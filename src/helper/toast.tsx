@@ -7,6 +7,7 @@ import ToastOrigin, {
 } from 'react-native-toast-message';
 
 import MessageIcon from '@asset/message.svg';
+import { OSType, isOS } from './device';
 
 const style = StyleSheet.create({
     success: {
@@ -79,7 +80,19 @@ const toastConfig: ToastConfig = {
     ),
 };
 
-const Toast = ToastOrigin;
+export function EmptyToast(props: any) {
+    return <></>
+};
+
+EmptyToast.show = (params: any) => {}
+EmptyToast.hide = () => {}
+
+export declare namespace EmptyToast {
+    var show: (params: any) => void;
+    var hide: (params?: void | undefined) => void;
+}
+
+const Toast = isOS(OSType.Windows) ? EmptyToast : ToastOrigin;
 
 export {
     Toast,

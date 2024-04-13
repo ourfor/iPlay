@@ -1,4 +1,6 @@
 import { ThemeBasicStyle } from '@global';
+import { Dev } from '@helper/dev';
+import { Device, isOS, OSType } from '@helper/device';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@store';
 import _ from 'lodash';
@@ -53,7 +55,7 @@ const initialState: ThemeState = {
     showVideoLink: false,
     isDarkMode: false,
     headerTitleAlign: 'center',
-    pagePaddingTop: 56,
+    pagePaddingTop: Device.isDesktop ? 0 : 56,
 };
 
 export const slice = createSlice({
@@ -104,11 +106,22 @@ export const selectScreenOptions = createSelector([
     getHeaderTitleAlign
 ], (headerTintColor, backgroundColor, headerTitleAlign) => {
     const options = {
-        headerTitleAlign: headerTitleAlign,
+        headerTitleAlign,
         headerStyle: {
-            backgroundColor: backgroundColor
+            backgroundColor
         }, 
         headerTransparent: true,
+        headerTintColor,
+        contentStyle: {
+            backgroundColor,
+        },
+    }
+    if (Device.isDesktop) return {
+        // headerTitleAlign,
+        headerShown: false,
+        headerStyle: {
+            backgroundColor: 'transparent',
+        }, 
         headerTintColor,
         contentStyle: {
             backgroundColor,
