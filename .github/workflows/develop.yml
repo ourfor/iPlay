@@ -3,8 +3,22 @@ name: 🌸 Build
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - 'doc/**'
+      - '.editorconfig'
+      - '.gitignore'
+      - 'Copyright'
+      - 'README.md'
+      - 'RELEASE_NOTES'
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - 'doc/**'
+      - '.editorconfig'
+      - '.gitignore'
+      - 'Copyright'
+      - 'README.md'
+      - 'RELEASE_NOTES'
 
 jobs:
   build:
@@ -14,6 +28,9 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.GH_PAT }}
           
       - name: 🐧 set up Swift
         uses: swift-actions/setup-swift@v1

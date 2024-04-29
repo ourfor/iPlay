@@ -1,0 +1,71 @@
+name: Windows CI
+on: [pull_request]
+
+jobs:
+  run-windows-tests:
+    name: Build & run tests
+    runs-on: windows-2022
+
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout Code
+     
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '^21'
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+      with:
+        # vs-version: '[17.0,18.0)'
+        msbuild-architecture: x64
+
+    - name: Check node modules cache
+      uses: actions/cache@v1
+      id: yarn-cache
+      with:
+        path: ./node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: Install node modules
+      if: steps.yarn-cache.outputs.cache-hit != 'true'
+      run: yarn --pure-lockfile
+    
+    # - name: yarn build
+    #   if: steps.yarn-cache.outputs.cache-hit == 'true'
+    #   run: |
+    #     yarn build
+    #     yarn tsc
+
+    - name: Build x64 release
+      shell: powershell
+      run: |
+        $file = "node_modules\react-native-svg\windows\RNSVG\RNSVG.vcxproj"
+        $content = Get-Content $file
+        $content = $content -replace '(<WindowsTargetPlatformVersion>).*(</WindowsTargetPlatformVersion>)', '${1}10.0.19041.0${2}'
+        $content | Set-Content $file
+        git apply tools/patch/RNSVG.patch
+
+        npx react-native run-windows --arch x64 --msbuildprops SignManifests=false --release --no-packager --no-deploy --logging
+        npx react-native run-windows --arch ARM64 --msbuildprops SignManifests=false --release --no-packager --no-deploy --logging
+
+    - name: Compress artifacts
+      shell: powershell
+      run: |
+        python ./tools/compress.py
+      
+    - name: ⬆️ Upload Build Artifact
+      shell: powershell
+      env:
+        scheme: ${{ 'default' }}
+      run: |
+        $buildtime = Get-Date -Format "yyyyMMdd.HHmm"
+        pip install requests
+        Write-Host "Uploading build artifacts..."
+        Write-Host "Uploaded iPlay.all.zip"
+        python ./tools/upload.py --url "https://drive.endemy.me/od_bot/build/iPlay/$buildtime/iPlay.all.zip" `
+          --file "$PWD/iPlay.all.zip" `
+          --token "${{ secrets.CLIENT_ID }}"
