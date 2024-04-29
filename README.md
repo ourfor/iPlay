@@ -67,8 +67,6 @@ It is developed in my free time ⏰
    <img width="120" style="border-radius: 5px" src="./doc/image/English_get it from MS_864X312.png">
 </a>
 </td>
-<td>
-</td>
 </tr>
 </table>
 
