@@ -13,6 +13,8 @@ import {Page as VideoConfigPage} from '@page/settings/video/index.tsx';
 import {Page as TestPage} from '@page/test/index.tsx';
 import {Page as ActorPage} from '@page/actor/index.tsx';
 import {Page as AboutPage} from '@page/settings/about/index.tsx';
+import {Page as CachePage} from '@page/settings/cache/index.tsx';
+import {Page as PicturePage} from '@page/settings/picture/index.tsx';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {
     DefaultTheme,
@@ -125,6 +127,11 @@ const SettingsRouter = () => {
                 options={{title: '主题配置'}}
             />
             <SettingsStack.Screen
+                name="config_picture"
+                component={PicturePage}
+                options={{title: '图片配置'}}
+            />
+            <SettingsStack.Screen
                 name="config_video"
                 component={VideoConfigPage}
                 options={{title: '视频配置'}}
@@ -133,6 +140,11 @@ const SettingsRouter = () => {
                 name="about"
                 component={AboutPage as any}
                 options={{title: '关于我们'}}
+            />
+            <SettingsStack.Screen
+                name="cache"
+                component={CachePage as any}
+                options={{title: '应用缓存'}}
             />
         </SettingsStack.Navigator>
     );

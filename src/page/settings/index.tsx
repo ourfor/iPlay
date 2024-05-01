@@ -29,6 +29,13 @@ const settings: SettingItemProps[] = [
         }
     },
     {
+        icon: "Picture",
+        label: "图片设置",
+        onPress: (setting, navigation) => {
+            navigation?.navigate("config_picture")
+        }
+    },
+    {
         icon: "Video",
         label: "视频设置",
         onPress: (setting, navigation) => {
@@ -40,12 +47,11 @@ const settings: SettingItemProps[] = [
         label: "音频设置",
     },
     {
-        icon: "Message",
-        label: "最近消息",
-    },
-    {
         icon: "Trash",
         label: "应用缓存",
+        onPress: (setting, navigation) => {
+            navigation?.navigate("cache")
+        }
     },
     {
         icon: "Mobile",

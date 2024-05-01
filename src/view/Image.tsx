@@ -39,5 +39,10 @@ export function WindowsImage(props: ImageProps) {
             />;
 }
 
+export const clearImageCache = () => {
+    FastImage.clearMemoryCache();
+    FastImage.clearDiskCache();
+}
+
 export const Image = isOS(OSType.Windows) ? WindowsImage : MobileImage
 export {BaseImage as BaseImage};

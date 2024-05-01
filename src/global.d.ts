@@ -31,7 +31,9 @@ type RootStackParamList = {
   theme: undefined,
   test: undefined,
   config_video: undefined,
+  config_picture: undefined,
   about: undefined,
+  cache: undefined,
   default: undefined,
   actor: {
     title?: string
