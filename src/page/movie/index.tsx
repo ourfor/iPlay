@@ -91,6 +91,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
     const themeStyle = useAppSelector(selectThemeBasicStyle)
     const emby = useAppSelector(state => state.emby?.emby)
     const showVideoLink = useAppSelector(state => state.theme.showVideoLink)
+    const showExternalPlayer = useAppSelector(state => state.theme.showExternalPlayer)
     const dispatch = useAppDispatch()
     const {type, movie} = route.params
     const [url, setUrl] = useState<string>()
@@ -262,7 +263,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
             <SpinBox color={themeStyle.color} size="small" /> 
             : null}
             <Text style={{...style.overview, color}}>{detail?.Overview}</Text>
-            {isPlayable && url ?
+            {showExternalPlayer && isPlayable && url ?
             <ExternalPlayer title={detail?.Name} src={url} /> : null}
             {showVideoLink ? 
             <Text style={{...style.link, ...themeStyle}}

@@ -50,6 +50,7 @@ export function Page() {
     const dispatch = useAppDispatch();
     const menuBarPaddingOffset = useAppSelector((state) => state.theme.menuBarPaddingOffset);
     const showVideoLink = useAppSelector((state) => state.theme.showVideoLink);
+    const showExternalPlayer = useAppSelector((state) => state.theme.showExternalPlayer);
     const headerTitleAlign = useAppSelector((state) => state.theme.headerTitleAlign);
     const color = useAppSelector(state => state.theme.fontColor);
     const fontName = useAppSelector(state => state.theme.fontFamily)
@@ -110,6 +111,11 @@ export function Page() {
                     <Text style={{...style.label, ...theme}}>显示视频链接</Text>
                     <Switch value={showVideoLink}
                         onChange={() => { dispatch(updateShowVideoLink(!showVideoLink)) }} />
+                </View>
+                <View style={style.inline}>
+                    <Text style={{...style.label, ...theme}}>显示外部播放器</Text>
+                    <Switch value={showExternalPlayer}
+                        onChange={() => { dispatch(updateTheme({showExternalPlayer: !showExternalPlayer})) }} />
                 </View>
                 <View style={style.inline}>
                     <Text style={{...style.label, ...theme}}>导航栏标题居中(默认居左, 仅安卓)</Text>

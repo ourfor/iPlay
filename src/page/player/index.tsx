@@ -76,6 +76,7 @@ export function Page({navigation, route}: PlayerPageProps) {
     const theme = useAppSelector(selectThemeBasicStyle)
     const pageStyle = useAppSelector(selectThemedPageStyle)
     const subtitleFontName = useAppSelector(s => s.player.fontFamily)
+    const showExternalPlayer = useAppSelector(s => s.theme.showExternalPlayer)
     const dispatch = useAppDispatch()
     const isTablet = Device.isTablet
 
@@ -170,12 +171,12 @@ export function Page({navigation, route}: PlayerPageProps) {
             }
             </>
             {loading ? <Spin color={theme.color} /> : null}
-            {isTablet && url ? <ExternalPlayer src={url} title={episode.Name} /> : null}
+            {showExternalPlayer && isTablet && url ? <ExternalPlayer src={url} title={episode.Name} /> : null}
             {isTablet ? <Text style={layout.overview}>{episode.Overview}</Text> : null}
         </View>
         <ScrollView style={layout.playlist}
             showsVerticalScrollIndicator={false}>
-        {!isTablet && url ? <ExternalPlayer src={url} title={episode.Name} /> : null}
+        {showExternalPlayer && !isTablet && url ? <ExternalPlayer src={url} title={episode.Name} /> : null}
         {episodes?.map((e, idx) => <EpisodeCard key={idx} 
             emby={emby} 
             theme={theme}
