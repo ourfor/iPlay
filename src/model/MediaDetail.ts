@@ -18,7 +18,7 @@ export interface MediaDetail {
         Thumb: string
     }
     UserData: UserData
-    People: People[]
+    People?: People[]
     SeriesId: string
     SeriesName: string
     MediaSources?: MediaSource[]
