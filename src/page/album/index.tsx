@@ -57,7 +57,6 @@ export function Page({ route}: PropsWithNavigation<'album'>) {
         (kFullScreenStyle.width - 20) /
         Math.floor((kFullScreenStyle.width - 20) / 120);
 
-    logger.info(`data[0] = ${data?.[0]}`)
     return (
         <View style={{...style.root, paddingTop: pageStyle.paddingTop}}>
             {data && data.length > 0 ? (
