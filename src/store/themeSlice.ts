@@ -28,6 +28,7 @@ interface ThemeState {
     pagePaddingTop: number,
     safeInsets: EdgeInsets;
     showVideoLink?: boolean;
+    showExternalPlayer?: boolean;
     isDarkMode: boolean;
     fontColor?: string;
     fontSize?: number;
