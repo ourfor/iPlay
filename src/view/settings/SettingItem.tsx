@@ -4,7 +4,7 @@ import { Navigation, ThemeBasicStyle } from "@global";
 import VideoIcon from "@asset/video.svg"
 import EarphoneIcon from "@asset/earphone.svg"
 import TrashIcon from "@asset/trash.svg"
-import MessageIcon from "@asset/message.svg"
+import PictureIcon from "@asset/picture.svg"
 import MobileIcon from "@asset/phone.svg"
 import ThemeIcon from "@asset/paint.svg"
 import Indicator from "@asset/right.arrow.svg"
@@ -46,7 +46,7 @@ export const Icon = {
     Video: VideoIcon,
     Audio: EarphoneIcon,
     Trash: TrashIcon,
-    Message: MessageIcon,
+    Picture: PictureIcon,
     Indicator: Indicator,
     Mobile: MobileIcon,
     Theme: ThemeIcon,

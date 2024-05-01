@@ -1,9 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
+export enum PictureQuality {
+    Low,
+    Medium,
+    High
+}
+
 interface ConfigState {
     video: {
         MaxStreamingBitrate?: number;
+    },
+    picture: {
+        quality: PictureQuality
     }
 }
 
@@ -12,6 +21,9 @@ type ThemeUpdateFunction = (state: ConfigState) => ConfigState;
 const initialState: ConfigState = {
     video: {
         MaxStreamingBitrate: 60000000
+    },
+    picture: {
+        quality: PictureQuality.High
     }
 };
 

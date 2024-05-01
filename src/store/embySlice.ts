@@ -236,6 +236,9 @@ export const slice = createSlice({
                 return site
             })
         }, 
+        clearCurrentSiteSource: (state) => {
+            state.source = {}
+        },
         switchToSite: (state, action: PayloadAction<string>) => {
             const id = action.payload
             const target = state.sites?.filter(site => site.id === id)?.[0]
@@ -354,7 +357,8 @@ export const slice = createSlice({
 
 export const { 
     switchToSite, removeSite,
-    updateCurrentEmbySite, 
+    updateCurrentEmbySite,
+    clearCurrentSiteSource,
     patchCurrentEmbySite,
     updateAlbumSortType,
     updateToNextAlbumSortType
