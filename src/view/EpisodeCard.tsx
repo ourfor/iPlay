@@ -89,7 +89,7 @@ export function EpisodeCard({style: extraStyle, theme, episode, onPress}: Episod
                 </View>
             </View>
             <Tag style={style.No} color="green">
-                {episode.IndexNumber}
+                {episode.IndexNumber.toString().padStart(2, "0")}
             </Tag>
         </View>
         </TouchableOpacity>
