@@ -20,7 +20,7 @@ import { logger, printException } from "@helper/log";
 import { updatePlayerState } from "@store/playerSlice";
 import { PlayEventType } from "@view/mpv/Player";
 import { PlaybackStateType } from "@view/mpv/type";
-import { fetchPlaybackAsync } from "@store/embySlice";
+import { fetchMediaAsync, fetchPlaybackAsync, fetchSeasonAsync } from "@store/embySlice";
 import { StatusBar } from "@view/StatusBar";
 import { Like } from "@view/like/Like";
 import { PlayCount } from "@view/counter/PlayCount";
@@ -104,7 +104,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
     const pageStyle = useAppSelector(selectThemedPageStyle)
     const subtitleFontName = useAppSelector(s => s.player.fontFamily)
     const poster = type==="Episode" ?  movie.image.primary : movie.image.backdrop
-    
+
     const fetchPlayUrl = useCallback(async () => {
         let url = getPlayUrl(detail)
         console.log(`fetch play url`, url)
@@ -146,14 +146,20 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
     useEffect(() => {
         setIsPlaying(false)
         setInfoLoading(true)
-        emby?.getMedia?.(Number(movie.Id))
-            .then(setDetail)
+        dispatch(fetchMediaAsync(movie.Id))
+            .then(res => {
+                const data = res.payload
+                if (data && typeof data !== "string") setDetail(data)
+            })
             .catch(printException)
             .finally(() => setInfoLoading(false))
 
         if (type !== "Series") return
-        emby?.getSeasons?.(Number(movie.Id))
-            .then(setSeasons)
+        dispatch(fetchSeasonAsync(movie.Id))
+            .then(res => {
+                const data = res.payload
+                if (data && typeof data !== "string") setSeasons(data)
+            })
             .catch(printException)
     }, [emby, movie.Id])
     

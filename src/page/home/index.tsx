@@ -2,7 +2,7 @@ import { PropsWithNavigation } from '@global';
 import { Device } from '@helper/device';
 import { printException } from '@helper/log';
 import { useAppDispatch, useAppSelector } from '@hook/store';
-import { fetchEmbyAlbumAsync, patchCurrentEmbySite } from '@store/embySlice';
+import { fetchEmbyAlbumAsync, fetchPublicInfo, patchCurrentEmbySite } from '@store/embySlice';
 import { selectThemedPageStyle } from '@store/themeSlice';
 import { SiteResource } from '@view/SiteResource';
 import { StatusBar } from '@view/StatusBar';
@@ -27,22 +27,22 @@ const style = StyleSheet.create({
 
 export function Page({navigation}: PropsWithNavigation<'home'>) {
     const site = useAppSelector(state => state.emby?.site)
-    const emby = useAppSelector(state => state.emby?.emby)
     const dispatch = useAppDispatch()
     const pageStyle = useAppSelector(selectThemedPageStyle)
     useEffect(() => {
         if (!site?.server || !site?.user) {
             return
         }
-        emby?.getPublicInfo?.().then(data => {
-            console.log(`site: `, data.ServerName);
-            dispatch(patchCurrentEmbySite({
-                name: data.ServerName,
-                version: data.Version,
-            }))
-        })
-        .catch(printException)
-        
+        dispatch(fetchPublicInfo())
+            .then(res => {
+                const data = res.payload
+                if (!data || typeof data === 'string') return;
+                dispatch(patchCurrentEmbySite({
+                    name: data.ServerName,
+                    version: data.Version,
+                }))
+            })
+            .catch(printException)
     }, [site])
 
     const goToLogin = () => {
