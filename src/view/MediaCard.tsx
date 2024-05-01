@@ -10,6 +10,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Navigation, ThemeBasicStyle} from '@global';
 import {useAppSelector} from '@hook/store';
 import { Device } from '@helper/device';
+import { useMemo } from 'react';
 
 export const style = StyleSheet.create({
     mediaCard: {
@@ -44,12 +45,13 @@ export const style = StyleSheet.create({
     title: {
         maxWidth: 90, 
         overflow: 'hidden',
+        marginTop: 5,
+        fontSize: 13,
         fontWeight: 'bold',
     }
 });
 
 export function MediaCard({media, theme}: {media: Media, theme?: ThemeBasicStyle}) {
-    const emby = useAppSelector(state => state.emby?.emby);
     const navigation: Navigation = useNavigation();
     const onPress = (media: Media) => {
         navigation.navigate('movie', {
@@ -59,20 +61,29 @@ export function MediaCard({media, theme}: {media: Media, theme?: ThemeBasicStyle
         } as any);
     };
     
-    const postStyle = {
-        width: media?.Type === "Episode" ? 160 : 90, 
-        aspectRatio: media?.Type !== "Episode" ? 0.666 : 16/9, 
-        borderRadius: media?.Type==="Episode" ? 7 : 5
-    }
+    const layout = useMemo(() => ({
+        poster: {
+            width: media?.Type === "Episode" ? 160 : 90, 
+            aspectRatio: media?.Type !== "Episode" ? 0.666 : 16/9, 
+            borderRadius: media?.Type==="Episode" ? 7 : 5
+        },
+        text: {
+            ...style.title, 
+            ...theme,
+            maxWidth: media?.Type === "Episode" ? 160 : 90,
+            fontWeight: media?.Type === "Episode" ? "normal" : "bold"
+        }
+    }), [theme, media])
+
     return (
         <View style={style.mediaCard} key={media.Id}>
             <TouchableOpacity activeOpacity={1.0} onPress={() => onPress(media)}>
                 <Image
-                    style={postStyle}
+                    style={layout.poster}
                     source={{uri: media.image.primary}}
                 />
             </TouchableOpacity>
-            <Text style={{...style.title, ...theme}}
+            <Text style={layout.text}
                 numberOfLines={1} 
                 ellipsizeMode="tail">
                 {media.Name}
@@ -84,7 +95,6 @@ export function MediaCard({media, theme}: {media: Media, theme?: ThemeBasicStyle
 
 
 export function MediaCardInLine({media, theme}: {media: Media, theme?: ThemeBasicStyle}) {
-    const emby = useAppSelector(state => state.emby?.emby);
     const navigation: Navigation = useNavigation();
     const onPress = (media: Media) => {
         navigation.navigate('movie', {
@@ -99,6 +109,7 @@ export function MediaCardInLine({media, theme}: {media: Media, theme?: ThemeBasi
         aspectRatio: media?.Type !== "Episode" ? 0.666 : 16/9, 
         borderRadius: media?.Type==="Episode" ? 7 : 5
     }
+
     return (
         <View style={style.mediaCardLine} key={media.Id}>
             <TouchableOpacity activeOpacity={1.0} onPress={() => onPress(media)}>
