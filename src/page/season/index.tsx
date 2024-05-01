@@ -45,7 +45,7 @@ export function Page({route, navigation}: SeasonPageProps) {
         });
     }
 
-    const coverUrl = season.image.backdrop
+    const coverUrl = season.image.primary
     const isTablet = Device.isTablet
     const layout = useMemo(() => ({
         page: {

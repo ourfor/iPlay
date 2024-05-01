@@ -104,7 +104,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
     const pageStyle = useAppSelector(selectThemedPageStyle)
     const subtitleFontName = useAppSelector(s => s.player.fontFamily)
     const poster = type==="Episode" ?  movie.image.primary : movie.image.backdrop
-
+    
     const fetchPlayUrl = useCallback(async () => {
         let url = getPlayUrl(detail)
         console.log(`fetch play url`, url)
@@ -270,7 +270,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
                 {url}
             </Text> : null}
             {seasons ? <SeasonCardList seasons={seasons} /> : null}
-            {detail?.People.length ? 
+            {detail?.People?.length ? 
             <Text style={{...style.actorSection, ...themeStyle}}>
                 演职人员
             </Text> 
@@ -278,7 +278,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
             <ScrollView horizontal 
                 contentContainerStyle={{minWidth: "100%"}}
                 showsHorizontalScrollIndicator={false}>
-            {detail?.People.map((actor, index) => 
+            {detail?.People?.map((actor, index) => 
                 <ActorCard key={index} 
                     theme={themeStyle} 
                     actor={actor}

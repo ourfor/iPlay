@@ -10,7 +10,7 @@ export interface MediaDetail {
     CollectionType: "tvshows"|"movies"
     Id: string
     Etag: string
-    Type: "Series"|"Movie"|string
+    Type: "Series"|"Movie"|"Playlist"|string
     ImageTags: {
         Banner: string
         Logo: string
