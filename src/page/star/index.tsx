@@ -4,7 +4,7 @@ import { useAppSelector } from "@hook/store";
 import { Media } from "@model/Media";
 import { selectThemeBasicStyle, selectThemedPageStyle } from "@store/themeSlice";
 import { MediaCard } from "@view/MediaCard";
-import { Spin, SpinBox } from "@view/Spin";
+import { SpinBox } from "@view/Spin";
 import { StatusBar } from "@view/StatusBar";
 import { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";

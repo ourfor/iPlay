@@ -221,7 +221,6 @@ export async function getCollection(site: EmbySite, cid: number, type: "Series"|
     Limit = kEmbyItemPageSize,
     SortBy = "DateCreated,SortName"
 }: CollectionOptions) {
-    logger.info("getCollection", cid, type, StartIndex, Limit)
     const uid = site.user.User.Id
     const params = {
         UserId: site.user.User.Id,

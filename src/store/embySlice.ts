@@ -15,6 +15,9 @@ import { Actor } from '@model/Actor';
 import { logger } from '@helper/log';
 import { CollectionOptions } from '@api/view';
 import { DEFAULT_AVATOR_URL } from '@helper/image';
+import { MediaDetail } from '@model/MediaDetail';
+import { Season } from '@model/Season';
+import { Info } from '@model/Info';
 
 export enum SortType {
     NameAsc,
@@ -152,6 +155,27 @@ export interface AlbumQueryParams {
     id: string,
     options?: CollectionOptions
 }
+
+export const fetchMediaAsync = createAppAsyncThunk<MediaDetail|undefined, string>("emby/media", async (id, config) => {
+    const state = await config.getState()
+    const emby = state.emby.emby
+    const data = await emby?.getMedia?.(Number(id));
+    return data
+})
+
+export const fetchSeasonAsync = createAppAsyncThunk<Season[]|undefined, string>("emby/season", async (id, config) => {
+    const state = await config.getState()
+    const emby = state.emby.emby
+    const data = await emby?.getSeasons?.(Number(id));
+    return data
+})
+
+export const fetchPublicInfo = createAppAsyncThunk<Info|undefined, void>("emby/public", async (_, config) => {
+    const state = await config.getState()
+    const emby = state.emby.emby
+    const data = await emby?.getPublicInfo?.()
+    return data
+})
 
 export const fetchAlbumMediaAsync = createAppAsyncThunk("emby/album/media", async (params: string|AlbumQueryParams, config) => {
     const state = await config.getState()
@@ -334,7 +358,6 @@ export const slice = createSlice({
         .addCase(fetchAlbumMediaAsync.fulfilled, (state, action) => {
             const album = action.payload
             if (!album) return
-            logger.info(`album.items[0]`, album.items[0])
             if (state.source.albumMedia) {
                 state.source.albumMedia[album.id] = album.items
             } else {
