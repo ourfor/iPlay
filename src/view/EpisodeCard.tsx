@@ -1,13 +1,10 @@
-import { Emby } from "@api/emby";
 import { Episode } from "@model/Episode";
 import { StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
 import { Image } from '@view/Image';
-import { useAppSelector } from "@hook/store";
 import { Tag } from "./Tag";
 import { Like } from "./like/Like";
 import { PlayCount } from "./counter/PlayCount";
 import { ThemeBasicStyle } from "@global";
-import { getImageUrl } from "@store/embySlice";
 
 const DEFULT_OVERVIEW = `数据源中缺少相关描述
 Data source lacks relevant description`
@@ -65,8 +62,8 @@ export interface EpisodeCardProps {
 }
 
 export function EpisodeCard({style: extraStyle, theme, episode, onPress}: EpisodeCardProps) {
-    const thumbUrl = useAppSelector(getImageUrl(episode.Id, episode.ImageTags.Primary))
-    const posterUrl = useAppSelector(getImageUrl(episode.SeasonId, episode.ImageTags.Primary))
+    const thumbUrl = episode.image.backdrop
+    const posterUrl = episode.image.primary
     return (
         <TouchableOpacity activeOpacity={1.0} onPress={() => onPress?.(episode)}>
         <View style={{...style.basic, ...theme, ...extraStyle}}>

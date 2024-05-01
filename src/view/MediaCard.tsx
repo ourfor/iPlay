@@ -8,7 +8,6 @@ import { Image } from '@view/Image';
 import {Media} from '@model/Media';
 import {useNavigation} from '@react-navigation/native';
 import {Navigation, ThemeBasicStyle} from '@global';
-import {Api} from '@api/emby';
 import {useAppSelector} from '@hook/store';
 import { Device } from '@helper/device';
 
@@ -70,7 +69,7 @@ export function MediaCard({media, theme}: {media: Media, theme?: ThemeBasicStyle
             <TouchableOpacity activeOpacity={1.0} onPress={() => onPress(media)}>
                 <Image
                     style={postStyle}
-                    source={{uri: emby?.imageUrl?.(media.Id, null)}}
+                    source={{uri: media.image.primary}}
                 />
             </TouchableOpacity>
             <Text style={{...style.title, ...theme}}
@@ -105,7 +104,7 @@ export function MediaCardInLine({media, theme}: {media: Media, theme?: ThemeBasi
             <TouchableOpacity activeOpacity={1.0} onPress={() => onPress(media)}>
                 <Image
                     style={postStyle}
-                    source={{uri: emby?.imageUrl?.(media.Id, null)}}
+                    source={{uri: media.image.primary}}
                 />
             </TouchableOpacity>
             <View style={style.mediaCardText}>

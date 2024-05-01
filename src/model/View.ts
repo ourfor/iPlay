@@ -1,3 +1,5 @@
+import { Image } from "./Image"
+
 export interface ViewDetail {
     BackdropImageTags: string[]
     CanDelete: boolean
@@ -31,6 +33,8 @@ export interface ViewDetail {
     SortName: string
     Taglines: string[]
     Type: string
+
+    image: Image
 }
 
 export interface View {

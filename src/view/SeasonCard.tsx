@@ -46,19 +46,12 @@ export interface SeasonCardProps {
 }
 
 export function SeasonCard({ season, theme, onPress }: SeasonCardProps) {
-    const emby = useAppSelector(state => state.emby?.emby);
     return (
         <View style={style.root}>
             <TouchableOpacity activeOpacity={1.0} onPress={() => onPress?.(season)}>
             <Image
                 style={style.cover}
-                source={{
-                    uri: emby?.imageUrl?.(
-                        season.Id,
-                        season.ImageTags.Primary,
-                        'Primary/0',
-                    ),
-                }}
+                source={{ uri: season.image.primary }}
             />
             </TouchableOpacity>
             <Text style={{...style.number}}>{season.UserData.UnplayedItemCount}</Text>

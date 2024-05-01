@@ -334,6 +334,7 @@ export const slice = createSlice({
         .addCase(fetchAlbumMediaAsync.fulfilled, (state, action) => {
             const album = action.payload
             if (!album) return
+            logger.info(`album.items[0]`, album.items[0])
             if (state.source.albumMedia) {
                 state.source.albumMedia[album.id] = album.items
             } else {

@@ -45,7 +45,7 @@ export function Page({route, navigation}: SeasonPageProps) {
         });
     }
 
-    const coverUrl = emby?.imageUrl?.(season.Id, season.BackdropImageTags[0])
+    const coverUrl = season.image.backdrop
     const isTablet = Device.isTablet
     const layout = useMemo(() => ({
         page: {
@@ -92,7 +92,7 @@ export function Page({route, navigation}: SeasonPageProps) {
                 </View>
                 }
                 {episodes?.map(episode => 
-                    <EpisodeCard key={episode.Id} emby={emby}
+                    <EpisodeCard key={episode.Id}
                         onPress={onPress}
                         theme={theme}
                         episode={episode} />

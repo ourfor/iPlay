@@ -1,3 +1,4 @@
+import { Image } from "./Image";
 import { UserData } from "./UserData";
 
 export interface Episode {
@@ -14,4 +15,6 @@ export interface Episode {
         Primary: string;
     };
     UserData: UserData;
+
+    image: Image
 }

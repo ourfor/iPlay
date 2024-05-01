@@ -21,7 +21,7 @@ const style = StyleSheet.create({
 });
 
 
-export function Page({ navigation, route}: PropsWithNavigation<'album'>) {
+export function Page({ route}: PropsWithNavigation<'album'>) {
     const data = useAppSelector(state => state.emby?.source?.albumMedia?.[route.params.albumId]);
     const [loading, setLoading] = useState(true);
     const theme = useAppSelector(selectThemeBasicStyle);
@@ -32,7 +32,7 @@ export function Page({ navigation, route}: PropsWithNavigation<'album'>) {
 
     useEffect(() => {
         setLoading(!cached);
-        logger.info("fetch album media", route.params.albumId)
+        logger.info("fetch album medias", route.params.albumId)
         const id = route.params.albumId;
         const query = {
             id, 
@@ -57,13 +57,14 @@ export function Page({ navigation, route}: PropsWithNavigation<'album'>) {
         (kFullScreenStyle.width - 20) /
         Math.floor((kFullScreenStyle.width - 20) / 120);
 
+    logger.info(`data[0] = ${data?.[0]}`)
     return (
         <View style={{...style.root, paddingTop: pageStyle.paddingTop}}>
             {data && data.length > 0 ? (
                 <ListView
                     items={data}
                     style={{width: '100%', flex: 1, padding: 10}}
-                    typeForIndex={i => layoutType ?? LayoutType.Card}
+                    typeForIndex={() => layoutType ?? LayoutType.Card}
                     layoutForType={(i, dim) => {
                         if (i === LayoutType.Card) {
                             dim.width = rowItemWidth;

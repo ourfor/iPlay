@@ -1,3 +1,4 @@
+import { Image } from "./Image"
 import { UserData } from "./UserData"
 
 export interface Season {
@@ -22,4 +23,6 @@ export interface Season {
     SupportsSync: boolean
     Type: string
     UserData: UserData
+
+    image: Image
 }
