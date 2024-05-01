@@ -74,8 +74,10 @@ export async function getMedia(site: EmbySite, id: number) {
     const response = await fetch(url)
     const data = await response.json() as MediaDetail
     data.image = getItemImage(site, id, PictureQuality.High)
-    for (const item of data.People) {
-        item.image = getItemImage(site, item.Id, PictureQuality.High)
+    if (data.People) {
+        for (const item of data.People) {
+            item.image = getItemImage(site, item.Id, PictureQuality.High)
+        }
     }
     return data
 }
