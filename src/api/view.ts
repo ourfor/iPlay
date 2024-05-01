@@ -1,5 +1,5 @@
 import { View } from "@model/View";
-import { makeEmbyUrl } from "./config";
+import { getItemImage, makeEmbyUrl } from "./config";
 import { Media } from "@model/Media";
 import { MediaDetail } from "@model/MediaDetail";
 import { Season } from "@model/Season";
@@ -10,6 +10,7 @@ import { Version } from "@helper/device";
 import { UserData } from "@model/UserData";
 import { PlaybackData, kPlaybackData } from "@model/PlaybackData";
 import { logger } from "@helper/log";
+import { PictureQuality } from "@store/configSlice";
 
 export const EMBY_CLIENT_HEADERS = {
     "X-Emby-Client": Version.displayName,
@@ -32,6 +33,9 @@ export async function getView(site: EmbySite) {
         }
     });
     const data = await response.json() as View
+    for (const item of data.Items) {
+        item.image = getItemImage(site, item.Id, PictureQuality.High)
+    }
     return data
 }
 
@@ -53,6 +57,9 @@ export async function getLatestMedia(site: EmbySite, parentId: number) {
         }
     })
     const data = await response.json() as Media[]
+    for (const item of data) {
+        item.image = getItemImage(site, item.Id, PictureQuality.High)
+    }
     return data
 }
 
@@ -66,6 +73,10 @@ export async function getMedia(site: EmbySite, id: number) {
     const url = makeEmbyUrl(params, `emby/Users/${uid}/Items/${id}`, site.server)
     const response = await fetch(url)
     const data = await response.json() as MediaDetail
+    data.image = getItemImage(site, id, PictureQuality.High)
+    for (const item of data.People) {
+        item.image = getItemImage(site, item.Id, PictureQuality.High)
+    }
     return data
 }
 
@@ -90,6 +101,9 @@ export async function getResume(site: EmbySite, type: "Video"|"Audio" = "Video")
         }
     })
     const data = await response.json() as EmbyResponse<Media>
+    for (const item of data.Items) {
+        item.image = getItemImage(site, item.Id, PictureQuality.High)
+    }
     return data.Items
 }
 
@@ -106,6 +120,9 @@ export async function getRecommendations(site: EmbySite) {
         }
     })
     const data = await response.json() as EmbyResponse<Media>
+    for (const item of data.Items) {
+        item.image = getItemImage(site, item.Id, PictureQuality.High)
+    }
     return data.Items
 }
 
@@ -124,6 +141,9 @@ export async function getSeasons(site: EmbySite, id: number) {
         }
     })
     const data = await response.json() as EmbyResponse<Season>
+    for (const item of data.Items) {
+        item.image = getItemImage(site, item.Id, PictureQuality.High)
+    }
     return data.Items
 }
 
@@ -143,6 +163,9 @@ export async function getEpisodes(site: EmbySite, vid: number, sid: number) {
         }
     })
     const data = await response.json() as EmbyResponse<Episode>
+    for (const item of data.Items) {
+        item.image = getItemImage(site, item.Id, PictureQuality.High)
+    }
     return data.Items
 }
 
@@ -179,6 +202,9 @@ export async function getItem(site: EmbySite, options: ItemOptions) {
         }
     })
     const data = await response.json() as EmbyResponse<Media>
+    for (const item of data.Items) {
+        item.image = getItemImage(site, item.Id, PictureQuality.High)
+    }
     return data
 }
 
@@ -193,6 +219,7 @@ export async function getCollection(site: EmbySite, cid: number, type: "Series"|
     Limit = kEmbyItemPageSize,
     SortBy = "DateCreated,SortName"
 }: CollectionOptions) {
+    logger.info("getCollection", cid, type, StartIndex, Limit)
     const uid = site.user.User.Id
     const params = {
         UserId: site.user.User.Id,
@@ -216,6 +243,9 @@ export async function getCollection(site: EmbySite, cid: number, type: "Series"|
         }
     })
     const data = await response.json() as EmbyResponse<Media>
+    for (const item of data.Items) {
+        item.image = getItemImage(site, item.Id, PictureQuality.High)
+    }
     return data
 }
 
@@ -238,6 +268,9 @@ export async function searchRecommend(site: EmbySite) {
         }
     })
     const data = await response.json() as EmbyResponse<Media>
+    for (const item of data.Items) {
+        item.image = getItemImage(site, item.Id, PictureQuality.High)
+    }
     return data
 }
 
@@ -263,6 +296,9 @@ export async function lookupItem(site: EmbySite, title: string) {
         }
     })
     const data = await response.json() as EmbyResponse<Media>
+    for (const item of data.Items) {
+        item.image = getItemImage(site, item.Id, PictureQuality.High)
+    }
     return data
 }
 

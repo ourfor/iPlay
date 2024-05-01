@@ -2,6 +2,8 @@ import { EmbySite } from "@model/EmbySite";
 import { ENV, EmbyConfig } from "../helper/env";
 import { Map } from "../model/Map";
 import { PlaybackInfo } from "@model/PlaybackInfo";
+import { PictureQuality } from "@store/configSlice";
+import { Image } from "@model/Image";
 
 export type { EmbyConfig } from "../helper/env"
 
@@ -31,6 +33,15 @@ export interface ImageProps {
     maxWidth: number
     tag: string
     quality: number
+}
+
+export function getItemImage(site: EmbySite, id: string|number, quality = PictureQuality.High) {
+    const image: Image = {
+        primary: imageUrl(site, id, null, "Primary"),
+        backdrop: imageUrl(site, id, null, "Backdrop"),
+        logo: imageUrl(site, id, null, "Logo"),
+    }
+    return image
 }
 
 export function imageUrl(site: EmbySite, id: string|number, options: string|Partial<ImageProps>|null, type: "Primary"|string = "Primary") {

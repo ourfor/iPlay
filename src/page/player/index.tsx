@@ -83,7 +83,7 @@ export function Page({navigation, route}: PlayerPageProps) {
     const playEpisode = (episode: Episode) => {
         setLoading(true)
         setEpisode(episode)
-        setPoster(emby?.imageUrl?.(episode.Id, episode.ImageTags.Primary))
+        setPoster(episode.image.primary)
         emby?.getPlaybackInfo?.(Number(episode.Id))
             .then(res => {
                 setUrl(emby?.videoUrl?.(res))
@@ -178,7 +178,6 @@ export function Page({navigation, route}: PlayerPageProps) {
             showsVerticalScrollIndicator={false}>
         {showExternalPlayer && !isTablet && url ? <ExternalPlayer src={url} title={episode.Name} /> : null}
         {episodes?.map((e, idx) => <EpisodeCard key={idx} 
-            emby={emby} 
             theme={theme}
             style={e === episode ? style.playing : style.inactive}
             onPress={playEpisode}

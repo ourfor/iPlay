@@ -35,8 +35,7 @@ export interface ActorCardProps {
 }
 
 export function ActorCard({actor, theme, onPress}: ActorCardProps) {
-    const emby = useAppSelector(state => state.emby?.emby)
-    const avatorUrl = emby?.imageUrl?.(actor.Id, actor.PrimaryImageTag, "Primary")
+    const avatorUrl = actor.image.primary
     return (
         <TouchableOpacity activeOpacity={1.0} onPress={() => onPress?.(actor)}>
         <View style={style.root}>

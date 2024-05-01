@@ -7,7 +7,7 @@ import { SeasonCardList } from "@view/SeasonCard";
 import { Tag } from "@view/Tag";
 import { ExternalPlayer } from "@view/player/ExternalPlayer";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { DimensionValue, ImageStyle, ScrollView, StyleProp, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { DimensionValue, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Image } from '@view/Image';
 import { Toast } from "@helper/toast";
 import { Spin, SpinBox } from "@view/Spin";
@@ -103,9 +103,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
     const [infoLoading, setInfoLoading] = useState(false)
     const pageStyle = useAppSelector(selectThemedPageStyle)
     const subtitleFontName = useAppSelector(s => s.player.fontFamily)
-    const poster = type==="Episode" ?
-        emby?.imageUrl?.(movie.Id, null) :
-        emby?.imageUrl?.(movie.Id, movie.BackdropImageTags?.[0], "Backdrop/0")
+    const poster = type==="Episode" ?  movie.image.primary : movie.image.backdrop
 
     const fetchPlayUrl = useCallback(async () => {
         let url = getPlayUrl(detail)
@@ -197,7 +195,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
             }))
         }
     }
-    const logoUrl = emby?.imageUrl?.(movie.Id, movie.BackdropImageTags?.[0], "Logo")
+    const logoUrl = movie.image.logo
     const isPlayable = movie.Type === "Movie" || movie.Type === "Episode" 
     const iconSize = preferedSize(24, 56, windowWidth/9)
     const layout = useMemo(() => ({

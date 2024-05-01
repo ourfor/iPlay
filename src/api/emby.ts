@@ -3,7 +3,7 @@ import { getActor, getCollection, getEpisodes, getItem, getLatestMedia, getMedia
 import { getPublicInfo } from "./info";
 import { login } from "./login";
 import { EmbySite } from "@model/EmbySite";
-import { imageUrl, playUrl } from "./config";
+import { getItemImage, imageUrl, playUrl } from "./config";
 
 export class Emby {
     private _site?: EmbySite;
@@ -36,6 +36,7 @@ export class Emby {
         this.getPublicInfo = getPublicInfo.bind(this, this.site)
         this.getItem = getItem.bind(this, this.site)
         this.getActor = getActor.bind(this, this.site)
+        this.getItemImage = getItemImage.bind(this, this.site)
         this.imageUrl = imageUrl.bind(this, this.site)
         this.videoUrl = playUrl.bind(this, this.site)
         this.markFavorite = markFavorite.bind(this, this.site)
@@ -58,6 +59,7 @@ export class Emby {
     public searchRecommend = this._site ? searchRecommend.bind(this, this.site) : null
     public getItem = this._site ? getItem.bind(this, this.site) : null
     public getActor = this._site ? getActor.bind(this, this.site) : null
+    public getItemImage = this._site ? getItemImage.bind(this, this.site) : null
     public imageUrl = this._site ? imageUrl.bind(this, this.site) : null
     public videoUrl = this._site ? playUrl.bind(this, this.site) : null
     public markFavorite = this._site ? markFavorite.bind(this, this.site) : null

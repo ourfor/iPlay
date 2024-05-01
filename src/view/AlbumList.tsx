@@ -63,7 +63,7 @@ export function AlbumCardList({albums, theme}: {albums: ViewDetail[], theme?: Th
                     <TouchableOpacity activeOpacity={1.0} key={album.Id} onPress={() => onPress(album)}>
                     <View key={album.Id} style={style.album}>
                         <Image style={style.albumImage}
-                            source={{uri: emby?.imageUrl?.(album.Id, album.Etag)}}
+                            source={{uri: album.image.primary}}
                         />
                         <Text style={theme}>{album.Name}</Text>
                     </View>

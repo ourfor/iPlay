@@ -1,3 +1,4 @@
+import { Image } from "./Image"
 import { UserData } from "./UserData"
 
 export interface Media {
@@ -32,4 +33,7 @@ export interface Media {
     SupportsSync: boolean
     Type: "Series"|"Movie"|"Episode"
     UserData: UserData
+
+
+    image: Image
 }
