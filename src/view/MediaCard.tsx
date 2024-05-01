@@ -1,6 +1,7 @@
 import {
     StyleSheet,
     Text,
+    TextStyle,
     TouchableOpacity,
     View,
 } from 'react-native';
@@ -8,7 +9,6 @@ import { Image } from '@view/Image';
 import {Media} from '@model/Media';
 import {useNavigation} from '@react-navigation/native';
 import {Navigation, ThemeBasicStyle} from '@global';
-import {useAppSelector} from '@hook/store';
 import { Device } from '@helper/device';
 import { useMemo } from 'react';
 
@@ -72,7 +72,7 @@ export function MediaCard({media, theme}: {media: Media, theme?: ThemeBasicStyle
             ...theme,
             maxWidth: media?.Type === "Episode" ? 160 : 90,
             fontWeight: media?.Type === "Episode" ? "normal" : "bold"
-        }
+        } as TextStyle
     }), [theme, media])
 
     return (
@@ -80,7 +80,7 @@ export function MediaCard({media, theme}: {media: Media, theme?: ThemeBasicStyle
             <TouchableOpacity activeOpacity={1.0} onPress={() => onPress(media)}>
                 <Image
                     style={layout.poster}
-                    source={{uri: media.image.primary}}
+                    source={{uri: media.image?.primary}}
                 />
             </TouchableOpacity>
             <Text style={layout.text}
