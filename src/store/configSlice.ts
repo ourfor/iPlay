@@ -7,9 +7,16 @@ export enum PictureQuality {
     High
 }
 
+export enum VideoDecodeType {
+    Auto,
+    Hardware,
+    Software,
+}
+
 interface ConfigState {
     video: {
         MaxStreamingBitrate?: number;
+        Decode: VideoDecodeType;
     },
     picture: {
         quality: PictureQuality
@@ -20,7 +27,8 @@ type ThemeUpdateFunction = (state: ConfigState) => ConfigState;
 
 const initialState: ConfigState = {
     video: {
-        MaxStreamingBitrate: 60000000
+        MaxStreamingBitrate: 60000000,
+        Decode: VideoDecodeType.Auto
     },
     picture: {
         quality: PictureQuality.High
