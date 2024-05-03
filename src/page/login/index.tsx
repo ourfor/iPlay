@@ -1,6 +1,7 @@
 import { EmbyConfig } from '@api/config';
 import { Navigation } from '@global';
 import { OSType, isOS } from '@helper/device';
+import { EmbyServerType } from '@helper/env';
 import { Toast } from '@helper/toast';
 import { useAppDispatch, useAppSelector } from '@hook/store';
 import { embyUrl } from '@model/EmbySite';
@@ -8,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { loginToSiteAsync, removeSite, switchToSiteAsync } from '@store/embySlice';
 import { selectThemeBasicStyle } from '@store/themeSlice';
 import { Site } from '@view/Site';
+import { Tag } from '@view/Tag';
 import {useEffect, useState} from 'react';
 import {Button, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,6 +30,20 @@ const style = StyleSheet.create({
         flex: 1,
         height: 40,
         margin: 12,
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingLeft: 8,
+        paddingRight: 8,
+        backgroundColor: "#f0f0f0",
+        borderColor: "#e0e0e0",
+    },
+    selector: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 40,
+        marginLeft: 12,
+        marginRight: 12,
         borderWidth: 1,
         borderRadius: 5,
         paddingLeft: 8,
@@ -56,6 +72,7 @@ export function Page() {
     const [server, onChangeServer] = useState(embyUrl(site) ?? '');
     const [username, onChangeUsername] = useState(site?.user.User.Name ?? '');
     const [password, onChangePassword] = useState('');
+    const [siteType, onChangeSiteType] = useState(EmbyServerType.Emby)
     const [loading, setLoading] = useState(false);
     const dispatch = useAppDispatch()
     const backgroundColor = useAppSelector(state => state.theme.backgroundColor);
@@ -67,6 +84,7 @@ export function Page() {
         const groups = server.match(regex)?.groups
         const protocol = groups?.protocol === "https" ? "https" : "http"
         const endpoint: EmbyConfig = {
+            type: siteType,
             remark: serverRemark?.trim() ?? null,
             host: groups?.host ?? "",
             port: groups?.port ? parseInt(groups.port) : (protocol === "https" ? 443 : 80),
@@ -116,7 +134,17 @@ export function Page() {
     return (
         <View style={{flex: 1, backgroundColor, paddingTop: pagePaddingTop}}>
             <View style={style.inputLine}>
-                <Text style={{...style.inputLabel, ...theme}}>备  注</Text>
+                <Text style={{...style.inputLabel, ...theme}}>类　型</Text>
+                <View style={{...style.selector, ...theme}}>
+                {[EmbyServerType.Emby, EmbyServerType.Jellyfin].map(type => 
+                    <Tag key={type}
+                        color={siteType==type ? "red" : "cyan"} 
+                        onPress={() => onChangeSiteType(type)}>
+                        {type}
+                    </Tag>
+                )}
+                </View>
+                <Text style={{...style.inputLabel, ...theme}}>备　注</Text>
                 <TextInput
                     placeholder="可选"
                     style={{...style.input, ...theme}}
@@ -146,7 +174,7 @@ export function Page() {
                 />
             </View>
             <View style={style.inputLine}>
-                <Text style={{...style.inputLabel, ...theme}}>密  码</Text>
+                <Text style={{...style.inputLabel, ...theme}}>密　码</Text>
                 <TextInput
                     placeholder="password"
                     style={{...style.input, ...theme}}

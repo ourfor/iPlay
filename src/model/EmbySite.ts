@@ -1,7 +1,9 @@
 import { EmbyConfig } from '@api/config';
+import { EmbyServerType } from '@helper/env';
 import { User } from '@model/User';
 
 export interface EmbySite {
+    type?: EmbyServerType;
     id: string;
     remark?: string;
     name?: string;
