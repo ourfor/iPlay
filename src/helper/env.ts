@@ -1,4 +1,5 @@
 export interface EmbyConfig {
+    remark?: string
     host: string
     protocol: "http"|"https"
     port: number

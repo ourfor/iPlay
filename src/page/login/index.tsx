@@ -9,7 +9,7 @@ import { loginToSiteAsync, removeSite, switchToSiteAsync } from '@store/embySlic
 import { selectThemeBasicStyle } from '@store/themeSlice';
 import { Site } from '@view/Site';
 import {useEffect, useState} from 'react';
-import {Button, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Button, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const style = StyleSheet.create({
@@ -52,6 +52,7 @@ export function Page() {
     const insets = useSafeAreaInsets()
     const sites = useAppSelector(state => state.emby.sites)
     const site = useAppSelector(state => state.emby.site)
+    const [serverRemark, onChangeServerRemark] = useState(site?.remark ?? '');
     const [server, onChangeServer] = useState(embyUrl(site) ?? '');
     const [username, onChangeUsername] = useState(site?.user.User.Name ?? '');
     const [password, onChangePassword] = useState('');
@@ -66,6 +67,7 @@ export function Page() {
         const groups = server.match(regex)?.groups
         const protocol = groups?.protocol === "https" ? "https" : "http"
         const endpoint: EmbyConfig = {
+            remark: serverRemark?.trim() ?? null,
             host: groups?.host ?? "",
             port: groups?.port ? parseInt(groups.port) : (protocol === "https" ? 443 : 80),
             protocol,
@@ -114,9 +116,19 @@ export function Page() {
     return (
         <View style={{flex: 1, backgroundColor, paddingTop: pagePaddingTop}}>
             <View style={style.inputLine}>
+                <Text style={{...style.inputLabel, ...theme}}>备  注</Text>
+                <TextInput
+                    placeholder="可选"
+                    style={{...style.input, ...theme}}
+                    placeholderTextColor={theme.color}
+                    onChangeText={onChangeServerRemark}
+                    value={serverRemark}
+                />
+            </View>
+            <View style={style.inputLine}>
                 <Text style={{...style.inputLabel, ...theme}}>服务器</Text>
                 <TextInput
-                    placeholder="https://server.emby.media"
+                    placeholder="eg: http://server.emby.media:8096/"
                     style={{...style.input, ...theme}}
                     placeholderTextColor={theme.color}
                     onChangeText={onChangeServer}
@@ -134,7 +146,7 @@ export function Page() {
                 />
             </View>
             <View style={style.inputLine}>
-                <Text style={{...style.inputLabel, ...theme}}>密码</Text>
+                <Text style={{...style.inputLabel, ...theme}}>密  码</Text>
                 <TextInput
                     placeholder="password"
                     style={{...style.input, ...theme}}

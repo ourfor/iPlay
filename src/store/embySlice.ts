@@ -87,6 +87,7 @@ export const loginToSiteAsync = createAppAsyncThunk<EmbySite|null, Authenticatio
     const data = await api.login(user.username, user.password, user.endpoint!)
     if (data) {
         const site: EmbySite = {
+            remark: user.endpoint?.remark,
             id: data.ServerId,
             user: data, 
             server: user.endpoint!, 
