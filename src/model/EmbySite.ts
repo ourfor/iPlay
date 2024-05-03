@@ -3,6 +3,7 @@ import { User } from '@model/User';
 
 export interface EmbySite {
     id: string;
+    remark?: string;
     name?: string;
     version?: string;
     server: EmbyConfig;
