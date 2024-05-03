@@ -1,4 +1,9 @@
+export enum EmbyServerType {
+    Emby = "Emby",
+    Jellyfin = "Jellyfin"
+}
 export interface EmbyConfig {
+    type?: EmbyServerType
     remark?: string
     host: string
     protocol: "http"|"https"

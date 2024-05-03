@@ -1,5 +1,5 @@
 import { EmbySite } from "@model/EmbySite";
-import { ENV, EmbyConfig } from "../helper/env";
+import { ENV, EmbyConfig, EmbyServerType } from "../helper/env";
 import { Map } from "../model/Map";
 import { PlaybackInfo } from "@model/PlaybackInfo";
 import { PictureQuality } from "@store/configSlice";
@@ -17,6 +17,7 @@ export const config = {
 }
 
 export function makeEmbyUrl(params: Map<string, any>|null, path: string, endpoint: EmbyConfig) {
+    path = endpoint.type === EmbyServerType.Emby ? path : path.replace("emby/", "")
     const url = new URL(`${endpoint.protocol ?? "https"}://${endpoint.host}:${endpoint.port ?? 443}${endpoint.path}${path}`)
     params && Object.entries(params).forEach(([key, value]) => {
         if (typeof value === "string") {
