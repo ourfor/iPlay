@@ -8,6 +8,8 @@ import {
 import { PlayerView } from './Player';
 import {NativeModules, StyleSheet, findNodeHandle} from 'react-native';
 import { PlaybackStateType, VideoProps } from './type';
+import { useAppSelector } from '@hook/store';
+import { VideoDecodeType } from '@store/configSlice';
 
 export interface PlayerManagerType {
     resume: (reactTag: number) => void;
@@ -45,6 +47,11 @@ export const MPVPlayer = forwardRef<PlayerRef, VideoProps>(
             PlayerManager.stop(id!);
         }, []);
 
+        const decode = useAppSelector(state => state.config.video.Decode)
+        const option = {
+            "hwdec": decode === VideoDecodeType.Software ? "no" : "auto",
+        }
+
 
         useImperativeHandle(
             ref,
@@ -62,6 +69,7 @@ export const MPVPlayer = forwardRef<PlayerRef, VideoProps>(
                 iconSize={preferedSize(25, 48, windowWidth/10)}
                 ref={nativeRef}
                 title={title}
+                option={option}
                 subtitleFontName={props.subtitleFontName}
                 onPlayStateChange={onPlayStateChange}
                 url={uri}
