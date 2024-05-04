@@ -5,6 +5,7 @@ import { OSType, isOS } from '@helper/device';
 
 export interface ImageProps extends ComponentProps<typeof FastImage> {
     fallbackImages?: string[];
+    fallbackElement?: React.ReactNode;
 }
 
 export function MobileImage(props: ImageProps) {
@@ -23,6 +24,10 @@ export function MobileImage(props: ImageProps) {
         setImageTryCount(0);
     },[uri])
 
+    if (imageTryCount > (fallbackImages?.length || 0) && props.fallbackElement) {
+        return props.fallbackElement || null;
+    }
+    
     return (
         <FastImage
             {...rest}

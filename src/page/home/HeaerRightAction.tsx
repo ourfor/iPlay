@@ -3,8 +3,8 @@ import { useAppDispatch, useAppSelector } from "@hook/store";
 import { useCallback } from "react";
 import { getAvatarUrl } from "@store/embySlice";
 import { Image } from "@view/Image";
-import { DEFAULT_AVATOR_URL } from "@helper/image";
 import { toggleSwitchSiteDialog } from "@store/menuSlice";
+import FemaleIcon from "@asset/female_avatar.svg"
 
 const hitSlop = {top: 10, bottom: 10, left: 10, right: 10}
 
@@ -18,7 +18,8 @@ const style = StyleSheet.create({
     avator: {
         width: 32,
         height: 32,
-        borderWidth: 2,
+        borderWidth: 1,
+        overflow: 'hidden',
         borderRadius: 16,
         borderColor: 'lightgray',
     }
@@ -37,7 +38,14 @@ export function HeaderRightAction() {
             <Pressable hitSlop={hitSlop} onPress={showSiteSelect}>
             <Image style={style.avator} 
                 source={{uri: avatorUrl }}
-                fallbackImages={[DEFAULT_AVATOR_URL]} />
+                fallbackElement={
+                    <FemaleIcon 
+                        style={style.avator}
+                        width={style.avator.width} 
+                        height={style.avator.height}
+                     />
+                }
+            />
             </Pressable>
         </View>
     );

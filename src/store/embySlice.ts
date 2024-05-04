@@ -87,6 +87,8 @@ export const loginToSiteAsync = createAppAsyncThunk<EmbySite|null, Authenticatio
     const data = await api.login(user.username, user.password, user.endpoint!)
     if (data) {
         const site: EmbySite = {
+            type: user.endpoint?.type,
+            remark: user.endpoint?.remark,
             id: data.ServerId,
             user: data, 
             server: user.endpoint!, 
@@ -131,7 +133,7 @@ export const fetchLatestMediaAsync = createAppAsyncThunk<(Media[]|undefined)[]|u
     const albums = state.emby.source?.albums ?? []
     const medias = await Promise.all(
         albums.map(async album => {
-            return await emby?.getLatestMedia?.(Number(album.Id));
+            return await emby?.getLatestMedia?.(album.Id);
         }),
     );
     return medias
@@ -159,14 +161,14 @@ export interface AlbumQueryParams {
 export const fetchMediaAsync = createAppAsyncThunk<MediaDetail|undefined, string>("emby/media", async (id, config) => {
     const state = await config.getState()
     const emby = state.emby.emby
-    const data = await emby?.getMedia?.(Number(id));
+    const data = await emby?.getMedia?.(id);
     return data
 })
 
 export const fetchSeasonAsync = createAppAsyncThunk<Season[]|undefined, string>("emby/season", async (id, config) => {
     const state = await config.getState()
     const emby = state.emby.emby
-    const data = await emby?.getSeasons?.(Number(id));
+    const data = await emby?.getSeasons?.(id);
     return data
 })
 
@@ -181,10 +183,10 @@ export const fetchAlbumMediaAsync = createAppAsyncThunk("emby/album/media", asyn
     const state = await config.getState()
     const emby = state.emby.emby
     const id = typeof params === 'string' ? params : params.id
-    const album = await emby?.getMedia?.(Number(id));
+    const album = await emby?.getMedia?.(id);
     const type = album?.CollectionType === 'tvshows' ? 'Series' : 'Movie';
     let startIdx = 0
-    const data = await emby?.getCollection?.(Number(id), type, {
+    const data = await emby?.getCollection?.(id, type, {
         StartIndex: startIdx,
         ...(typeof params === 'object' ? params.options : {})
     });
@@ -195,7 +197,7 @@ export const fetchAlbumMediaAsync = createAppAsyncThunk("emby/album/media", asyn
     startIdx += data.Items.length
     while (startIdx < total) {
         try {
-            const data = await emby?.getCollection?.(Number(id), type, { StartIndex: startIdx, })
+            const data = await emby?.getCollection?.(id, type, { StartIndex: startIdx, })
             if (!data) return null
             items.push(...data.Items)
             startIdx += data.Items.length

@@ -11,6 +11,7 @@ import { UserData } from "@model/UserData";
 import { PlaybackData, kPlaybackData } from "@model/PlaybackData";
 import { logger } from "@helper/log";
 import { PictureQuality } from "@store/configSlice";
+import { EmbyServerType } from "@helper/env";
 
 export const EMBY_CLIENT_HEADERS = {
     "X-Emby-Client": Version.displayName,
@@ -39,13 +40,13 @@ export async function getView(site: EmbySite) {
     return data
 }
 
-export async function getLatestMedia(site: EmbySite, parentId: number) {
+export async function getLatestMedia(site: EmbySite, parentId: number|string) {
     const params = {
         Limit: 16,
         Fields: "BasicSyncInfo,CanDelete,Container,PrimaryImageAspectRatio,ProductionYear,Status,EndDate,Overview",
         ImageTypeLimit: 1,
         EnableImageTypes: "Primary,Backdrop,Thumb",
-        ParentId: parentId,
+        ParentId: parentId?.toString(),
         "X-Emby-Language": "zh-cn"
     }
     const uid = site.user.User.Id
@@ -53,7 +54,7 @@ export async function getLatestMedia(site: EmbySite, parentId: number) {
     const response = await fetch(url, {
         headers: {
             ...EMBY_CLIENT_HEADERS,
-            "X-Emby-Token": site.user.AccessToken,
+            "X-Emby-Token": site.user.AccessToken
         }
     })
     const data = await response.json() as Media[]
@@ -63,7 +64,7 @@ export async function getLatestMedia(site: EmbySite, parentId: number) {
     return data
 }
 
-export async function getMedia(site: EmbySite, id: number) {
+export async function getMedia(site: EmbySite, id: number|string) {
     const params = {
         ...EMBY_CLIENT_HEADERS,
         "X-Emby-Token": site.user.AccessToken,
@@ -71,6 +72,7 @@ export async function getMedia(site: EmbySite, id: number) {
     }
     const uid = site.user.User.Id
     const url = makeEmbyUrl(params, `emby/Users/${uid}/Items/${id}`, site.server)
+    logger.info("getMedia", url)
     const response = await fetch(url)
     const data = await response.json() as MediaDetail
     data.image = getItemImage(site, id, PictureQuality.High)
@@ -128,7 +130,7 @@ export async function getRecommendations(site: EmbySite) {
     return data.Items
 }
 
-export async function getSeasons(site: EmbySite, id: number) {
+export async function getSeasons(site: EmbySite, id: number|string) {
     const params = {
         UserId: site.user.User.Id,
         Fields: "BasicSyncInfo,CanDelete,Container,PrimaryImageAspectRatio",
@@ -216,7 +218,7 @@ export type CollectionOptions = {
     Limit?: number
     SortBy?: string
 }
-export async function getCollection(site: EmbySite, cid: number, type: "Series"|"Movie" = "Series", {
+export async function getCollection(site: EmbySite, cid: number|string, type: "Series"|"Movie" = "Series", {
     StartIndex = 0,
     Limit = kEmbyItemPageSize,
     SortBy = "DateCreated,SortName"
@@ -229,7 +231,7 @@ export async function getCollection(site: EmbySite, cid: number, type: "Series"|
         IncludeItemTypes: type,
         Recursive: true,
         Fields: "BasicSyncInfo,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated",
-        ParentId: cid,
+        ParentId: cid.toString(),
         EnableImageTypes: "Primary,Backdrop,Thumb",
         ImageTypeLimit: 1,
         "X-Emby-Language": "zh-cn",

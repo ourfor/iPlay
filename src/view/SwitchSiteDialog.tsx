@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@hook/store';
 import { toggleSwitchSiteDialog } from '@store/menuSlice';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
 import Dialog from 'react-native-dialog';
 import { Site } from './Site';
 import { removeSite, switchToSiteAsync } from '@store/embySlice';
@@ -27,19 +27,23 @@ export function SwitchSiteDialog() {
     const maxHeight = windowHeight * 0.65
     const layout = {
         container: {
-            minWidth: isOS(OSType.Android) ? null : screenWidth * (Device.isTablet ? 0.5 : 0.75) + 60,
-            padding: 0, 
+            minWidth: isOS(OSType.Android) ? null : screenWidth * (Device.isTablet ? 0.45 : 0.75) + 60,
+            padding: 0,
+            alignItems: "center",
             ...theme
-        },
+        } as ViewStyle,
         siteList: {
-            minWidth: isOS(OSType.Android) ? null : screenWidth * (Device.isTablet ? 0.5 : 0.75) + 60,
+            minWidth: isOS(OSType.Android) ? null : screenWidth * (Device.isTablet ? 0.42 : 0.75) + 60,
             ...style.list,
             ...theme,
             maxHeight,
         },
         site: {
-            minWidth: isOS(OSType.Android) ? null : screenWidth * 0.5
-        }
+            minWidth: isOS(OSType.Android) ? null : screenWidth * 0.45,
+            width: "100%",
+            marginLeft: 0,
+            marginRight: 0,
+        } as ViewStyle
     }
     return (
         <Dialog.Container visible={visible}
@@ -49,8 +53,7 @@ export function SwitchSiteDialog() {
             <Dialog.Description>
             <ScrollView style={layout.siteList}
                 showsVerticalScrollIndicator={false}
-                showsHorizontalScrollIndicator={false}
-                >
+                showsHorizontalScrollIndicator={false}>
                 {sites?.map((s, i) => (
                     <Site key={`${s.id}:${i}`} site={s}
                         style={layout.site}
