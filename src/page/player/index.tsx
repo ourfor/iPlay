@@ -170,7 +170,7 @@ export function Page({navigation, route}: PlayerPageProps) {
             <Image style={style.player} source={{uri: poster}} />
             }
             </>
-            {loading ? <Spin color={theme.color} /> : null}
+            {/* {loading ? <Spin color={theme.color} /> : null} */}
             {showExternalPlayer && isTablet && url ? <ExternalPlayer src={url} title={episode.Name} /> : null}
             {isTablet ? <Text style={layout.overview}>{episode.Overview}</Text> : null}
         </View>
