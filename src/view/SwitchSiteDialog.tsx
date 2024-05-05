@@ -24,7 +24,7 @@ export function SwitchSiteDialog() {
     const sites = useAppSelector(state => state.emby.sites)
     const site = useAppSelector(state => state.emby.site)
     const theme = useAppSelector(selectThemeBasicStyle)
-    const maxHeight = windowHeight * 0.65
+    const maxHeight = windowHeight * 0.55
     const layout = {
         container: {
             minWidth: isOS(OSType.Android) ? null : screenWidth * (Device.isTablet ? 0.45 : 0.75) + 60,
@@ -33,7 +33,7 @@ export function SwitchSiteDialog() {
             ...theme
         } as ViewStyle,
         siteList: {
-            minWidth: isOS(OSType.Android) ? null : screenWidth * (Device.isTablet ? 0.42 : 0.75) + 60,
+            minWidth: isOS(OSType.Android) ? null : screenWidth * (Device.isTablet ? 0.42 : 0.65) + 60,
             ...style.list,
             ...theme,
             maxHeight,
