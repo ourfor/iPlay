@@ -241,7 +241,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
             <TouchableOpacity style={playButtonStyle} onPress={playVideo} activeOpacity={1.0}>
                 <PlayIcon style={style.play} />
             </TouchableOpacity> : null}
-            {loading ? <Spin color={themeStyle.color} size="small" /> : null}
+            {/* {loading ? <Spin color={themeStyle.color} size="small" /> : null} */}
             </View>
             <View style={style.actionBar}>
             <Image style={style.logo}
