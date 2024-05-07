@@ -7,20 +7,20 @@ import { SeasonCardList } from "@view/SeasonCard";
 import { Tag } from "@view/Tag";
 import { ExternalPlayer } from "@view/player/ExternalPlayer";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { DimensionValue, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { DimensionValue, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import { Image } from '@view/Image';
 import { Toast } from "@helper/toast";
-import { Spin, SpinBox } from "@view/Spin";
+import { SpinBox } from "@view/Spin";
 import PlayIcon from "../../asset/play.svg"
 import { getPlayUrl } from "@api/play";
 import { Video } from "@view/Video";
-import { preferedSize, windowWidth } from "@helper/device";
+import { preferedSize } from "@helper/device";
 import { selectThemeBasicStyle, selectThemedPageStyle } from "@store/themeSlice";
 import { logger, printException } from "@helper/log";
 import { updatePlayerState } from "@store/playerSlice";
 import { PlayEventType } from "@view/mpv/Player";
 import { PlaybackStateType } from "@view/mpv/type";
-import { fetchMediaAsync, fetchPlaybackAsync, fetchSeasonAsync } from "@store/embySlice";
+import { fetchMediaAsync, fetchPlaybackAsync, fetchSeasonAsync, getVideoUrlAsync } from "@store/embySlice";
 import { StatusBar } from "@view/StatusBar";
 import { Like } from "@view/like/Like";
 import { PlayCount } from "@view/counter/PlayCount";
@@ -86,10 +86,10 @@ const style = StyleSheet.create({
 })
 
 export function Page({route, navigation}: PropsWithNavigation<"movie">) {
+    const window = useWindowDimensions()
     const color = useAppSelector(state => state.theme.fontColor);
     const backgroundColor = useAppSelector(state => state.theme.backgroundColor);
     const themeStyle = useAppSelector(selectThemeBasicStyle)
-    const emby = useAppSelector(state => state.emby?.emby)
     const showVideoLink = useAppSelector(state => state.theme.showVideoLink)
     const showExternalPlayer = useAppSelector(state => state.theme.showExternalPlayer)
     const dispatch = useAppDispatch()
@@ -99,7 +99,6 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
     const [detail, setDetail] = useState<MediaDetail>();
     const [seasons, setSeasons] = useState<Season[]>();
     const videoRef = useRef<any>()
-    const [loading, setLoading] = useState(false)
     const [infoLoading, setInfoLoading] = useState(false)
     const pageStyle = useAppSelector(selectThemedPageStyle)
     const subtitleFontName = useAppSelector(s => s.player.fontFamily)
@@ -111,9 +110,11 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
         if (!url || url?.length === 0) {
             const response = await dispatch(fetchPlaybackAsync(Number(movie.Id)))
             const playbackInfo = typeof response.payload !== "string" ? response.payload : null
-            console.log(`playback info`, playbackInfo)
             if (playbackInfo) {
-                url = emby?.videoUrl?.(playbackInfo) ?? ""
+                const res = await dispatch(getVideoUrlAsync(playbackInfo))
+                if (typeof res.payload === "string") {
+                    url = res.payload
+                }
                 console.log(`url from playback`, url)
                 dispatch(updatePlayerState({
                     source: "emby",
@@ -127,7 +128,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
             }
         }
         return url
-    }, [emby, movie.Id])
+    }, [movie.Id])
 
     useEffect(() => {
         if (movie.Type === "Series") return
@@ -161,7 +162,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
                 if (data && typeof data !== "string") setSeasons(data)
             })
             .catch(printException)
-    }, [emby, movie.Id])
+    }, [movie.Id])
     
 
     const playVideo = async () => {
@@ -175,7 +176,6 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
         }
         setUrl(url)
         setIsPlaying(true)
-        setLoading(true)
         dispatch(updatePlayerState({
             status: "start",
             mediaName: detail?.Name,
@@ -185,7 +185,6 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
 
     const onPlaybackStateChanged = (data: PlaybackStateType) => {
         if (data.type === PlayEventType.PlayEventTypeOnProgress) {
-            setLoading(false)
             dispatch(updatePlayerState({
                 status: "playing",
                 mediaEvent: "TimeUpdate",
@@ -203,13 +202,13 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
     }
     const logoUrl = movie.image.logo
     const isPlayable = movie.Type === "Movie" || movie.Type === "Episode" 
-    const iconSize = preferedSize(24, 56, windowWidth/9)
+    const iconSize = preferedSize(24, 56, window.width/9)
     const layout = useMemo(() => ({
         cover: {
             width: "100%" as DimensionValue, 
-            height: windowWidth * 9/16 + pageStyle.paddingTop
+            height: window.width * 9/16 + pageStyle.paddingTop
         }
-    }), [pageStyle.paddingTop, windowWidth])
+    }), [pageStyle.paddingTop, window])
 
     const playButtonStyle = {
         ...style.playButton,
@@ -241,7 +240,6 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
             <TouchableOpacity style={playButtonStyle} onPress={playVideo} activeOpacity={1.0}>
                 <PlayIcon style={style.play} />
             </TouchableOpacity> : null}
-            {/* {loading ? <Spin color={themeStyle.color} size="small" /> : null} */}
             </View>
             <View style={style.actionBar}>
             <Image style={style.logo}
