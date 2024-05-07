@@ -13,7 +13,7 @@ import { Media } from '@model/Media';
 import { Map } from '@model/Map';
 import { Actor } from '@model/Actor';
 import { logger } from '@helper/log';
-import { CollectionOptions } from '@api/view';
+import { CollectionOptions, play } from '@api/view';
 import { DEFAULT_AVATOR_URL } from '@helper/image';
 import { MediaDetail } from '@model/MediaDetail';
 import { Season } from '@model/Season';
@@ -224,6 +224,18 @@ export const fetchPlaybackAsync = createAppAsyncThunk<PlaybackInfo|undefined, nu
         MaxStreamingBitrate: videoConfig.MaxStreamingBitrate
     })
     return data
+})
+
+export const getVideoUrlAsync = createAppAsyncThunk<string|undefined, PlaybackInfo>("emby/videoUrl", async (info, config) => {
+    const state = await config.getState()
+    const emby = state.emby.emby
+    return emby?.videoUrl?.(info)
+})
+
+export const getSubtitleUrlAsync = createAppAsyncThunk<string[]|undefined, PlaybackInfo>("emby/subtitleUrl", async (info, config) => {
+    const state = await config.getState()
+    const emby = state.emby.emby
+    return emby?.subtitleUrl?.(info)
 })
 
 export type MarkFavoriteParams = {

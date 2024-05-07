@@ -4,6 +4,7 @@ import { Map } from "../model/Map";
 import { PlaybackInfo } from "@model/PlaybackInfo";
 import { PictureQuality } from "@store/configSlice";
 import { Image } from "@model/Image";
+import { logger } from "@helper/log";
 
 export type { EmbyConfig } from "../helper/env"
 
@@ -16,7 +17,7 @@ export const config = {
     }
 }
 
-export function makeEmbyUrl(params: Map<string, any>|null, path: string, endpoint: EmbyConfig) {
+export function makeEmbyUrl(params: Map<string, any> | null, path: string, endpoint: EmbyConfig) {
     path = endpoint.type === EmbyServerType.Emby ? path : path.replace("emby/", "")
     const url = new URL(`${endpoint.protocol ?? "https"}://${endpoint.host}:${endpoint.port ?? 443}${endpoint.path}${path}`)
     params && Object.entries(params).forEach(([key, value]) => {
@@ -36,7 +37,7 @@ export interface ImageProps {
     quality: number
 }
 
-export function getItemImage(site: EmbySite, id: string|number, quality = PictureQuality.High) {
+export function getItemImage(site: EmbySite, id: string | number, quality = PictureQuality.High) {
     const image: Image = {
         primary: imageUrl(site, id, null, "Primary"),
         backdrop: imageUrl(site, id, null, "Backdrop"),
@@ -45,7 +46,7 @@ export function getItemImage(site: EmbySite, id: string|number, quality = Pictur
     return image
 }
 
-export function imageUrl(site: EmbySite, id: string|number, options: string|Partial<ImageProps>|null, type: "Primary"|string = "Primary") {
+export function imageUrl(site: EmbySite, id: string | number, options: string | Partial<ImageProps> | null, type: "Primary" | string = "Primary") {
     const endpoint = site.server!
     if (typeof options === "string") {
         return `${endpoint.protocol}://${endpoint.host}:${endpoint.port}${endpoint.path}emby/Items/${id}/Images/${type}?tag=${options}&quality=90`
@@ -58,11 +59,11 @@ export function imageUrl(site: EmbySite, id: string|number, options: string|Part
     }
 }
 
-export function avatorUrl(id: string, options: string|Partial<ImageProps>, type: "Primary" = "Primary") {
+export function avatorUrl(id: string, options: string | Partial<ImageProps>, type: "Primary" = "Primary") {
     return `${config.emby.protocol}://${config.emby.host}:${config.emby.port}${config.emby.path}emby/Users/${id}/Images/${type}?height=152&tag=${options}&quality=90`
 }
 
-export function playUrl(site: EmbySite, path: string|PlaybackInfo) {
+export function playUrl(site: EmbySite, path: string | PlaybackInfo) {
     const endpoint = site.server!
     if (typeof path === "string") {
         if (path?.startsWith("http")) return path
@@ -82,4 +83,29 @@ export function playUrl(site: EmbySite, path: string|PlaybackInfo) {
             }
         }
     }
+}
+
+export function subtitleUrl(site: EmbySite, path: string | PlaybackInfo) {
+    const endpoint = site.server!;
+    const result = [];
+    if (typeof path === "string") {
+        if (path?.startsWith("http")) return [path]
+        const part = `${endpoint.protocol}://${endpoint.host}:${endpoint.port}${endpoint.path}emby${path}`
+        result.push(part)
+    } else {
+        const sources = path?.MediaSources ?? []
+        for (const source of sources) {
+            for (const stream of source?.MediaStreams ?? []) {
+                if (stream?.Type === "Subtitle" && 
+                    stream?.IsExternal &&
+                    stream?.DeliveryMethod === "External" &&
+                    stream?.DeliveryUrl) {
+                    logger.info("subtitle stream", stream)
+                    const part = `${endpoint.protocol}://${endpoint.host}:${endpoint.port}${endpoint.path}emby${stream.DeliveryUrl}`
+                    result.push(part)
+                }
+            }
+        }
+    }
+    return result;
 }
