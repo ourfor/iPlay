@@ -1,11 +1,11 @@
 import { useAppDispatch, useAppSelector } from '@hook/store';
 import { toggleSwitchSiteDialog } from '@store/menuSlice';
-import { ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
+import { ScrollView, StyleSheet, ViewStyle, useWindowDimensions } from 'react-native';
 import Dialog from 'react-native-dialog';
 import { Site } from './Site';
 import { removeSite, switchToSiteAsync } from '@store/embySlice';
 import { selectThemeBasicStyle } from '@store/themeSlice';
-import { Device, OSType, isOS, screenWidth, windowHeight } from '@helper/device';
+import { Device, OSType, isOS } from '@helper/device';
 
 const style = StyleSheet.create({
     container: {
@@ -24,22 +24,23 @@ export function SwitchSiteDialog() {
     const sites = useAppSelector(state => state.emby.sites)
     const site = useAppSelector(state => state.emby.site)
     const theme = useAppSelector(selectThemeBasicStyle)
+    const {width: windowWidth, height: windowHeight} = useWindowDimensions()
     const maxHeight = windowHeight * 0.55
     const layout = {
         container: {
-            minWidth: isOS(OSType.Android) ? null : screenWidth * (Device.isTablet ? 0.45 : 0.75) + 60,
+            minWidth: isOS(OSType.Android) ? null : windowWidth * (Device.isTablet ? 0.45 : 0.75) + 60,
             padding: 0,
             alignItems: "center",
             ...theme
         } as ViewStyle,
         siteList: {
-            minWidth: isOS(OSType.Android) ? null : screenWidth * (Device.isTablet ? 0.42 : 0.65) + 60,
+            minWidth: isOS(OSType.Android) ? null : windowWidth * (Device.isTablet ? 0.42 : 0.65) + 60,
             ...style.list,
             ...theme,
             maxHeight,
         },
         site: {
-            minWidth: isOS(OSType.Android) ? null : screenWidth * 0.45,
+            minWidth: isOS(OSType.Android) ? null : windowWidth * 0.45,
             width: "100%",
             marginLeft: 0,
             marginRight: 0,

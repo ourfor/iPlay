@@ -34,6 +34,13 @@ export const screenWidth = Dimensions.get("screen").width;
 export const windowHeight = Dimensions.get('window').height;
 export const screenHeight = Dimensions.get("screen").height;
 
+export const window = {
+    width: windowWidth,
+    height: windowHeight,
+    scale: 1,
+    fontScale: 1
+}
+
 export const preferedSize = (start: number, end: number, value: number) => {
     if (value < start) {
         return start;

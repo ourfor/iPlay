@@ -78,6 +78,15 @@ jobs:
           rm -rf ios/iPlayClient.xcworkspace/xcshareddata/swiftpm/Package.resolved
           make all
 
+      - name: ⬆️ Upload Build Artifact To GitHub
+        uses: actions/upload-artifact@v3
+        with:
+            name: artifact
+            path: |
+              build/*.apk
+              build/*.ipa
+        
+
       - name: ⬆️ Upload Build Artifact
         env:
           scheme: ${{ 'default' }}
