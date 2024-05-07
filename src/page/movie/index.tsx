@@ -226,6 +226,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
             <View style={{width: "100%", height: pageStyle.paddingTop}} />
             <Video
                 ref={videoRef}
+                subtitleFontScale={window.fontScale}
                 subtitleFontName={subtitleFontName}
                 source={{uri: url, title: detail?.Name ?? ""}}
                 onPlaybackStateChanged={onPlaybackStateChanged}

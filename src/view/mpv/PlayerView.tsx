@@ -50,7 +50,8 @@ export const MPVPlayer = forwardRef<PlayerRef, VideoProps>(
         const decode = useAppSelector(state => state.config.video.Decode)
         const option = {
             hwdec: decode === VideoDecodeType.Software ? "no" : "auto",
-            "sub-font": props.subtitleFontName ?? "sans-serif"
+            "sub-font": props.subtitleFontName ?? "sans-serif",
+            "sub-scale": props.subtitleFontScale ?? "1",
         }
 
 
