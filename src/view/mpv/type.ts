@@ -9,6 +9,7 @@ export type PlaybackStateType = {
 }
 export type VideoProps = {
     subtitleFontName?: string
+    subtitleFontScale?: number
     source: {
         uri: string;
         title: string;
