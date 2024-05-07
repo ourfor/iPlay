@@ -19,7 +19,7 @@ import { selectThemeBasicStyle, selectThemedPageStyle } from "@store/themeSlice"
 import { logger, printException } from "@helper/log";
 import { updatePlayerState } from "@store/playerSlice";
 import { PlayEventType } from "@view/mpv/Player";
-import { PlaybackStateType } from "@view/mpv/type";
+import { PlaybackStateType, PlayerSourceType } from "@view/mpv/type";
 import { fetchMediaAsync, fetchPlaybackAsync, fetchSeasonAsync, getVideoUrlAsync } from "@store/embySlice";
 import { StatusBar } from "@view/StatusBar";
 import { Like } from "@view/like/Like";
@@ -228,6 +228,11 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
                 ref={videoRef}
                 subtitleFontScale={window.fontScale}
                 subtitleFontName={subtitleFontName}
+                sources={[
+                    {url: poster, type: PlayerSourceType.PosterImage},
+                    {url: logoUrl, type: PlayerSourceType.LogoImage},
+                    {url, name: detail?.Name ?? "", type: PlayerSourceType.Video}
+                ]}
                 source={{uri: url, title: detail?.Name ?? ""}}
                 onPlaybackStateChanged={onPlaybackStateChanged}
                 style={{...style.player}}
