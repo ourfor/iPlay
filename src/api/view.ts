@@ -168,7 +168,9 @@ export async function getEpisodes(site: EmbySite, vid: number, sid: number) {
     })
     const data = await response.json() as EmbyResponse<Episode>
     for (const item of data.Items) {
+        const seriesImage = getItemImage(site, item.SeriesId, PictureQuality.High)
         item.image = getItemImage(site, item.Id, PictureQuality.High)
+        item.image.logo = seriesImage.logo
     }
     return data.Items
 }
@@ -208,6 +210,10 @@ export async function getItem(site: EmbySite, options: ItemOptions) {
     const data = await response.json() as EmbyResponse<Media>
     for (const item of data.Items) {
         item.image = getItemImage(site, item.Id, PictureQuality.High)
+        if (item.Type === "Episode") {
+            const seriesImage = getItemImage(site, item.SeriesId, PictureQuality.High)
+            item.image.logo = seriesImage.logo
+        }
     }
     return data
 }
@@ -301,6 +307,10 @@ export async function lookupItem(site: EmbySite, title: string) {
     const data = await response.json() as EmbyResponse<Media>
     for (const item of data.Items) {
         item.image = getItemImage(site, item.Id, PictureQuality.High)
+        if (item.Type === "Episode") {
+            const seriesImage = getItemImage(site, item.SeriesId, PictureQuality.High)
+            item.image.logo = seriesImage.logo
+        }
     }
     return data
 }

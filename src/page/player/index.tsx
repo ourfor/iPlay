@@ -10,7 +10,7 @@ import { Image } from '@view/Image';
 import { Spin } from '@view/Spin';
 import { Video } from '@view/Video';
 import { PlayEventType } from '@view/mpv/Player';
-import { PlaybackStateType } from '@view/mpv/type';
+import { PlaybackStateType, PlayerSourceType } from '@view/mpv/type';
 import { ExternalPlayer } from '@view/player/ExternalPlayer';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
@@ -71,7 +71,6 @@ export function Page({navigation, route}: PlayerPageProps) {
     const [url, setUrl] = useState<string>()
     const [poster, setPoster] = useState<string>()
     const [episode, setEpisode] = useState(route.params.episode)
-    const [loading, setLoading] = useState(true)
     const videoRef = useRef<any>(null);
     const theme = useAppSelector(selectThemeBasicStyle)
     const pageStyle = useAppSelector(selectThemedPageStyle)
@@ -81,7 +80,6 @@ export function Page({navigation, route}: PlayerPageProps) {
     const isTablet = Device.isTablet
 
     const playEpisode = (episode: Episode) => {
-        setLoading(true)
         setEpisode(episode)
         setPoster(episode.image.primary)
         emby?.getPlaybackInfo?.(Number(episode.Id))
@@ -106,7 +104,6 @@ export function Page({navigation, route}: PlayerPageProps) {
 
     const onPlaybackStateChanged = useCallback((data: PlaybackStateType) => {
         if (data.type === PlayEventType.PlayEventTypeOnProgress) {
-            setLoading(false)
             dispatch(updatePlayerState({
                 status: "playing",
                 mediaEvent: "TimeUpdate",
@@ -121,7 +118,7 @@ export function Page({navigation, route}: PlayerPageProps) {
                 isPaused: true,
             }))
         }
-    }, [dispatch, setLoading])
+    }, [dispatch])
 
     useEffect(() => {
         playEpisode(episode)
@@ -161,6 +158,11 @@ export function Page({navigation, route}: PlayerPageProps) {
             {url ? 
             <Video
                 ref={videoRef}
+                sources={[
+                    {url: poster, type: PlayerSourceType.PosterImage},
+                    {url: episode.image.logo, type: PlayerSourceType.LogoImage},
+                    {url, name: episode?.Name ?? "", type: PlayerSourceType.Video}
+                ]}
                 source={{uri: url, title: episode.Name}}
                 subtitleFontName={subtitleFontName}
                 onPlaybackStateChanged={onPlaybackStateChanged}
@@ -170,7 +172,6 @@ export function Page({navigation, route}: PlayerPageProps) {
             <Image style={style.player} source={{uri: poster}} />
             }
             </>
-            {/* {loading ? <Spin color={theme.color} /> : null} */}
             {showExternalPlayer && isTablet && url ? <ExternalPlayer src={url} title={episode.Name} /> : null}
             {isTablet ? <Text style={layout.overview}>{episode.Overview}</Text> : null}
         </View>

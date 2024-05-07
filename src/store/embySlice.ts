@@ -232,6 +232,12 @@ export const getVideoUrlAsync = createAppAsyncThunk<string|undefined, PlaybackIn
     return emby?.videoUrl?.(info)
 })
 
+export const getSubtitleUrlAsync = createAppAsyncThunk<string[]|undefined, PlaybackInfo>("emby/subtitleUrl", async (info, config) => {
+    const state = await config.getState()
+    const emby = state.emby.emby
+    return emby?.subtitleUrl?.(info)
+})
+
 export type MarkFavoriteParams = {
     id: number,
     favorite: boolean
