@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import {ViewProps, requireNativeComponent} from 'react-native';
-import { PlaybackStateType } from './type';
+import { PlaybackStateType, PlayerSource } from './type';
 import { Map } from '@model/Map';
 const Player = requireNativeComponent('PlayerView');
 
@@ -15,6 +15,7 @@ export enum PlayEventType {
 export interface PlayerViewProps extends ViewProps {
     title?: string
     option?: Map<string, string>
+    source: PlayerSource[]
     subtitleFontName?: string
     onPlayStateChange?: (state: PlaybackStateType) => void
     url: string
