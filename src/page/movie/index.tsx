@@ -19,11 +19,12 @@ import { selectThemeBasicStyle, selectThemedPageStyle } from "@store/themeSlice"
 import { logger, printException } from "@helper/log";
 import { updatePlayerState } from "@store/playerSlice";
 import { PlayEventType } from "@view/mpv/Player";
-import { PlaybackStateType, PlayerSourceType } from "@view/mpv/type";
-import { fetchMediaAsync, fetchPlaybackAsync, fetchSeasonAsync, getVideoUrlAsync } from "@store/embySlice";
+import { PlaybackStateType, PlayerSource, PlayerSourceType } from "@view/mpv/type";
+import { fetchMediaAsync, fetchPlaybackAsync, fetchSeasonAsync, getSubtitleUrlAsync, getVideoUrlAsync } from "@store/embySlice";
 import { StatusBar } from "@view/StatusBar";
 import { Like } from "@view/like/Like";
 import { PlayCount } from "@view/counter/PlayCount";
+import { set } from "lodash";
 
 const style = StyleSheet.create({
     overview: {
@@ -95,6 +96,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
     const dispatch = useAppDispatch()
     const {type, movie} = route.params
     const [url, setUrl] = useState<string>()
+    const [subtitles, setSubtitles] = useState<PlayerSource[]>([])
     const [isPlaying, setIsPlaying] = useState(false)
     const [detail, setDetail] = useState<MediaDetail>();
     const [seasons, setSeasons] = useState<Season[]>();
@@ -105,8 +107,10 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
     const poster = type==="Episode" ?  movie.image.primary : movie.image.backdrop
 
     const fetchPlayUrl = useCallback(async () => {
+        logger.info(`detail`, detail)
+        logger.info(`media source`, detail?.MediaSources?.[0].MediaStreams)
         let url = getPlayUrl(detail)
-        console.log(`fetch play url`, url)
+        let subtitles: PlayerSource[] = []
         if (!url || url?.length === 0) {
             const response = await dispatch(fetchPlaybackAsync(Number(movie.Id)))
             const playbackInfo = typeof response.payload !== "string" ? response.payload : null
@@ -115,7 +119,15 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
                 if (typeof res.payload === "string") {
                     url = res.payload
                 }
-                console.log(`url from playback`, url)
+                const subRes = await dispatch(getSubtitleUrlAsync(playbackInfo))
+                if (typeof subRes.payload !== "string") {
+                    subtitles = subRes.payload?.map(item => ({
+                        type: PlayerSourceType.Subtitle,
+                        url: item,
+                    } as PlayerSource)) ?? []
+                }
+                logger.info(`media source`, playbackInfo.MediaSources[0].MediaStreams)
+                logger.info(`subtitle`, subRes.payload)
                 dispatch(updatePlayerState({
                     source: "emby",
                     mediaId: movie.Id,
@@ -127,13 +139,19 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
                 }))
             }
         }
-        return url
+        return {
+            url,
+            subtitles,
+        }
     }, [movie.Id])
 
     useEffect(() => {
         if (movie.Type === "Series") return
         fetchPlayUrl()
-            .then(setUrl)
+            .then(data => {
+                setUrl(data.url)
+                setSubtitles(data.subtitles)
+            })
             .catch(printException)
         return () => {
             logger.info("reset url")
@@ -231,7 +249,8 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
                 sources={[
                     {url: poster, type: PlayerSourceType.PosterImage},
                     {url: logoUrl, type: PlayerSourceType.LogoImage},
-                    {url, name: detail?.Name ?? "", type: PlayerSourceType.Video}
+                    {url, name: detail?.Name ?? "", type: PlayerSourceType.Video},
+                    ...subtitles
                 ]}
                 source={{uri: url, title: detail?.Name ?? ""}}
                 onPlaybackStateChanged={onPlaybackStateChanged}
