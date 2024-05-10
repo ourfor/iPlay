@@ -2,7 +2,7 @@ import {TabNavigation} from '@global';
 import {useAppDispatch, useAppSelector} from '@hook/store';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {getActiveMenu, switchToMenu, toggleSwitchSiteDialog} from '@store/menuSlice';
-import {Animated, Pressable, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Animated, Pressable, StyleSheet, View} from 'react-native';
 import {OSType, isOS} from '@helper/device';
 import {useEffect, useMemo, useRef} from 'react';
 import {switchRoute, updateMenuBarHeight} from '@store/themeSlice';
@@ -48,7 +48,6 @@ const style = StyleSheet.create({
     icon: {
         height: 25,
         aspectRatio: 1,
-        // tintColor: "rgba(128, 128, 128, 0.3)",
         opacity: 0.25,
     },
     activeIcon: {
