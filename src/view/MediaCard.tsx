@@ -1,4 +1,5 @@
 import {
+    Pressable,
     StyleSheet,
     Text,
     TextStyle,
@@ -119,6 +120,7 @@ export function MediaCardInLine({media, theme}: {media: Media, theme?: ThemeBasi
                 />
             </TouchableOpacity>
             <View style={style.mediaCardText}>
+                <Pressable onPress={() => onPress(media)}>
                 <Text style={{...style.inlineTitle, ...theme}}
                     numberOfLines={1} 
                     ellipsizeMode="tail">
@@ -129,6 +131,7 @@ export function MediaCardInLine({media, theme}: {media: Media, theme?: ThemeBasi
                     ellipsizeMode="tail">
                     {media.Overview}
                 </Text>
+                </Pressable>
                 <Text style={theme}>{media.ProductionYear}</Text>
             </View>
         </View>
