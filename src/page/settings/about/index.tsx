@@ -44,7 +44,7 @@ const style = StyleSheet.create({
 
 export function Page(props: PropsWithNavigation<"default">) {
     const theme = useAppSelector(selectThemeBasicStyle)
-    const url = "https://github.com/ourfor/iPlayClient"
+    const url = "https://github.com/ourfor/iPlay"
     const pagePaddingTop = useAppSelector(state => state.theme.pagePaddingTop)
     return (
         <View style={{...style.page, ...theme, paddingTop: pagePaddingTop}}>

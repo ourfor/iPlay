@@ -6,6 +6,7 @@ import { Site } from './Site';
 import { removeSite, switchToSiteAsync } from '@store/embySlice';
 import { selectThemeBasicStyle } from '@store/themeSlice';
 import { Device, OSType, isOS } from '@helper/device';
+import { useMemo } from 'react';
 
 const style = StyleSheet.create({
     container: {
@@ -15,6 +16,10 @@ const style = StyleSheet.create({
     list: {
         width: "100%",
         flex: 1,
+    },
+    zero: {
+        margin: 0,
+        padding: 0,
     }
 })
 
@@ -26,12 +31,13 @@ export function SwitchSiteDialog() {
     const theme = useAppSelector(selectThemeBasicStyle)
     const {width: windowWidth, height: windowHeight} = useWindowDimensions()
     const maxHeight = windowHeight * 0.55
-    const layout = {
+
+    const layout = useMemo(() => ({
         container: {
             minWidth: isOS(OSType.Android) ? null : windowWidth * (Device.isTablet ? 0.45 : 0.75) + 60,
             padding: 0,
             alignItems: "center",
-            ...theme
+            ...theme,
         } as ViewStyle,
         siteList: {
             minWidth: isOS(OSType.Android) ? null : windowWidth * (Device.isTablet ? 0.42 : 0.65) + 60,
@@ -45,11 +51,14 @@ export function SwitchSiteDialog() {
             marginLeft: 0,
             marginRight: 0,
         } as ViewStyle
-    }
+    }), [theme, windowWidth, maxHeight])
+
     return (
         <Dialog.Container visible={visible}
             blurStyle={theme}
-            contentStyle={layout.container} 
+            headerStyle={style.zero}
+            footerStyle={style.zero}
+            contentStyle={layout.container}
             onBackdropPress={() => dispatch(toggleSwitchSiteDialog())}>
             <Dialog.Description>
             <ScrollView style={layout.siteList}

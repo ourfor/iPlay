@@ -4,7 +4,7 @@ import { Media } from "@model/Media";
 import { fetchResumeMediaAsync } from "@store/embySlice";
 import { selectThemeBasicStyle, selectThemedPageStyle } from "@store/themeSlice";
 import { EpisodeCard } from "@view/EpisodeCard";
-import { MediaCard } from "@view/MediaCard";
+import { MediaCard, MediaCardInLine } from "@view/MediaCard";
 import { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 
@@ -66,10 +66,10 @@ export function Page({navigation}: PropsWithNavigation<"default">) {
             <View style={style.watchList}>
                 {items?.map((item, idx) => (
                     item.Type === "Movie" ?
-                    <MediaCard key={idx} 
+                    <MediaCardInLine key={idx} 
                         media={item} 
-                        theme={theme}
-                        /> :
+                        theme={theme} /> 
+                    :
                     <EpisodeCard key={idx}
                         style={{minWidth: "100%", maxWidth: "100%"}}
                         theme={theme}
