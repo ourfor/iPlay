@@ -24,7 +24,6 @@ import { fetchMediaAsync, fetchPlaybackAsync, fetchSeasonAsync, getSubtitleUrlAs
 import { StatusBar } from "@view/StatusBar";
 import { Like } from "@view/like/Like";
 import { PlayCount } from "@view/counter/PlayCount";
-import { set } from "lodash";
 
 const style = StyleSheet.create({
     overview: {
@@ -225,8 +224,11 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
         cover: {
             width: "100%" as DimensionValue, 
             height: window.width * 9/16 + pageStyle.paddingTop
+        },
+        tagText: {
+            fontFamily: themeStyle.fontFamily,
         }
-    }), [pageStyle.paddingTop, window])
+    }), [pageStyle.paddingTop, window, themeStyle])
 
     const playButtonStyle = {
         ...style.playButton,
@@ -284,7 +286,8 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
             : null }
             </View>
             <View style={style.tags}>
-                {detail?.Genres.map((genre, index) => <Tag key={index}>{genre}</Tag>)}
+                {detail?.Genres.map((genre, index) => 
+                    <Tag textStyle={layout.tagText} key={index}>{genre}</Tag>)}
             </View>
             {infoLoading ? 
             <SpinBox color={themeStyle.color} size="small" /> 

@@ -45,7 +45,7 @@ const style = StyleSheet.create({
 });
 
 
-export function Page(props: PropsWithNavigation<"default">) {
+export function Page() {
     const theme = useAppSelector(selectThemeBasicStyle)
     const pagePaddingTop = useAppSelector(state => state.theme.pagePaddingTop)
     const pictureQuality = useAppSelector(state => state.config.picture?.quality ?? PictureQuality.High)

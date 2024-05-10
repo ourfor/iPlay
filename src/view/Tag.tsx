@@ -1,5 +1,5 @@
-import React, { PropsWithChildren } from "react";
-import { View, Text, StyleSheet, Touchable, TouchableOpacity, GestureResponderEvent, ViewStyle } from "react-native";
+import React, { PropsWithChildren, useMemo } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, GestureResponderEvent, ViewStyle, TextStyle } from "react-native";
 
 const COLOR = {
     blue: {
@@ -86,6 +86,7 @@ export type TagProps = PropsWithChildren<{
     color?: keyof typeof COLOR;
     onPress?: (event: GestureResponderEvent) => void;
     style?: Partial<ViewStyle>
+    textStyle?: Partial<TextStyle>
 }>
 
 export function Tag(props: TagProps) {
@@ -95,10 +96,24 @@ export function Tag(props: TagProps) {
         const key = keys[Math.floor(Math.random() * keys.length)];
         color = key as keyof typeof COLOR
     }
+
+    const layout = useMemo(() => ({
+        container: {
+            ...COLOR[color!],
+            ...style.root,
+            ...props.style,
+        },
+        text: {
+            ...style.text,
+            color: COLOR[color!].color,
+            ...props.textStyle,
+        }
+    }), [props.style, props.textStyle, color])
+    
     return (
         <TouchableOpacity onPress={props.onPress} activeOpacity={1.0}>
-        <View style={{...COLOR[color!], ...style.root, ...props.style}}>
-            <Text style={{...style.text, color: COLOR[color!].color}}>
+        <View style={layout.container}>
+            <Text style={layout.text}>
                 {props.children}
             </Text>
         </View>
