@@ -91,6 +91,7 @@ export function Page() {
                 <View style={style.recommendations}>
                     {recommendations?.map((media, i) => 
                         <Tag key={media.Id} onPress={() => setSearchKeyword(media.Name)} 
+                            textStyle={{fontFamily: theme.fontFamily}}
                             color={colors[i%colors.length] as any}>
                             {media.Name}
                         </Tag>

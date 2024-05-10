@@ -104,13 +104,22 @@ const getMenuBarHeight = (state: RootState) => state.theme.menuBarHeight;
 export const selectScreenOptions = createSelector([
     getHeaderTintColor,
     getBackgroundColor,
-    getHeaderTitleAlign
-], (headerTintColor, backgroundColor, headerTitleAlign) => {
+    getHeaderTitleAlign,
+    getFontFamily
+], (headerTintColor, backgroundColor, headerTitleAlign, fontFamily) => {
     const options = {
         headerTitleAlign,
         headerStyle: {
-            backgroundColor
+            backgroundColor,
         }, 
+        headerTitleStyle: {
+            color: headerTintColor,
+            fontFamily
+        },
+        headerBackTitleStyle: {
+            color: headerTintColor,
+            fontFamily
+        },
         headerTransparent: true,
         headerTintColor,
         contentStyle: {
