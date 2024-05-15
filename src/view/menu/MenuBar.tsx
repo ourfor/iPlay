@@ -233,7 +233,7 @@ export function MenuBar() {
             ...style.title,
             ...theme
         }
-    }), []);
+    }), [theme]);
 
     useEffect(() => {
         const menuBarHeight = menuBarStyle.paddingTop + menuBarStyle.paddingBottom + style.icon.height
@@ -263,7 +263,7 @@ export function MenuBar() {
                 </Pressable>
             )
         })
-        , [menu, active, hideMenuTitle, menuIconStyle])
+        , [menu, active, layout, hideMenuTitle, menuIconStyle])
 
     return (
         <Animated.View
