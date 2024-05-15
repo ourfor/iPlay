@@ -103,7 +103,7 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
     const [infoLoading, setInfoLoading] = useState(false)
     const pageStyle = useAppSelector(selectThemedPageStyle)
     const subtitleFontName = useAppSelector(s => s.player.fontFamily)
-    const poster = type==="Episode" ?  movie.image.primary : movie.image.backdrop
+    const poster = type==="Episode" ?  movie.image?.primary : movie.image?.backdrop
 
     const fetchPlayUrl = useCallback(async () => {
         logger.info(`detail`, detail)

@@ -49,6 +49,16 @@ export const style = StyleSheet.create({
         marginTop: 5,
         fontSize: 13,
         fontWeight: 'bold',
+    },
+    shadow: {
+        shadowColor: 'gray',
+        shadowRadius: 1.75,
+        elevation:1.5,
+        shadowOpacity: 0.5,
+        shadowOffset:{
+            width:0,
+            height:0
+        },
     }
 });
 
@@ -66,7 +76,7 @@ export function MediaCard({media, theme}: {media: Media, theme?: ThemeBasicStyle
         poster: {
             width: media?.Type === "Episode" ? 160 : 90, 
             aspectRatio: media?.Type !== "Episode" ? 0.666 : 16/9, 
-            borderRadius: media?.Type==="Episode" ? 7 : 5
+            borderRadius: media?.Type==="Episode" ? 7 : 5,
         },
         text: {
             ...style.title, 
@@ -78,7 +88,8 @@ export function MediaCard({media, theme}: {media: Media, theme?: ThemeBasicStyle
 
     return (
         <View style={style.mediaCard} key={media.Id}>
-            <TouchableOpacity activeOpacity={1.0} onPress={() => onPress(media)}>
+            <TouchableOpacity activeOpacity={1.0}
+                onPress={() => onPress(media)}>
                 <Image
                     style={layout.poster}
                     source={{uri: media.image?.primary}}
@@ -108,7 +119,7 @@ export function MediaCardInLine({media, theme}: {media: Media, theme?: ThemeBasi
     const postStyle = {
         width: media?.Type === "Episode" ? 160 : 90, 
         aspectRatio: media?.Type !== "Episode" ? 0.666 : 16/9, 
-        borderRadius: media?.Type==="Episode" ? 7 : 5
+        borderRadius: media?.Type==="Episode" ? 7 : 5,
     }
 
     return (

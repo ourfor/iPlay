@@ -1,4 +1,3 @@
-import {Emby} from '@api/emby';
 import {ViewDetail} from '@model/View';
 import {
     ScrollView,
@@ -10,7 +9,6 @@ import {
 import { Image } from '@view/Image';
 import {useNavigation} from '@react-navigation/native';
 import {Navigation, ThemeBasicStyle} from '@global';
-import { useAppSelector } from '@hook/store';
 
 export const style = StyleSheet.create({
     root: {
@@ -33,10 +31,6 @@ export const style = StyleSheet.create({
         borderColor: 'transparent',
         marginBottom: 10,
     },
-    albumItem: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-    },
     albumImage: {
         width: 160, 
         aspectRatio: 16/9,
@@ -47,7 +41,6 @@ export const style = StyleSheet.create({
 
 export function AlbumCardList({albums, theme}: {albums: ViewDetail[], theme?: ThemeBasicStyle}) {
     const navigation: Navigation = useNavigation();
-    const emby = useAppSelector(state => state.emby.emby)
     const onPress = (album: ViewDetail) => {
         navigation.navigate('album', {
             title: album.Name,
