@@ -19,6 +19,8 @@ export enum LayoutType {
 export enum MenuIconStyle {
     OUTLINE,
     FLAT,
+    LINE,
+    EMOJI,
 }
 
 interface ThemeState {

@@ -7,16 +7,26 @@ import { OSType, isOS } from '@helper/device';
 import { useEffect, useMemo, useRef } from 'react';
 import { MenuIconStyle, selectThemeBasicStyle, switchRoute, updateMenuBarHeight } from '@store/themeSlice';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import HomeIconV1 from '@asset/home.svg';
-import HomeIconV2 from '@asset/menu/home.svg';
-import SearchIconV1 from '@asset/search.svg';
-import SearchIconV2 from '@asset/menu/search.svg';
-import StarIconV1 from '@asset/star.svg';
-import StarIconV2 from '@asset/menu/star.svg';
-import SettingsIconV1 from '@asset/setting.svg';
-import SettingsIconV2 from '@asset/menu/setting.svg';
-import MessageIconV1 from '@asset/message.svg';
-import MessageIconV2 from '@asset/menu/message.svg';
+import HomeIconV1 from '@asset/menu/home.svg';
+import HomeIconV2 from '@asset/menu/home_v2.svg';
+import HomeIconV3 from '@asset/menu/home_v3.svg';
+import HomeIconV4 from '@asset/menu/home_v4.svg';
+import SearchIconV1 from '@asset/menu/search.svg';
+import SearchIconV2 from '@asset/menu/search_v2.svg';
+import SearchIconV3 from '@asset/menu/search_v3.svg';
+import SearchIconV4 from '@asset/menu/search_v4.svg';
+import StarIconV1 from '@asset/menu/star.svg';
+import StarIconV2 from '@asset/menu/star_v2.svg';
+import StarIconV3 from '@asset/menu/star_v3.svg';
+import StarIconV4 from '@asset/menu/star_v4.svg';
+import SettingsIconV1 from '@asset/menu/setting.svg';
+import SettingsIconV2 from '@asset/menu/setting_v2.svg';
+import SettingsIconV3 from '@asset/menu/setting_v3.svg';
+import SettingsIconV4 from '@asset/menu/setting_v4.svg';
+import MessageIconV1 from '@asset/menu/message.svg';
+import MessageIconV2 from '@asset/menu/message_v2.svg';
+import MessageIconV3 from '@asset/menu/message_v3.svg';
+import MessageIconV4 from '@asset/menu/message_v4.svg';
 import { SvgProps } from 'react-native-svg';
 import { AppDispatch } from '@store';
 
@@ -40,22 +50,32 @@ const IconElement = {
     [MenuIcon.Home]: {
         [MenuIconStyle.OUTLINE]: HomeIconV1,
         [MenuIconStyle.FLAT]: HomeIconV2,
+        [MenuIconStyle.LINE]: HomeIconV3,
+        [MenuIconStyle.EMOJI]: HomeIconV4,
     },
     [MenuIcon.Search]: {
         [MenuIconStyle.OUTLINE]: SearchIconV1,
         [MenuIconStyle.FLAT]: SearchIconV2,
+        [MenuIconStyle.LINE]: SearchIconV3,
+        [MenuIconStyle.EMOJI]: SearchIconV4,
     },
     [MenuIcon.Star]: {
         [MenuIconStyle.OUTLINE]: StarIconV1,
         [MenuIconStyle.FLAT]: StarIconV2,
+        [MenuIconStyle.LINE]: StarIconV3,
+        [MenuIconStyle.EMOJI]: StarIconV4,
     },
     [MenuIcon.Settings]: {
         [MenuIconStyle.OUTLINE]: SettingsIconV1,
         [MenuIconStyle.FLAT]: SettingsIconV2,
+        [MenuIconStyle.LINE]: SettingsIconV3,
+        [MenuIconStyle.EMOJI]: SettingsIconV4,
     },
     [MenuIcon.Message]: {
         [MenuIconStyle.OUTLINE]: MessageIconV1,
         [MenuIconStyle.FLAT]: MessageIconV2,
+        [MenuIconStyle.LINE]: MessageIconV3,
+        [MenuIconStyle.EMOJI]: MessageIconV4,
     },
 }
 

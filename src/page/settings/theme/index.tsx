@@ -124,6 +124,14 @@ export function Page() {
                         onPress={_ => dispatch(updateTheme({menuIconStyle: MenuIconStyle.FLAT}))} >
                         扁平
                     </Tag>
+                    <Tag color={menuIconStyle === MenuIconStyle.LINE ? "red" : "gold"}
+                        onPress={_ => dispatch(updateTheme({menuIconStyle: MenuIconStyle.LINE}))} >
+                        线性
+                    </Tag>
+                    <Tag color={menuIconStyle === MenuIconStyle.EMOJI ? "red" : "gold"}
+                        onPress={_ => dispatch(updateTheme({menuIconStyle: MenuIconStyle.EMOJI}))} >
+                        表情
+                    </Tag>
                 </View>
                 <View style={style.inline}>
                     <Text style={{...style.label, ...theme}}>显示视频链接</Text>
