@@ -62,8 +62,8 @@ export interface EpisodeCardProps {
 }
 
 export function EpisodeCard({style: extraStyle, theme, episode, onPress}: EpisodeCardProps) {
-    const thumbUrl = episode.image.backdrop
-    const posterUrl = episode.image.primary
+    const thumbUrl = episode.image?.backdrop ?? ""
+    const posterUrl = episode.image?.primary ?? ""
     return (
         <TouchableOpacity activeOpacity={1.0} onPress={() => onPress?.(episode)}>
         <View style={{...style.basic, ...theme, ...extraStyle}}>
