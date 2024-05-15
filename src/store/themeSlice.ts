@@ -60,7 +60,7 @@ const initialState: ThemeState = {
     },
     hideMenuBar: false,
     hideMenuTitle: false,
-    menuIconStyle: MenuIconStyle.OUTLINE, 
+    menuIconStyle: MenuIconStyle.EMOJI, 
     menuBarPaddingOffset: 0,
     statusBarHeight: 0,
     showVideoLink: false,
