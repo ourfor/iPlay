@@ -22,7 +22,7 @@ const style = StyleSheet.create({
         fontWeight: 'bold',
     },
     more: {
-        fontWeight: "light"
+        fontWeight: "light",
     }
 });
 
@@ -53,7 +53,7 @@ export function AlbumCard({album, media, title, theme }: AlbumCardProps) {
         },
         more: {
             ...style.more,
-            ...theme
+            ...theme,
         }
     }), [theme])
 
