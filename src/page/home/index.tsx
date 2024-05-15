@@ -65,7 +65,11 @@ export function Page({navigation}: PropsWithNavigation<'home'>) {
                 showsHorizontalScrollIndicator={false}
                 showsVerticalScrollIndicator={Device.isDesktop}
                 nestedScrollEnabled={true}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing} 
+                        onRefresh={onRefresh} />
+                }
                 style={{flex: 1}}>
                 {site?.server && site?.user ? <SiteResource /> : <Button title="添加站点" onPress={goToLogin} />}
             </ScrollView>
