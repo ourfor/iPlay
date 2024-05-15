@@ -1,11 +1,11 @@
 import { useAppDispatch, useAppSelector } from '@hook/store';
 import { toggleSwitchSiteDialog } from '@store/menuSlice';
-import { ScrollView, StyleSheet, ViewStyle, useWindowDimensions } from 'react-native';
+import { ScrollView, StyleProp, StyleSheet, ViewStyle, useWindowDimensions } from 'react-native';
 import Dialog from 'react-native-dialog';
 import { Site } from './Site';
 import { removeSite, switchToSiteAsync } from '@store/embySlice';
 import { selectThemeBasicStyle } from '@store/themeSlice';
-import { Device, OSType, isOS } from '@helper/device';
+import { Device, OSType, isAndroid, isOS } from '@helper/device';
 import { useMemo } from 'react';
 
 const style = StyleSheet.create({
@@ -45,9 +45,15 @@ export function SwitchSiteDialog() {
             ...theme,
             maxHeight,
         },
+        listContainer: (isOS(OSType.Android) ? {
+            alignItems: "center",
+            paddingLeft: 5,
+            paddingRight: 5,
+            margin: 0,
+        } : {}) as ViewStyle,
         site: {
             minWidth: isOS(OSType.Android) ? null : windowWidth * 0.45,
-            width: "100%",
+            width: "97%",
             marginLeft: 0,
             marginRight: 0,
         } as ViewStyle
@@ -62,6 +68,7 @@ export function SwitchSiteDialog() {
             onBackdropPress={() => dispatch(toggleSwitchSiteDialog())}>
             <Dialog.Description>
             <ScrollView style={layout.siteList}
+                contentContainerStyle={layout.listContainer}
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}>
                 {sites?.map((s, i) => (
