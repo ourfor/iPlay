@@ -38,6 +38,7 @@ export function SiteResource() {
             {medias?.map((media, i) => (
                 <AlbumCard
                     key={albums?.[i]?.Id ?? i}
+                    album={albums?.[i]}
                     media={media}
                     title={albums?.[i]?.Name ?? ""}
                     theme={theme} />
