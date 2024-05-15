@@ -31,8 +31,14 @@ const style = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         backgroundColor: 'white',
-        borderTopColor: 'gray',
-        borderTopWidth: 0.25,
+        shadowColor: 'gray',
+        shadowRadius: 1.75,
+        elevation:1.5,
+        shadowOpacity: 0.5,
+        shadowOffset:{
+            width:0,
+            height:0
+        },
         paddingTop: 8,
         paddingBottom: 2.5,
         alignItems: 'center',
