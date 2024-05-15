@@ -1,6 +1,5 @@
 import { ThemeBasicStyle } from '@global';
-import { Dev } from '@helper/dev';
-import { Device, isOS, OSType } from '@helper/device';
+import { Device } from '@helper/device';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '@store';
 import _ from 'lodash';
@@ -17,13 +16,22 @@ export enum LayoutType {
     Line,
 }
 
+export enum MenuIconStyle {
+    OUTLINE,
+    FLAT,
+    LINE,
+    EMOJI,
+}
+
 interface ThemeState {
     routeName: string;
     hideMenuBar: boolean;
+    menuIconStyle?: MenuIconStyle;
     colorScheme: ColorScheme;
     // menu bar padding bottom offset
     menuBarPaddingOffset: number;
     menuBarHeight?: number;
+    hideMenuTitle: boolean;
     statusBarHeight: number,
     pagePaddingTop: number,
     safeInsets: EdgeInsets;
@@ -51,6 +59,8 @@ const initialState: ThemeState = {
         left: 0
     },
     hideMenuBar: false,
+    hideMenuTitle: false,
+    menuIconStyle: MenuIconStyle.EMOJI, 
     menuBarPaddingOffset: 0,
     statusBarHeight: 0,
     showVideoLink: false,

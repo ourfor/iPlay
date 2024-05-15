@@ -1,7 +1,7 @@
 import { OSType, isOS } from "@helper/device";
 import { FontModule } from "@helper/font";
 import { useAppDispatch, useAppSelector } from "@hook/store";
-import { ColorScheme, selectThemeBasicStyle, updateMenuBarPaddingOffset, updateShowVideoLink, updateTheme } from "@store/themeSlice";
+import { ColorScheme, MenuIconStyle, selectThemeBasicStyle, updateMenuBarPaddingOffset, updateShowVideoLink, updateTheme } from "@store/themeSlice";
 import { SelectView } from "@view/SelectView";
 import { StatusBar } from "@view/StatusBar";
 import { Tag } from "@view/Tag";
@@ -51,12 +51,14 @@ export function Page() {
     const menuBarPaddingOffset = useAppSelector((state) => state.theme.menuBarPaddingOffset);
     const showVideoLink = useAppSelector((state) => state.theme.showVideoLink);
     const showExternalPlayer = useAppSelector((state) => state.theme.showExternalPlayer);
+    const hideMenuTitle = useAppSelector((state) => state.theme.hideMenuTitle);
     const headerTitleAlign = useAppSelector((state) => state.theme.headerTitleAlign);
     const color = useAppSelector(state => state.theme.fontColor);
     const fontName = useAppSelector(state => state.theme.fontFamily)
     const backgroundColor = useAppSelector(state => state.theme.backgroundColor);
     const theme = useAppSelector(selectThemeBasicStyle)
     const colorScheme = useAppSelector(state => state.theme.colorScheme)
+    const menuIconStyle = useAppSelector(state => state.theme.menuIconStyle)
     const pagePaddingTop = useAppSelector(state => state.theme.pagePaddingTop)
     const [fontList, setFontList] = useState<{label: string, value: string}[]>([])
 
@@ -106,6 +108,30 @@ export function Page() {
                         value={menuBarPaddingOffset.toString()}
                         onChangeText={(text) => dispatch(updateMenuBarPaddingOffset(Number(text)))}
                         />
+                </View>
+                <View style={style.inline}>
+                    <Text style={{...style.label, ...theme}}>隐藏菜单栏标题</Text>
+                    <Switch value={hideMenuTitle}
+                        onChange={() => { dispatch(updateTheme({hideMenuTitle: !hideMenuTitle})) }} />
+                </View>
+                <View style={style.inline}>
+                    <Text style={{...style.label, ...theme}}>菜单栏图标风格</Text>
+                    <Tag color={menuIconStyle === MenuIconStyle.OUTLINE ? "red" : "gold"}
+                        onPress={_ => dispatch(updateTheme({menuIconStyle: MenuIconStyle.OUTLINE}))}>
+                        拟物
+                    </Tag>
+                    <Tag color={menuIconStyle === MenuIconStyle.FLAT ? "red" : "gold"}
+                        onPress={_ => dispatch(updateTheme({menuIconStyle: MenuIconStyle.FLAT}))} >
+                        扁平
+                    </Tag>
+                    <Tag color={menuIconStyle === MenuIconStyle.LINE ? "red" : "gold"}
+                        onPress={_ => dispatch(updateTheme({menuIconStyle: MenuIconStyle.LINE}))} >
+                        线性
+                    </Tag>
+                    <Tag color={menuIconStyle === MenuIconStyle.EMOJI ? "red" : "gold"}
+                        onPress={_ => dispatch(updateTheme({menuIconStyle: MenuIconStyle.EMOJI}))} >
+                        表情
+                    </Tag>
                 </View>
                 <View style={style.inline}>
                     <Text style={{...style.label, ...theme}}>显示视频链接</Text>
