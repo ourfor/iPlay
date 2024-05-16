@@ -18,6 +18,7 @@ import { DEFAULT_AVATOR_URL } from '@helper/image';
 import { MediaDetail } from '@model/MediaDetail';
 import { Season } from '@model/Season';
 import { Info } from '@model/Info';
+import { Subtitle } from '@api/config';
 
 export enum SortType {
     NameAsc,
@@ -216,7 +217,7 @@ export const helloAsync = createAsyncThunk<string, string, any>("emby/site", asy
     return content
 })
 
-export const fetchPlaybackAsync = createAppAsyncThunk<PlaybackInfo|undefined, number>("emby/playback", async (vid, config) => {
+export const fetchPlaybackAsync = createAppAsyncThunk<PlaybackInfo|undefined, number|string>("emby/playback", async (vid, config) => {
     const state = await config.getState()
     const emby = state.emby.emby
     const videoConfig = state.config.video
@@ -232,7 +233,7 @@ export const getVideoUrlAsync = createAppAsyncThunk<string|undefined, PlaybackIn
     return emby?.videoUrl?.(info)
 })
 
-export const getSubtitleUrlAsync = createAppAsyncThunk<string[]|undefined, PlaybackInfo>("emby/subtitleUrl", async (info, config) => {
+export const getSubtitleUrlAsync = createAppAsyncThunk<Subtitle[]|undefined, PlaybackInfo>("emby/subtitleUrl", async (info, config) => {
     const state = await config.getState()
     const emby = state.emby.emby
     return emby?.subtitleUrl?.(info)

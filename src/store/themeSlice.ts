@@ -27,6 +27,7 @@ interface ThemeState {
     routeName: string;
     hideMenuBar: boolean;
     menuIconStyle?: MenuIconStyle;
+    menuInactiveOpacity?: number;
     colorScheme: ColorScheme;
     // menu bar padding bottom offset
     menuBarPaddingOffset: number;
@@ -60,7 +61,8 @@ const initialState: ThemeState = {
     },
     hideMenuBar: false,
     hideMenuTitle: false,
-    menuIconStyle: MenuIconStyle.EMOJI, 
+    menuIconStyle: MenuIconStyle.EMOJI,
+    menuInactiveOpacity: 0.25,
     menuBarPaddingOffset: 0,
     statusBarHeight: 0,
     showVideoLink: false,
@@ -110,6 +112,10 @@ const getBackgroundColor = (state: RootState) => state.theme.backgroundColor;
 const getHeaderTitleAlign = (state: RootState) => state.theme.headerTitleAlign;
 const getPagePaddingTop = (state: RootState) => state.theme.pagePaddingTop;
 const getMenuBarHeight = (state: RootState) => state.theme.menuBarHeight;
+const getMenuIconStyle = (state: RootState) => state.theme.menuIconStyle;
+const getMenuInactiveOpacity = (state: RootState) => state.theme.menuInactiveOpacity;
+const getMenuHideTitle = (state: RootState) => state.theme.hideMenuTitle;
+const getMenuBarPaddingOffset = (state: RootState) => state.theme.menuBarPaddingOffset;
 
 export const selectScreenOptions = createSelector([
     getHeaderTintColor,
@@ -171,6 +177,26 @@ export const selectThemedPageStyle = createSelector([
         paddingTop,
         paddingBottom,
         fontFamily
+    };
+})
+
+export const selectMenuStyle = createSelector([
+    getHeaderTintColor,
+    getBackgroundColor,
+    getMenuBarPaddingOffset,
+    getFontFamily,
+    getMenuIconStyle,
+    getMenuInactiveOpacity,
+    getMenuHideTitle
+], (color, backgroundColor, paddingOffset, fontFamily, iconType, inactiveOpacity, hideTitle) => {
+    return {
+        color, 
+        backgroundColor,
+        paddingOffset,
+        fontFamily,
+        iconType,
+        inactiveOpacity,
+        hideTitle
     };
 })
 
