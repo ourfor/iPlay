@@ -184,7 +184,6 @@ const kIconSize = {
     height: 25,
 }
 
-const kInactiveOpacity = 0.25;
 const hitSlop = { top: 10, bottom: 10, left: 10, right: 10 };
 
 export function MenuBar() {
