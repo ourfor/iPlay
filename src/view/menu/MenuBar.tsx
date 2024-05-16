@@ -5,7 +5,7 @@ import { getActiveMenu, switchToMenu, toggleSwitchSiteDialog } from '@store/menu
 import { Animated, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { OSType, isOS } from '@helper/device';
 import { useEffect, useMemo, useRef } from 'react';
-import { MenuIconStyle, selectThemeBasicStyle, switchRoute, updateMenuBarHeight } from '@store/themeSlice';
+import { MenuIconStyle, selectMenuStyle, selectThemeBasicStyle, switchRoute, updateMenuBarHeight } from '@store/themeSlice';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HomeIconV1 from '@asset/menu/home.svg';
 import HomeIconV2 from '@asset/menu/home_v2.svg';
@@ -114,6 +114,7 @@ const style = StyleSheet.create({
     },
     title: {
         marginTop: 2.5,
+        textAlign: 'center',
         fontWeight: 'light',
         fontSize: 11,
     },
@@ -193,9 +194,7 @@ export function MenuBar() {
     const dispatch = useAppDispatch();
     const navigation: TabNavigation = useNavigation();
     const hideMenuBar = useAppSelector(state => state.theme.hideMenuBar);
-    const hideMenuTitle = useAppSelector(state => state.theme.hideMenuTitle);
-    const menuIconStyle = useAppSelector(state => state.theme.menuIconStyle);
-    const menuBarPaddingOffset = useAppSelector(state => state.theme.menuBarPaddingOffset);
+    const menuOption = useAppSelector(selectMenuStyle)
     const insets = useSafeAreaInsets();
     const position = useRef(new Animated.Value(!hideMenuBar ? 0 : 100)).current; // Assuming the height of the component is less than 100
 
@@ -217,16 +216,16 @@ export function MenuBar() {
         if (isOS(OSType.Android)) {
             result = {
                 ...style.menuBar,
-                paddingBottom: menuBarPaddingOffset,
+                paddingBottom: menuOption.paddingOffset,
             }
         } else {
             result = {
                 ...style.menuBar,
-                paddingBottom: insets.bottom + menuBarPaddingOffset,
+                paddingBottom: insets.bottom + menuOption.paddingOffset,
             }
         }
         return result
-    }, [hideMenuBar, menuBarPaddingOffset]);
+    }, [hideMenuBar, menuOption.paddingOffset]);
 
     const layout = useMemo(() => ({
         title: {
@@ -242,12 +241,16 @@ export function MenuBar() {
 
     const menuItems = useMemo(() =>
         menu.map((item, i) => {
-            const Icon = IconElement[item.icon][menuIconStyle ?? MenuIconStyle.OUTLINE] as React.FC<SvgProps>;
+            const Icon = IconElement[item.icon][menuOption.iconType ?? MenuIconStyle.OUTLINE] as React.FC<SvgProps>;
+            const opacity = active === item.type ? 1.0 : menuOption.inactiveOpacity;
             const container = {
                 item: {
                     alignItems: 'center',
-                    opacity: active === item.type ? 1.0 : kInactiveOpacity,
-                } as ViewStyle
+                } as ViewStyle,
+                title: {
+                    ...layout.title,
+                    opacity
+                }
             }
             return (
                 <Pressable
@@ -257,13 +260,13 @@ export function MenuBar() {
                     onLongPress={() => item?.onLongPress?.(dispatch)}
                     onPress={() => onActive(item.type)}>
                     <View style={container.item}>
-                        <Icon {...kIconSize} />
-                        {hideMenuTitle ? null : <Text style={layout.title} >{item.title}</Text>}
+                        <Icon {...kIconSize} opacity={opacity} />
+                        {menuOption.hideTitle ? null : <Text style={container.title} >{item.title}</Text>}
                     </View>
                 </Pressable>
             )
         })
-        , [menu, active, layout, hideMenuTitle, menuIconStyle])
+        , [menu, active, layout, menuOption])
 
     return (
         <Animated.View
