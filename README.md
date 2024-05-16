@@ -78,7 +78,7 @@ It is developed in my free time ⏰
 </a>
 </td>
 <td>
-<a href="https://apps.microsoft.com/detail/9pd0sg0lztnl">
+<a href="https://apps.apple.com/app/iplay/id6480576133">
    <img width="130" style="border-radius: 5px" src="./doc/image/Download_on_the_App_Store.png">
 </a>
 </td>
