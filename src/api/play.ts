@@ -5,7 +5,7 @@ import { EmbySite } from "@model/EmbySite";
 import { MediaDetail } from "@model/MediaDetail";
 import { EMBY_CLIENT_HEADERS } from "./view";
 
-export async function getPlaybackInfo(site: EmbySite, id: number, option?: {
+export async function getPlaybackInfo(site: EmbySite, id: number|string, option?: {
     MaxStreamingBitrate?: number
 }) {
     const params = {
