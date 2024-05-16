@@ -1,16 +1,16 @@
 import {PropsWithNavigation} from '@global';
 import { Device } from '@helper/device';
-import { printException } from '@helper/log';
 import { useAppDispatch, useAppSelector } from '@hook/store';
 import { Episode } from "@model/Episode";
+import { PlaybackInfo } from '@model/PlaybackInfo';
+import { fetchPlaybackAsync, getSubtitleUrlAsync, getVideoUrlAsync } from '@store/embySlice';
 import { updatePlayerState } from '@store/playerSlice';
 import { selectThemeBasicStyle, selectThemedPageStyle } from '@store/themeSlice';
 import { EpisodeCard } from '@view/EpisodeCard';
 import { Image } from '@view/Image';
-import { Spin } from '@view/Spin';
 import { Video } from '@view/Video';
 import { PlayEventType } from '@view/mpv/Player';
-import { PlaybackStateType, PlayerSourceType } from '@view/mpv/type';
+import { PlaybackStateType, PlayerSource, PlayerSourceType } from '@view/mpv/type';
 import { ExternalPlayer } from '@view/player/ExternalPlayer';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
@@ -69,6 +69,7 @@ export function Page({navigation, route}: PlayerPageProps) {
     const { episodes } = route.params;
     const emby = useAppSelector(state => state.emby.emby);
     const [url, setUrl] = useState<string>()
+    const [subtitles, setSubtitles] = useState<PlayerSource[]>([])
     const [poster, setPoster] = useState<string>()
     const [episode, setEpisode] = useState(route.params.episode)
     const videoRef = useRef<any>(null);
@@ -79,27 +80,50 @@ export function Page({navigation, route}: PlayerPageProps) {
     const dispatch = useAppDispatch()
     const isTablet = Device.isTablet
 
-    const playEpisode = (episode: Episode) => {
+
+    const getPlaySources = async (playback: PlaybackInfo) => {
+        const urlres = await dispatch(getVideoUrlAsync(playback))
+        let url = ""
+        if (typeof urlres.payload === "string") {
+            url = urlres.payload
+        }
+        const subres = await dispatch(getSubtitleUrlAsync(playback))
+        let subtitles: PlayerSource[] = []
+        if (typeof subres.payload !== "string") {
+            subtitles = subres.payload?.map(item => ({
+                type: PlayerSourceType.Subtitle,
+                url: item.url,
+                value: item.lang,
+                name: item.name,
+            } as PlayerSource)) ?? []
+        }
+        return {url, subtitles}
+    }
+
+    const playEpisode = async (episode: Episode) => {
         setEpisode(episode)
         setPoster(episode.image.primary)
-        emby?.getPlaybackInfo?.(Number(episode.Id))
-            .then(res => {
-                setUrl(emby?.videoUrl?.(res))
-                navigation.setOptions({
-                    title: episode.Name
-                })
-                dispatch(updatePlayerState({
-                    source: "emby",
-                    status: "start",
-                    mediaId: episode.Id,
-                    mediaSourceId: res.MediaSources[0]?.Id,
-                    sessionId: res.PlaySessionId,
-                    startTime: Date.now(),
-                    mediaPoster: poster,
-                    position: 0,
-                }))
-            })
-            .catch(printException)
+        const response = await dispatch(fetchPlaybackAsync(episode.Id))
+        const playbackInfo = typeof response.payload !== "string" ? response.payload : null
+        if (!playbackInfo) {
+            return
+        }
+        const source = await getPlaySources(playbackInfo)
+        setUrl(emby?.videoUrl?.(source.url))
+        setSubtitles(source.subtitles)
+        navigation.setOptions({
+            title: episode.Name
+        })
+        dispatch(updatePlayerState({
+            source: "emby",
+            status: "start",
+            mediaId: episode.Id,
+            mediaSourceId: playbackInfo.MediaSources[0]?.Id,
+            sessionId: playbackInfo.PlaySessionId,
+            startTime: Date.now(),
+            mediaPoster: poster,
+            position: 0,
+        }))
     }
 
     const onPlaybackStateChanged = useCallback((data: PlaybackStateType) => {
@@ -161,7 +185,8 @@ export function Page({navigation, route}: PlayerPageProps) {
                 sources={[
                     {url: poster, type: PlayerSourceType.PosterImage},
                     {url: episode.image.logo, type: PlayerSourceType.LogoImage},
-                    {url, name: episode?.Name ?? "", type: PlayerSourceType.Video}
+                    {url, name: episode?.Name ?? "", type: PlayerSourceType.Video},
+                    ...subtitles
                 ]}
                 source={{uri: url, title: episode.Name}}
                 subtitleFontName={subtitleFontName}

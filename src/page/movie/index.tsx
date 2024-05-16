@@ -122,7 +122,9 @@ export function Page({route, navigation}: PropsWithNavigation<"movie">) {
                 if (typeof subRes.payload !== "string") {
                     subtitles = subRes.payload?.map(item => ({
                         type: PlayerSourceType.Subtitle,
-                        url: item,
+                        url: item.url,
+                        value: item.lang,
+                        name: item.name,
                     } as PlayerSource)) ?? []
                 }
                 logger.info(`media source`, playbackInfo.MediaSources[0].MediaStreams)
