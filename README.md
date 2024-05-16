@@ -62,9 +62,24 @@ It is developed in my free time ⏰
 
 <table>
 <tr>
+<td> XBox </td>
+<td> Windows </td>
+<td> MacOS/iOS </td>
+</tr>
+<tr>
+<td>
+<a href="https://www.microsoft.com/store/apps/9PD0SG0LZTNL">
+   <img width="120" style="border-radius: 5px" src="./doc/image/English_get it from MS_864X312.png">
+</a>
+</td>
+<td>
+<a href="https://www.microsoft.com/store/apps/9NBZ2BXD4WFZ">
+   <img width="120" style="border-radius: 5px" src="./doc/image/English_get it from MS_864X312.png">
+</a>
+</td>
 <td>
 <a href="https://apps.microsoft.com/detail/9pd0sg0lztnl">
-   <img width="120" style="border-radius: 5px" src="./doc/image/English_get it from MS_864X312.png">
+   <img width="130" style="border-radius: 5px" src="./doc/image/Download_on_the_App_Store.png">
 </a>
 </td>
 </tr>

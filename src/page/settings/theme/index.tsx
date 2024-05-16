@@ -52,6 +52,7 @@ export function Page() {
     const showVideoLink = useAppSelector((state) => state.theme.showVideoLink);
     const showExternalPlayer = useAppSelector((state) => state.theme.showExternalPlayer);
     const hideMenuTitle = useAppSelector((state) => state.theme.hideMenuTitle);
+    const menuInactiveOpacity = useAppSelector((state) => state.theme.menuInactiveOpacity);
     const headerTitleAlign = useAppSelector((state) => state.theme.headerTitleAlign);
     const color = useAppSelector(state => state.theme.fontColor);
     const fontName = useAppSelector(state => state.theme.fontFamily)
@@ -113,6 +114,14 @@ export function Page() {
                     <Text style={{...style.label, ...theme}}>隐藏菜单栏标题</Text>
                     <Switch value={hideMenuTitle}
                         onChange={() => { dispatch(updateTheme({hideMenuTitle: !hideMenuTitle})) }} />
+                </View>
+                <View style={style.inline}>
+                    <Text style={{...style.label, ...theme}}>菜单栏非激活按钮不透明度[0-100]</Text>
+                    <TextInput style={{...style.input, color}}
+                        keyboardType="numeric"
+                        value={((menuInactiveOpacity ?? 0) * 100).toString()}
+                        onChangeText={(text) => dispatch(updateTheme({menuInactiveOpacity: Number(text)/100}))}
+                        />
                 </View>
                 <View style={style.inline}>
                     <Text style={{...style.label, ...theme}}>菜单栏图标风格</Text>

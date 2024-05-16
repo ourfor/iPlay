@@ -85,13 +85,27 @@ export function playUrl(site: EmbySite, path: string | PlaybackInfo) {
     }
 }
 
+export interface Subtitle {
+    name: string
+    lang: string
+    url: string
+}
+
 export function subtitleUrl(site: EmbySite, path: string | PlaybackInfo) {
     const endpoint = site.server!;
-    const result = [];
+    const result: Subtitle[] = [];
     if (typeof path === "string") {
-        if (path?.startsWith("http")) return [path]
+        if (path?.startsWith("http")) return [{
+            name: "unknown",
+            lang: "unknown",
+            url: path
+        }]
         const part = `${endpoint.protocol}://${endpoint.host}:${endpoint.port}${endpoint.path}emby${path}`
-        result.push(part)
+        result.push({
+            name: "unknown",
+            lang: "unknown",
+            url: part
+        })
     } else {
         const sources = path?.MediaSources ?? []
         for (const source of sources) {
@@ -102,7 +116,11 @@ export function subtitleUrl(site: EmbySite, path: string | PlaybackInfo) {
                     stream?.DeliveryUrl) {
                     logger.info("subtitle stream", stream)
                     const part = `${endpoint.protocol}://${endpoint.host}:${endpoint.port}${endpoint.path}emby${stream.DeliveryUrl}`
-                    result.push(part)
+                    result.push({
+                        name: stream.DisplayTitle,
+                        lang: stream.Language,
+                        url: part
+                    })
                 }
             }
         }
