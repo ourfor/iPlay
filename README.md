@@ -1,5 +1,5 @@
 <p align="center">
-   <img src="doc/image/AppIcon.png" />
+   <img src="doc/image/appletv-icon.png" />
 </p>
 <h2 align="center">🎬 iPlay</h2>
 <p align="center">iPlay is a modern video player for Android、 iOS、Windows and macOS</p>
@@ -20,9 +20,9 @@
 
 <table>
 <tr>
-   <td><img src="./doc/image/Screen-20240319@2x1.png" /></td>
-   <td><img src="./doc/image/Screen-20240319@2x.png" /></td>
-   <td><img src="./doc/image/Screen-20240319@2x2.png" /></td>
+   <td><img src="./doc/image/IMG_0455.PNG" /></td>
+   <td><img src="./doc/image/IMG_0457.PNG" /></td>
+   <td><img src="./doc/image/IMG_0460.PNG" /></td>
    <td colspan="3"><img src="./doc/image/IMG_0130.png" /></td>
 </tr>
 <tr>
