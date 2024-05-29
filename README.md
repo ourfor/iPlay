@@ -64,7 +64,7 @@ It is developed in my free time ⏰
 <tr>
 <td> XBox </td>
 <td> Windows </td>
-<td> MacOS/iOS </td>
+<td> MacOS/iOS/tvOS </td>
 </tr>
 <tr>
 <td>
