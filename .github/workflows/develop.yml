@@ -99,10 +99,12 @@ jobs:
             --file "$PWD/build/iPlay.ipa" \
             --token "${{ secrets.CLIENT_ID }}"
           echo "Uploaded iPlay.apk"
-          python ./tools/upload.py --url "https://drive.endemy.me/od_bot/build/iPlay/$buildtime/iPlay.apk" \
-            --file "$PWD/build/iPlay.apk" \
+          python ./tools/upload.py --url "https://drive.endemy.me/od_bot/build/iPlay/$buildtime/iPlay-x86_64.apk" \
+            --file "$PWD/build/iPlay-x86_64.apk" \
             --token "${{ secrets.CLIENT_ID }}"
-          echo "Uploaded iPlay.dSYMs.zip"
-          python ./tools/upload.py --url "https://drive.endemy.me/od_bot/build/iPlay/$buildtime/iPlay.dSYMs.zip" \
-            --file "$PWD/build/iPlay.dSYMs.zip" \
+          python ./tools/upload.py --url "https://drive.endemy.me/od_bot/build/iPlay/$buildtime/iPlay-arm64-v8a.apk" \
+            --file "$PWD/build/iPlay-arm64-v8a.apk" \
+            --token "${{ secrets.CLIENT_ID }}"
+          python ./tools/upload.py --url "https://drive.endemy.me/od_bot/build/iPlay/$buildtime/iPlay-armeabi-v7a.apk" \
+            --file "$PWD/build/iPlay-armeabi-v7a.apk" \
             --token "${{ secrets.CLIENT_ID }}"
