@@ -16,9 +16,9 @@ apk:
 	@echo "📦 apk $(VERSION_NAME)"
 	cd $(ANDROID_DIR) && ./gradlew assembleRelease -PversionName=$(VERSION_NAME)
 	mkdir -p $(BUILD_DIR)
-	cp $(ANDROID_DIR)/app/build/outputs/apk/release/app-arm64-v8a-release-unsigned.apk $(BUILD_DIR)/$(APP_NAME)-arm64-v8a.apk
-	cp $(ANDROID_DIR)/app/build/outputs/apk/release/app-armeabi-v7a-release-unsigned.apk $(BUILD_DIR)/$(APP_NAME)-armeabi-v7a.apk
-	cp $(ANDROID_DIR)/app/build/outputs/apk/release/app-x86_64-release-unsigned.apk $(BUILD_DIR)/$(APP_NAME)-x86_64.apk
+	cp $(ANDROID_DIR)/app/build/outputs/apk/release/app-arm64-v8a-release.apk $(BUILD_DIR)/$(APP_NAME)-arm64-v8a.apk
+	cp $(ANDROID_DIR)/app/build/outputs/apk/release/app-armeabi-v7a-release.apk $(BUILD_DIR)/$(APP_NAME)-armeabi-v7a.apk
+	cp $(ANDROID_DIR)/app/build/outputs/apk/release/app-x86_64-release.apk $(BUILD_DIR)/$(APP_NAME)-x86_64.apk
 
 ipa:
 	@echo "📦 ipa $(VERSION_NAME)"
