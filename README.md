@@ -14,7 +14,7 @@
 <table>
 <tr>
    <td><img src="./doc/image/20240321_225330.png" /></td>
-   <td><img src="./doc/image/Screen-20240501@2x.png" /></td>
+   <td><img src="./doc/image/windows.preview.png" /></td>
 </tr>
 </table>
 
