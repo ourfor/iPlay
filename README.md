@@ -56,8 +56,8 @@ It is developed in my free time ⏰
 
 ### 📥 Download
 
-- [Android](https://drive.endemy.me/od_bot/build/iPlay/latest/iPlay.apk)
-- [iOS](https://drive.endemy.me/od_bot/build/iPlay/latest/iPlay.ipa)
+- [Android](https://github.com/ourfor/iPlay/releases/latest)
+- [iOS](https://github.com/ourfor/iPlay/releases/latest)
 - [Testflight](https://testflight.apple.com/join/73NHMoP6)
 
 <table>
