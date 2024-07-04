@@ -6,6 +6,7 @@ APP_NAME 		= iPlay
 VERSION			= v1.0
 BUILD_ID 		= $(shell git rev-parse --short HEAD)
 VERSION_NAME    = "$(VERSION) $(BUILD_ID)"
+VERSION_CODE    = $(shell git rev-list --count HEAD)
 
 all: apk ipa
 
@@ -14,7 +15,7 @@ version:
 
 apk:
 	@echo "📦 apk $(VERSION_NAME)"
-	cd $(ANDROID_DIR) && ./gradlew assembleRelease -PversionName=$(VERSION_NAME)
+	cd $(ANDROID_DIR) && ./gradlew assembleRelease -PversionName=$(VERSION_NAME) -PversionCode=$(VERSION_CODE)
 	mkdir -p $(BUILD_DIR)
 	cp $(ANDROID_DIR)/app/build/outputs/apk/release/app-arm64-v8a-release.apk $(BUILD_DIR)/$(APP_NAME)-arm64-v8a.apk
 	cp $(ANDROID_DIR)/app/build/outputs/apk/release/app-armeabi-v7a-release.apk $(BUILD_DIR)/$(APP_NAME)-armeabi-v7a.apk
