@@ -77,6 +77,7 @@ jobs:
         env:
           scheme: ${{ 'default' }}
           DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
+          silent: true
         run: |
           rm -rf ios/iPlayClient.xcworkspace/xcshareddata/swiftpm/Package.resolved
           make all
