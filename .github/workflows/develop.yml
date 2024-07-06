@@ -48,7 +48,7 @@ jobs:
       - name:  Select Xcode version
         run: |
           ls /Applications/
-          sudo xcode-select --switch /Applications/Xcode_15.2.app
+          sudo xcode-select --switch /Applications/Xcode_15.4.app
       
       # - name: 🕸️ Cache node modules
       #   uses: actions/cache@v2
