@@ -49,6 +49,8 @@ jobs:
         run: |
           ls /Applications/
           sudo xcode-select --switch /Applications/Xcode_15.4.app
+          export TOOLCHAINS=swift
+          swift --version
       
       # - name: 🕸️ Cache node modules
       #   uses: actions/cache@v2
