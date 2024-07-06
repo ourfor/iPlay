@@ -30,13 +30,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: true
+          submodules: recursive
           token: ${{ secrets.GH_PAT }}
           
       - name: 🐧 set up Swift
-        uses: swift-actions/setup-swift@v1
+        uses: swift-actions/setup-swift@v2
         with:
-          swift-version: 5.8
+          swift-version: "5.10.1"
       
       - name: ☕️ set up JDK
         uses: actions/setup-java@v3
@@ -48,7 +48,9 @@ jobs:
       - name:  Select Xcode version
         run: |
           ls /Applications/
-          sudo xcode-select --switch /Applications/Xcode_15.2.app
+          sudo xcode-select --switch /Applications/Xcode_15.4.app
+          export TOOLCHAINS=swift
+          swift --version
       
       # - name: 🕸️ Cache node modules
       #   uses: actions/cache@v2
@@ -74,7 +76,7 @@ jobs:
       - name: 🧬 Build
         env:
           scheme: ${{ 'default' }}
-          DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+          DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
         run: |
           rm -rf ios/iPlayClient.xcworkspace/xcshareddata/swiftpm/Package.resolved
           make all
