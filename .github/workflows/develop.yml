@@ -52,21 +52,21 @@ jobs:
           export TOOLCHAINS=swift
           swift --version
       
-      # - name: 🕸️ Cache node modules
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: node_modules
-      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-node-
+      - name: 🕸️ Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
             
-      # - name: 🕸️ Cache CocoaPods
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: ios/Pods
-      #     key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-pods-
+      - name: 🕸️ Cache CocoaPods
+        uses: actions/cache@v2
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
 
       - name: 🧱 Install Dependencies
         run: |
@@ -77,8 +77,8 @@ jobs:
         env:
           scheme: ${{ 'default' }}
           DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
-          silent: true
         run: |
+          exec &> build.log
           rm -rf ios/iPlayClient.xcworkspace/xcshareddata/swiftpm/Package.resolved
           make all
 
