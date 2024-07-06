@@ -45,9 +45,9 @@ jobs:
             distribution: 'zulu'
             cache: gradle
 
-      - name:  Select Xcode version
+      - name: 🔨 Select Xcode version
         run: |
-          ls /Applications/
+          # ls /Applications/
           sudo xcode-select --switch /Applications/Xcode_15.4.app
           export TOOLCHAINS=swift
           swift --version
