@@ -97,7 +97,7 @@ jobs:
         run: |
           echo "version_code=$(git rev-list --count HEAD)" >> $GITHUB_ENV
           echo "build_id=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo version_name=\""v1.0 $(git rev-parse --short HEAD)"\" >> $GITHUB_ENV
+          echo version_name="v1.0 $(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: 🎉 Publish Release
         uses: softprops/action-gh-release@v2
