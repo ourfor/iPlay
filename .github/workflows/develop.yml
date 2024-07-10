@@ -1,5 +1,8 @@
 name: 🌸 Build
 
+permissions:
+  contents: write
+  
 on:
   push:
     branches: [ "main" ]
@@ -93,15 +96,15 @@ jobs:
       - name: 🎊 Release Notes
         run: |
           echo "version_code=$(git rev-list --count HEAD)" >> $GITHUB_ENV
-          echo "build_id=$(shell git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo 'version_name="v1.0 $(shell git rev-parse --short HEAD)"' >> $GITHUB_ENV
-          
+          echo "build_id=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo 'version_name="v1.0 $(git rev-parse --short HEAD)"' >> $GITHUB_ENV
+
       - name: 🎉 Publish Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main')
         with:
           name: ${{ env.version_name }}
-          tag_name: ${{ env.version_code }}
+          tag_name: v1.0.${{ env.version_code }}
           make_latest: true
           files: |
             build/*.apk
