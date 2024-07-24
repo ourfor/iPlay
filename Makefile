@@ -21,6 +21,12 @@ apk:
 	cp $(ANDROID_DIR)/app/build/outputs/apk/release/app-armeabi-v7a-release.apk $(BUILD_DIR)/$(APP_NAME)-armeabi-v7a.apk
 	cp $(ANDROID_DIR)/app/build/outputs/apk/release/app-x86_64-release.apk $(BUILD_DIR)/$(APP_NAME)-x86_64.apk
 
+aab:
+	@echo "📦 aab $(VERSION_NAME)"
+	cd $(ANDROID_DIR) && ./gradlew bundleRelease -PversionName=$(VERSION_NAME) -PversionCode=$(VERSION_CODE)
+	mkdir -p $(BUILD_DIR)
+	cp $(ANDROID_DIR)/app/build/outputs/bundle/release/app-release.aab $(BUILD_DIR)/$(APP_NAME).aab
+
 ipa:
 	@echo "📦 ipa $(VERSION_NAME)"
 	cd $(IOS_DIR) && xcodebuild archive \
