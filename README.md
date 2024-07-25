@@ -65,6 +65,7 @@ It is developed in my free time ⏰
 <td> XBox </td>
 <td> Windows </td>
 <td> MacOS/iOS/tvOS </td>
+<td> Android </td>
 </tr>
 <tr>
 <td>
@@ -80,6 +81,11 @@ It is developed in my free time ⏰
 <td>
 <a href="https://apps.apple.com/app/iplay/id6480576133">
    <img width="130" style="border-radius: 5px" src="./doc/image/Download_on_the_App_Store.png">
+</a>
+</td>
+<td>
+<a href="https://www.amazon.com/gp/product/B0DB2KL58G">
+   <img width="130" style="border-radius: 5px" src="./doc/image/amazon_appstore.png">
 </a>
 </td>
 </tr>
