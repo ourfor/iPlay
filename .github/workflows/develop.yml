@@ -92,6 +92,7 @@ jobs:
             path: |
               build/*.apk
               build/*.ipa
+              build/*.aab
 
       - name: 🎊 Release Notes
         run: |
@@ -109,6 +110,7 @@ jobs:
           files: |
             build/*.apk
             build/*.ipa
+            build/*.aab
 
       - name: ⬆️ Upload Build Artifact
         env:
