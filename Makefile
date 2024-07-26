@@ -8,7 +8,7 @@ BUILD_ID 		= $(shell git rev-parse --short HEAD)
 VERSION_NAME    = "$(VERSION) $(BUILD_ID)"
 VERSION_CODE    = $(shell git rev-list --count HEAD)
 
-all: apk ipa
+all: apk ipa aab
 
 version:
 	@echo $(VERSION_NAME)
