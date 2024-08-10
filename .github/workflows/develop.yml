@@ -85,6 +85,16 @@ jobs:
           rm -rf ios/iPlayClient.xcworkspace/xcshareddata/swiftpm/Package.resolved
           make all
 
+      - name: ⬆️ Upload Build Log if Build Fails
+        if: failure()
+        run: |
+          buildtime=$(date '+%Y%m%d.%H%M')
+          python -m pip install requests
+          echo "Uploaded build.log"
+          python ./tools/upload.py --url "https://drive.endemy.me/od_bot/build/iPlay/$buildtime/build.log" \
+            --file "$PWD/build.log" \
+            --token "${{ secrets.CLIENT_ID }}"
+
       - name: ⬆️ Upload Build Artifact To GitHub
         uses: actions/upload-artifact@v3
         with:
