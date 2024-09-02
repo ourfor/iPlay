@@ -137,10 +137,10 @@ jobs:
           buildtime=$(date '+%Y%m%d.%H%M')
           python -m pip install requests
           echo "Uploading build artifacts..."
-          echo "Uploaded iPlay.ipa"
-          python ./tools/upload.py --url "https://drive.endemy.me/od_bot/build/iPlay/$buildtime/iPlay.ipa" \
-            --file "$PWD/build/iPlay.ipa" \
-            --token "${{ secrets.CLIENT_ID }}"
+          # echo "Uploaded iPlay.ipa"
+          # python ./tools/upload.py --url "https://drive.endemy.me/od_bot/build/iPlay/$buildtime/iPlay.ipa" \
+          #   --file "$PWD/build/iPlay.ipa" \
+          #   --token "${{ secrets.CLIENT_ID }}"
           echo "Uploaded iPlay.apk"
           python ./tools/upload.py --url "https://drive.endemy.me/od_bot/build/iPlay/$buildtime/iPlay-x86_64.apk" \
             --file "$PWD/build/iPlay-x86_64.apk" \
