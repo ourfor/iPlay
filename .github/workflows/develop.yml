@@ -103,14 +103,14 @@ jobs:
       #     api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
       #     api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
-      - name: ⬆️ Upload Build Artifact To GitHub
-        uses: actions/upload-artifact@v3
-        with:
-            name: artifact
-            path: |
-              build/*.apk
-              build/*.ipa
-              build/*.aab
+      # - name: ⬆️ Upload Build Artifact To GitHub
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #       name: artifact
+      #       path: |
+      #         build/*.apk
+      #         build/*.ipa
+      #         build/*.aab
 
       - name: 🎊 Release Notes
         run: |
