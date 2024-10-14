@@ -11,44 +11,18 @@
 
 ### 🌐 A cross-platform media player
 
-<table>
-<tr>
-   <td><img src="./doc/image/20240321_225330.png" /></td>
-   <td><img src="./doc/image/windows.preview.png" /></td>
-</tr>
-</table>
+<img src="./doc/image/windows.preview.png" />
 
-<table>
-<tr>
-   <td><img src="./doc/image/IMG_0455.PNG" /></td>
-   <td><img src="./doc/image/IMG_0457.PNG" /></td>
-   <td><img src="./doc/image/IMG_0460.PNG" /></td>
-   <td colspan="3"><img src="./doc/image/IMG_0130.png" /></td>
-</tr>
-<tr>
-   <td><img src="./doc/image/Screenshot_2024-04-01-15-33-47-550.jpg" /></td>
-   <td><img src="./doc/image/Screenshot_2024-04-01-15-34-35-022.jpg" /></td>
-   <td><img src="./doc/image/Screenshot_2024-04-01-15-33-17-258.jpg" /></td>
-   <td><img src="./doc/image/Screenshot_2024-04-01-15-30-58-457.jpg" /></td>
-   <td><img src="./doc/image/Screenshot_2024-04-01-15-32-39-223.jpg" /></td>
-   <td><img src="./doc/image/Screenshot_2024-04-01-15-33-54-903.jpg" /></td>
-</tr>
-</table>
-
-Supports Android, iOS, MacOS and Windows
+Supports `Android`, `iOS`, `MacOS`, `XBox` and `Windows`
 
 ### 🌟 Feature
 
 - [x] Support Emby
-- [x] Internal mpv player
+- [x] Support Jellyfin
 - [x] Multi-site switch
 - [x] Use custom font
 - [x] Support Windows
-- [ ] Download video and audio
-- [ ] Audio player
-- [ ] Support subscribe movie and series
-- [ ] User interface
-- [ ] Enhance internal player
+- [x] Audio player
 
 ### 🚧 Development Progress
 
