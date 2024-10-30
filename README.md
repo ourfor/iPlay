@@ -1,6 +1,3 @@
-<p align="center">
-   <img src="doc/image/appletv-icon.png" />
-</p>
 <h2 align="center">🎬 iPlay</h2>
 <p align="center">iPlay is a modern video player for Android、 iOS、Windows and macOS</p>
 <br />
@@ -8,6 +5,8 @@
 ---
 
 [![🌸 Build](https://github.com/ourfor/iPlayClient/actions/workflows/develop.yml/badge.svg?branch=main)](https://github.com/ourfor/iPlayClient/actions/workflows/develop.yml)
+
+![Alt](https://repobeats.axiom.co/api/embed/442b21fb8b1ed2cc170510527ec68880ebbeb2b4.svg "Repobeats analytics image")
 
 ### 🌐 A cross-platform media player
 
@@ -44,22 +43,22 @@ It is developed in my free time ⏰
 <tr>
 <td>
 <a href="https://www.microsoft.com/store/apps/9PD0SG0LZTNL">
-   <img width="120" style="border-radius: 5px" src="./doc/image/English_get it from MS_864X312.png">
+   <img width="120" style="border-radius: 5px;object-fit:fill;" src="./doc/image/English_get it from MS_864X312.png">
 </a>
 </td>
 <td>
 <a href="https://www.microsoft.com/store/apps/9NBZ2BXD4WFZ">
-   <img width="120" style="border-radius: 5px" src="./doc/image/English_get it from MS_864X312.png">
+   <img width="120" style="border-radius: 5px;object-fit:fill;" src="./doc/image/English_get it from MS_864X312.png">
 </a>
 </td>
 <td>
 <a href="https://apps.apple.com/app/iplay/id6480576133">
-   <img width="130" style="border-radius: 5px" src="./doc/image/Download_on_the_App_Store.png">
+   <img width="130" style="border-radius: 5px;object-fit:fill;" src="./doc/image/Download_on_the_App_Store.png">
 </a>
 </td>
 <td>
 <a href="https://www.amazon.com/gp/product/B0DB2KL58G">
-   <img width="130" style="border-radius: 5px" src="./doc/image/amazon_appstore.png">
+   <img width="130" style="border-radius: 5px;object-fit:fill;" src="./doc/image/amazon_appstore.png">
 </a>
 </td>
 </tr>
