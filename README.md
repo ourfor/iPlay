@@ -6,8 +6,7 @@
 
 <div style="display:inline-flex;flex-direction:row;gap:0.5rem;">
 
-[![🌸 Build](https://github.com/ourfor/iPlayClient/actions/workflows/develop.yml/badge.svg?branch=main)](https://github.com/ourfor/iPlayClient/actions/workflows/develop.yml)
-
+![Build](https://github.com/ourfor/iPlayClient/actions/workflows/develop.yml/badge.svg?branch=main)
 ![Version](https://img.shields.io/github/v/release/ourfor/iPlay)
 
 </div>
