@@ -3,7 +3,8 @@
 <br />
 
 ---
-<div style="display:inline-flex;gap:0.5rem;">
+
+<div style="display:inline-flex;flex-direction:row;gap:0.5rem;">
 
 [![🌸 Build](https://github.com/ourfor/iPlayClient/actions/workflows/develop.yml/badge.svg?branch=main)](https://github.com/ourfor/iPlayClient/actions/workflows/develop.yml)
 
