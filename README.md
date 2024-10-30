@@ -1,10 +1,15 @@
 <h2 align="center">🎬 iPlay</h2>
-<p align="center">iPlay is a modern video player for Android、 iOS、Windows and macOS</p>
+<p>iPlay is a modern video player for Android、 iOS、Windows and macOS</p>
 <br />
 
 ---
+<div style="display:inline-flex;gap:0.5rem;">
 
 [![🌸 Build](https://github.com/ourfor/iPlayClient/actions/workflows/develop.yml/badge.svg?branch=main)](https://github.com/ourfor/iPlayClient/actions/workflows/develop.yml)
+
+![Version](https://img.shields.io/github/v/release/ourfor/iPlay)
+
+</div>
 
 ![Alt](https://repobeats.axiom.co/api/embed/442b21fb8b1ed2cc170510527ec68880ebbeb2b4.svg "Repobeats analytics image")
 
