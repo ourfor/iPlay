@@ -48,33 +48,32 @@ jobs:
             distribution: 'zulu'
             cache: gradle
 
-      - name: 🔨 Select Xcode version
-        run: |
-          # ls /Applications/
-          sudo xcode-select --switch /Applications/Xcode_15.4.app
-          export TOOLCHAINS=swift
-          swift --version
+      # - name: 🔨 Select Xcode version
+      #   run: |
+      #     # ls /Applications/
+      #     sudo xcode-select --switch /Applications/Xcode_15.4.app
+      #     export TOOLCHAINS=swift
+      #     swift --version
       
-      - name: 🕸️ Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      # - name: 🕸️ Cache node modules
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: node_modules
+      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-node-
             
-      - name: 🕸️ Cache CocoaPods
-        uses: actions/cache@v2
-        with:
-          path: ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+      # - name: 🕸️ Cache CocoaPods
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ios/Pods
+      #     key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pods-
 
-      - name: 🧱 Install Dependencies
-        run: |
-          npm install
-          cd ios && pod install
+      # - name: 🧱 Install Dependencies
+      #   run: |
+      #     cd ios && pod install
 
       - name: 🧬 Build
         env:
