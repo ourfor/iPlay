@@ -238,5 +238,10 @@ public class WebPage implements ThemeUpdateAction, Page {
     public View view() {
         return this.binding.getRoot();
     }
+
+    @Override
+    public int id() {
+        return R.id.webPage;
+    }
 }
 

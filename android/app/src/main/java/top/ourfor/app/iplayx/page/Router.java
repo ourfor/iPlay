@@ -140,6 +140,38 @@ public class Router implements Navigator {
     }
 
     @Override
+    public void pushPage(String name, Map<String, Object> params) {
+        var clazz = pageMap.get(name);
+        if (clazz == null) return;
+        try {
+            val page = clazz.newInstance();
+            pushPage(page, params);
+        } catch (IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void pushPage(Page newPage, Map<String, Object> params) {
+        val pages = navigators.computeIfAbsent(stackId, k -> new Stack<>());
+        if (pages.isEmpty()) return;
+        val page = pages.peek();
+        page.viewWillDisappear();
+        pageId.put(newPage, page.id());
+        newPage.create(container.getContext(), params);
+        pages.push(newPage);
+        val view = newPage.view();
+        view.setBackgroundResource(R.drawable.bg);
+        newPage.viewWillAppear();
+        container.addView(view, LayoutUtil.fill());
+        if (view instanceof PageLifecycle lifecycle) {
+            lifecycle.onAttach();
+        }
+        pushPageAnimation(page, newPage);
+        onNavigateChange(page.id());
+    }
+
+    @Override
     public boolean popPage() {
         val pages = navigators.computeIfAbsent(stackId, k -> new Stack<>());
         if (pages.isEmpty()) return false;
@@ -227,7 +259,7 @@ public class Router implements Navigator {
     public int getCurrentPageId() {
         if (stackId == null) return 0;
         val page = navigators.get(stackId).peek();
-        return pageId.get(page);
+        return pageId.containsKey(page) ? pageId.get(page) : page.id();
     }
 
     void pushPageAnimation(Page oldPage, Page newPage) {

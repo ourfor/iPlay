@@ -117,7 +117,8 @@ public class HomePage implements SiteUpdateAction, ThemeUpdateAction, SiteListUp
             } else if (itemId == R.id.web_page) {
                 val route = XGET(Navigator.class);
                 val args = new HashMap<String, Object>();
-                route.pushPage(R.id.webPage, args);
+                assert route != null;
+                route.pushPage("web_page", args);
             }
             return true;
         });
