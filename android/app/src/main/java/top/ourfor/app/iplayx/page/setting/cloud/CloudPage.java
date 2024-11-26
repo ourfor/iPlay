@@ -42,6 +42,7 @@ import top.ourfor.app.iplayx.action.DriveUpdateAction;
 import top.ourfor.app.iplayx.api.file.FileProvider;
 import top.ourfor.app.iplayx.api.file.FileProviderFactory;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.type.ServerType;
 import top.ourfor.app.iplayx.databinding.CloudPageBinding;
 import top.ourfor.app.iplayx.model.drive.Drive;
@@ -55,6 +56,7 @@ import top.ourfor.app.iplayx.util.PathUtil;
 import top.ourfor.app.iplayx.util.WindowUtil;
 
 @Slf4j
+@ViewController(name = "cloud_page")
 public class CloudPage implements DriveUpdateAction, Page {
 
     CloudPageBinding binding = null;

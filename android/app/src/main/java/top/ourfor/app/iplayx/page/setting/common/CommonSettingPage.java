@@ -13,10 +13,12 @@ import androidx.fragment.app.Fragment;
 
 import java.util.List;
 
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.util.LayoutUtil;
 import top.ourfor.app.iplayx.util.WindowUtil;
 import top.ourfor.app.iplayx.view.ListView;
 
+@ViewController(name = "common_setting_page")
 public class CommonSettingPage extends Fragment {
     private ConstraintLayout contentView = null;
     static List<SettingModel> settingModels = List.of(

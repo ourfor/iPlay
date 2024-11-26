@@ -48,6 +48,7 @@ import top.ourfor.app.iplayx.api.webdav.WebDavFileApi;
 import top.ourfor.app.iplayx.bean.KVStorage;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
 import top.ourfor.app.iplayx.bean.Navigator;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.type.ServerType;
 import top.ourfor.app.iplayx.databinding.LoginPageBinding;
 import top.ourfor.app.iplayx.model.drive.AlistDriveModel;
@@ -63,6 +64,7 @@ import top.ourfor.app.iplayx.util.WindowUtil;
 import top.ourfor.app.iplayx.view.TagView;
 
 @Slf4j
+@ViewController(name = "login_page")
 public class LoginPage extends BottomSheetDialogFragment implements OneDriveAction, Page {
     private static final String remarkKey = "@site/remark";
     private static final String usernameKey = "@site/username";

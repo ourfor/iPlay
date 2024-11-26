@@ -31,6 +31,7 @@ import lombok.SneakyThrows;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.DispatchAction;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.model.SeekableRange;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
@@ -50,6 +51,7 @@ import top.ourfor.app.iplayx.view.audio.MusicPlayerView;
 import top.ourfor.app.iplayx.view.player.PlayerEventType;
 import top.ourfor.app.iplayx.view.video.PlayerSourceModel;
 
+@ViewController(name = "music_player_page")
 public class MusicPlayerPage implements Page {
     private ConstraintLayout contentView = null;
     private MusicPlayerView playerView = null;

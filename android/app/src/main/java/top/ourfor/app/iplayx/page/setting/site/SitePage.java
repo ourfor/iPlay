@@ -30,6 +30,7 @@ import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
 import top.ourfor.app.iplayx.action.SiteListUpdateAction;
 import top.ourfor.app.iplayx.action.SiteUpdateAction;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.databinding.SitePageBinding;
 import top.ourfor.app.iplayx.model.SiteModel;
 import top.ourfor.app.iplayx.page.Activity;
@@ -44,6 +45,7 @@ import top.ourfor.app.iplayx.view.infra.Toolbar;
 import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 
 @Slf4j
+@ViewController(name = "site_page")
 public class SitePage implements Page, SiteListUpdateAction, SiteUpdateAction {
     private SitePageBinding binding = null;
     private ListView<SiteModel> listView = null;

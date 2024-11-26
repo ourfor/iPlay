@@ -23,6 +23,7 @@ import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.DispatchAction;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
 import top.ourfor.app.iplayx.bean.Navigator;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.databinding.EpisodePageBinding;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.util.AnimationUtil;
@@ -36,6 +37,7 @@ import top.ourfor.app.iplayx.view.ListView;
 import top.ourfor.app.iplayx.view.infra.Toolbar;
 import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 
+@ViewController(name = "episode_page")
 public class EpisodePage implements Page {
     private EpisodePageBinding binding = null;
     private ListView<EmbyMediaModel> episodeList = null;

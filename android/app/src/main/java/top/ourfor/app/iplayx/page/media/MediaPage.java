@@ -28,6 +28,7 @@ import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.DispatchAction;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
 import top.ourfor.app.iplayx.bean.Navigator;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.model.ColorScheme;
 import top.ourfor.app.iplayx.common.model.MediaModel;
 import top.ourfor.app.iplayx.common.type.MediaType;
@@ -51,6 +52,7 @@ import top.ourfor.app.iplayx.view.infra.Toolbar;
 import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 
 @Slf4j
+@ViewController(name = "media_page")
 public class MediaPage implements Page {
     private String title = null;
     private String id = null;

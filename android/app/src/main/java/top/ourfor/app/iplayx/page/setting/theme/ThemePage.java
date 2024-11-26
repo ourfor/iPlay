@@ -20,6 +20,7 @@ import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.LayoutUpdateAction;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.type.LayoutType;
 import top.ourfor.app.iplayx.config.AppSetting;
 import top.ourfor.app.iplayx.module.FontModule;
@@ -32,6 +33,7 @@ import top.ourfor.app.iplayx.page.setting.common.SettingViewCell;
 import top.ourfor.app.iplayx.util.WindowUtil;
 import top.ourfor.app.iplayx.view.ListView;
 
+@ViewController(name = "theme_page")
 public class ThemePage implements Page {
     private ConstraintLayout contentView = null;
     private List<SettingModel> settingModels = null;

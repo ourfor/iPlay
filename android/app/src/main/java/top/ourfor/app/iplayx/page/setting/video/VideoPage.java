@@ -17,6 +17,7 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.config.AppSetting;
 import top.ourfor.app.iplayx.common.type.VideoDecodeType;
 import top.ourfor.app.iplayx.page.Page;
@@ -28,6 +29,7 @@ import top.ourfor.app.iplayx.page.setting.common.SettingViewCell;
 import top.ourfor.app.iplayx.util.WindowUtil;
 import top.ourfor.app.iplayx.view.ListView;
 
+@ViewController(name = "video_page")
 public class VideoPage implements Page {
     private ConstraintLayout contentView = null;
     private List<SettingModel> settingModels = null;

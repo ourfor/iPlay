@@ -27,6 +27,7 @@ import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.DispatchAction;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
 import top.ourfor.app.iplayx.bean.Navigator;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.databinding.EpisodePageBinding;
 import top.ourfor.app.iplayx.model.EmbyMediaModel;
 import top.ourfor.app.iplayx.model.EmbyUserData;
@@ -40,6 +41,7 @@ import top.ourfor.app.iplayx.view.ListView;
 import top.ourfor.app.iplayx.view.infra.Toolbar;
 import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 
+@ViewController(name = "music_page")
 public class MusicPage implements Page {
     private EpisodePageBinding binding = null;
     private ConstraintLayout contentView = null;
