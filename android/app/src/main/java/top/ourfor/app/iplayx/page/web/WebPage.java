@@ -40,6 +40,7 @@ import top.ourfor.app.iplayx.action.ThemeUpdateAction;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
 import top.ourfor.app.iplayx.bean.KVStorage;
 import top.ourfor.app.iplayx.bean.Navigator;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.config.AppSetting;
 import top.ourfor.app.iplayx.databinding.WebPageBinding;
 import top.ourfor.app.iplayx.page.Activity;
@@ -57,6 +58,7 @@ import top.ourfor.app.iplayx.view.infra.Toolbar;
 import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 
 @Slf4j
+@ViewController(name = "web_page")
 public class WebPage implements ThemeUpdateAction, Page {
     static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0";
     GlobalStore store;
@@ -235,6 +237,11 @@ public class WebPage implements ThemeUpdateAction, Page {
     @Override
     public View view() {
         return this.binding.getRoot();
+    }
+
+    @Override
+    public int id() {
+        return R.id.webPage;
     }
 }
 

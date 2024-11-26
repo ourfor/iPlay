@@ -6,6 +6,8 @@ import top.ourfor.app.iplayx.page.Page;
 
 public interface Navigator {
     default void pushPage(int id, Map<String, Object> params) {}
+    default void pushPage(String name, Map<String, Object> params) {}
+    default void pushPage(Page page, Map<String, Object> params) {}
     default boolean popPage() {
         return true;
     }

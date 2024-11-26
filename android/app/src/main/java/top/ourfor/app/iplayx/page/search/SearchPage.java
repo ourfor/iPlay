@@ -34,6 +34,7 @@ import top.ourfor.app.iplayx.action.AnimationAction;
 import top.ourfor.app.iplayx.action.SiteUpdateAction;
 import top.ourfor.app.iplayx.action.ThemeUpdateAction;
 import top.ourfor.app.iplayx.bean.Navigator;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.model.ColorScheme;
 import top.ourfor.app.iplayx.databinding.SearchPageBinding;
 import top.ourfor.app.iplayx.page.Page;
@@ -50,6 +51,7 @@ import top.ourfor.app.iplayx.view.TagView;
 import top.ourfor.app.iplayx.view.infra.Toolbar;
 import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 
+@ViewController(name = "search_page")
 public class SearchPage implements SiteUpdateAction, ThemeUpdateAction, Page {
     @Getter
     Context context;

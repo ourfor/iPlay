@@ -33,6 +33,7 @@ import top.ourfor.app.iplayx.action.SiteListUpdateAction;
 import top.ourfor.app.iplayx.action.SiteUpdateAction;
 import top.ourfor.app.iplayx.action.ThemeUpdateAction;
 import top.ourfor.app.iplayx.bean.Navigator;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.type.MediaType;
 import top.ourfor.app.iplayx.databinding.HomePageBinding;
 import top.ourfor.app.iplayx.model.SiteModel;
@@ -47,6 +48,7 @@ import top.ourfor.app.iplayx.view.infra.Toolbar;
 import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 
 @Slf4j
+@ViewController(name = "home_page")
 public class HomePage implements SiteUpdateAction, ThemeUpdateAction, SiteListUpdateAction, Page {
     private ListView<SiteModel> siteListView = null;
     private BottomSheetDialog dialog = null;
@@ -115,7 +117,8 @@ public class HomePage implements SiteUpdateAction, ThemeUpdateAction, SiteListUp
             } else if (itemId == R.id.web_page) {
                 val route = XGET(Navigator.class);
                 val args = new HashMap<String, Object>();
-                route.pushPage(R.id.webPage, args);
+                assert route != null;
+                route.pushPage("web_page", args);
             }
             return true;
         });

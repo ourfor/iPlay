@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
@@ -51,6 +52,7 @@ import top.ourfor.app.iplayx.action.NavigationTitleBar;
 import top.ourfor.app.iplayx.api.dandan.DanDanPlayApi;
 import top.ourfor.app.iplayx.api.dandan.DanDanPlayModel;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.model.SeekableRange;
 import top.ourfor.app.iplayx.common.model.WebMediaMessage;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
@@ -71,6 +73,7 @@ import top.ourfor.app.iplayx.view.video.PlayerSourceModel;
 import top.ourfor.app.iplayx.view.video.PlayerView;
 
 @Slf4j
+@ViewController(name = "movie_player_page")
 public class MoviePlayerPage implements Page {
     private ConstraintLayout contentView = null;
     private PlayerView playerView = null;

@@ -25,6 +25,7 @@ import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.AnimationAction;
 import top.ourfor.app.iplayx.action.SiteUpdateAction;
 import top.ourfor.app.iplayx.action.ThemeUpdateAction;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.databinding.StarPageBinding;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.util.DeviceUtil;
@@ -35,6 +36,7 @@ import top.ourfor.app.iplayx.view.infra.Toolbar;
 import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 
 @Slf4j
+@ViewController(name = "star_page")
 public class StarPage implements SiteUpdateAction, ThemeUpdateAction, Page {
     private ViewGroup contentView = null;
     private ListView<MediaStarModel> listView = null;

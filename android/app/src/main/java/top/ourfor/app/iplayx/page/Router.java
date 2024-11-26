@@ -3,6 +3,7 @@ package top.ourfor.app.iplayx.page;
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 import static top.ourfor.app.iplayx.page.PageMaker.makePage;
 
+import android.app.Application;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -13,24 +14,31 @@ import androidx.appcompat.app.ActionBar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
 import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.bean.PageLifecycle;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.store.GlobalStore;
+import top.ourfor.app.iplayx.util.AnnotationUtil;
 import top.ourfor.app.iplayx.util.LayoutUtil;
 import top.ourfor.app.iplayx.view.infra.Toolbar;
 
+@Slf4j
 public class Router implements Navigator {
     private static final HashMap<Integer, PageType> pageType;
     private static Map<Integer, Stack<Page>> navigators;
     private static Integer stackId = null;
     private static final Map<Page, Integer> pageId = new HashMap<>();
+    private static final Map<String, Class<Page>> pageMap = new HashMap<>();
 
     Interpolator interpolator = new AccelerateDecelerateInterpolator();
     long duration = 300;
@@ -66,6 +74,27 @@ public class Router implements Navigator {
             navigate(item.getItemId());
             return true;
         });
+    }
+
+    public void scanPage() {
+        try {
+            var app = XGET(Application.class);
+            assert app != null;
+            String packageName = app.getPackageName();
+            val basePackageName = packageName.replace(".debug", "") + ".page";
+            AnnotationUtil.load(basePackageName, app.getPackageCodePath());
+            List<Class<?>> vcs = AnnotationUtil.findDecorateWith(ViewController.class);
+            for (val vc : vcs) {
+                val annotation = vc.getAnnotation(ViewController.class);
+                if (Page.class.isAssignableFrom(vc)) {
+                    assert annotation != null;
+                    pageMap.put(annotation.name(), (Class<Page>) vc);
+                }
+            }
+            log.info("view controllers: {}", pageMap);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     void navigate(int id) {
@@ -108,6 +137,38 @@ public class Router implements Navigator {
         }
         pushPageAnimation(page, newPage);
         onNavigateChange(id);
+    }
+
+    @Override
+    public void pushPage(String name, Map<String, Object> params) {
+        var clazz = pageMap.get(name);
+        if (clazz == null) return;
+        try {
+            val page = clazz.newInstance();
+            pushPage(page, params);
+        } catch (IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void pushPage(Page newPage, Map<String, Object> params) {
+        val pages = navigators.computeIfAbsent(stackId, k -> new Stack<>());
+        if (pages.isEmpty()) return;
+        val page = pages.peek();
+        page.viewWillDisappear();
+        pageId.put(newPage, page.id());
+        newPage.create(container.getContext(), params);
+        pages.push(newPage);
+        val view = newPage.view();
+        view.setBackgroundResource(R.drawable.bg);
+        newPage.viewWillAppear();
+        container.addView(view, LayoutUtil.fill());
+        if (view instanceof PageLifecycle lifecycle) {
+            lifecycle.onAttach();
+        }
+        pushPageAnimation(page, newPage);
+        onNavigateChange(page.id());
     }
 
     @Override
@@ -198,7 +259,7 @@ public class Router implements Navigator {
     public int getCurrentPageId() {
         if (stackId == null) return 0;
         val page = navigators.get(stackId).peek();
-        return pageId.get(page);
+        return pageId.containsKey(page) ? pageId.get(page) : page.id();
     }
 
     void pushPageAnimation(Page oldPage, Page newPage) {

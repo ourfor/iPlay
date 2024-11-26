@@ -36,6 +36,7 @@ import top.ourfor.app.iplayx.api.file.File;
 import top.ourfor.app.iplayx.api.file.FileProviderFactory;
 import top.ourfor.app.iplayx.api.file.FileType;
 import top.ourfor.app.iplayx.bean.Navigator;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.type.ServerType;
 import top.ourfor.app.iplayx.databinding.FilePageBinding;
 import top.ourfor.app.iplayx.model.drive.Drive;
@@ -53,6 +54,7 @@ import top.ourfor.app.iplayx.view.infra.Toolbar;
 import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 
 @Slf4j
+@ViewController(name = "file_page")
 public class FilePage implements DriveUpdateAction, ThemeUpdateAction, Page {
     GlobalStore store;
     @Getter

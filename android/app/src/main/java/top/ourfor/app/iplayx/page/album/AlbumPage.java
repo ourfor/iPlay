@@ -27,6 +27,7 @@ import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
 import top.ourfor.app.iplayx.bean.Navigator;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.common.type.MediaType;
 import top.ourfor.app.iplayx.common.type.SortType;
@@ -42,6 +43,7 @@ import top.ourfor.app.iplayx.view.ListView;
 import top.ourfor.app.iplayx.view.infra.Toolbar;
 import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 
+@ViewController(name = "album_page")
 public class AlbumPage implements Page {
     private AlbumPageBinding binding = null;
     private ListView<EmbyMediaModel> listView = null;

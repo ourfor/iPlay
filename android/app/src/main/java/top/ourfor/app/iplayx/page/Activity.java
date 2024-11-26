@@ -112,6 +112,7 @@ public class Activity extends AppCompatActivity implements NavigationTitleBar,
 
 
         router = new Router(binding.container, binding.bottomNavigation, binding.toolbar);
+        router.scanPage();
         XSET(Navigator.class, router);
         setContentView(binding.getRoot());
 

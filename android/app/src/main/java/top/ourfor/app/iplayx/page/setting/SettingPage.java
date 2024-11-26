@@ -21,6 +21,7 @@ import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.ThemeUpdateAction;
 import top.ourfor.app.iplayx.bean.Navigator;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.databinding.SettingPageBinding;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.page.setting.SettingItemModel.Type;
@@ -28,6 +29,7 @@ import top.ourfor.app.iplayx.util.WindowUtil;
 import top.ourfor.app.iplayx.view.ListItemClickEvent;
 import top.ourfor.app.iplayx.view.ListView;
 
+@ViewController(name = "setting_page")
 public class SettingPage implements ThemeUpdateAction, Page {
     @Getter
     Context context;

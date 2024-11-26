@@ -18,8 +18,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
+import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.databinding.PlayerControlBinding;
 
+@ViewController(name = "test_page")
 public class TestPage extends Fragment {
     PlayerControlBinding binding = null;
 
