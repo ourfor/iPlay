@@ -161,4 +161,9 @@ public class SitePage implements Page, SiteListUpdateAction, SiteUpdateAction {
     public View view() {
         return binding.getRoot();
     }
+
+    @Override
+    public int id() {
+        return R.id.sitePage;
+    }
 }

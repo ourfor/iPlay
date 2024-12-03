@@ -109,4 +109,9 @@ public class PicturePage implements Page {
         onCreate(null);
         onCreateView(LayoutInflater.from(context), null, null);
     }
+
+    @Override
+    public int id() {
+        return R.id.picturePage;
+    }
 }

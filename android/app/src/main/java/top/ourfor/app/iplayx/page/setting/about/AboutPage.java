@@ -133,4 +133,5 @@ public class AboutPage implements Page {
         this.context = context;
         onCreateView(LayoutInflater.from(context), null, null);
     }
+
 }
