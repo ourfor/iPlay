@@ -13,15 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -45,15 +42,10 @@ import top.ourfor.app.iplayx.config.AppSetting;
 import top.ourfor.app.iplayx.databinding.WebPageBinding;
 import top.ourfor.app.iplayx.page.Activity;
 import top.ourfor.app.iplayx.page.Page;
-import top.ourfor.app.iplayx.page.setting.common.ScriptManageView;
-import top.ourfor.app.iplayx.page.setting.common.WebScriptMessage;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.util.AnimationUtil;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.util.WindowUtil;
-import top.ourfor.app.iplayx.view.infra.Button;
-import top.ourfor.app.iplayx.view.infra.EditText;
-import top.ourfor.app.iplayx.view.infra.TextView;
 import top.ourfor.app.iplayx.view.infra.Toolbar;
 import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 
@@ -211,11 +203,10 @@ public class WebPage implements ThemeUpdateAction, Page {
     }
 
     void showScriptPanel() {
-        val drive = store.getDrive();
         dialog = new BottomSheetDialog(getContext(), R.style.SiteBottomSheetDialog);
-        dialog.setOnDismissListener(dlg -> {
-        });
+        dialog.setOnDismissListener(dlg -> { });
         var view = new ScriptManageView(context);
+        view.setOnSaveButtonClick(v -> dialog.dismiss());
         dialog.setContentView(view);
         var behavior = BottomSheetBehavior.from((View) view.getParent());
         val height = (int) (DeviceUtil.screenSize(getContext()).getHeight() * 0.6);

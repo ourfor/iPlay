@@ -1,4 +1,4 @@
-package top.ourfor.app.iplayx.page.setting.common;
+package top.ourfor.app.iplayx.page.web;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

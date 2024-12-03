@@ -37,7 +37,7 @@
         />
 
     <top.ourfor.app.iplayx.view.infra.Button
-        android:id="@+id/setting_button"
+        android:id="@+id/save_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/save"
