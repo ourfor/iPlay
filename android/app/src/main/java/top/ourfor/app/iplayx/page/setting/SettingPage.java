@@ -61,17 +61,18 @@ public class SettingPage implements ThemeUpdateAction, Page {
     void setupUI(Context context) {
         listView.viewModel.viewCell = SettingItemViewCell.class;
         listView.viewModel.onClick = (ListItemClickEvent<SettingItemModel> event) -> {
-            val navController = XGET(Navigator.class);
+            val navigator = XGET(Navigator.class);
+            assert navigator != null;
             val type = event.getModel().type;
             switch (type) {
-                case Theme -> navController.pushPage(R.id.themePage, null);
-                case Video -> navController.pushPage(R.id.videoPage, null);
-                case Audio -> navController.pushPage(R.id.audioPage, null);
-                case Site -> navController.pushPage(R.id.sitePage, null);
-                case About -> navController.pushPage(R.id.aboutPage, null);
-                case Cloud -> navController.pushPage(R.id.cloudPage, null);
-                case Cache -> navController.pushPage(R.id.cachePage, null);
-                case Picture -> navController.pushPage(R.id.picturePage, null);
+                case Theme -> navigator.pushPage("theme_page", null);
+                case Video -> navigator.pushPage("video_page", null);
+                case Audio -> navigator.pushPage("audio_page", null);
+                case Site -> navigator.pushPage("site_page", null);
+                case About -> navigator.pushPage("about_page", null);
+                case Cloud -> navigator.pushPage("cloud_page", null);
+                case Cache -> navigator.pushPage("cache_page", null);
+                case Picture -> navigator.pushPage("picture_page", null);
                 default -> Toast.makeText(context, R.string.not_implementation, Toast.LENGTH_SHORT).show();
             }
         };

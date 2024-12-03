@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import top.ourfor.app.iplayx.config.AppSetting;
 
+@Slf4j
 public class FontModule {
-    static private String moduleName = "FontModule";
-
     static private Map<String, Typeface> systemFontMap;
 
     static Map<String, Typeface> getSystemFontMap() throws NoSuchFieldException, IllegalAccessException {
@@ -28,10 +28,8 @@ public class FontModule {
     static public void obtainSystemFont() {
         try {
             systemFontMap = getSystemFontMap();
-        } catch (NoSuchFieldException e) {
-            Log.d(moduleName, e.toString());
-        } catch (IllegalAccessException e) {
-            Log.d(moduleName, e.toString());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            log.error("obtain system font failed", e);
         }
     }
 
@@ -58,15 +56,23 @@ public class FontModule {
         return fontDir.getPath();
     }
 
+    public static void initFont(Context context) {
+        try {
+            scanExternalFont(context);
+        } catch (Exception e) {
+            log.error("scan external font failed", e);
+        }
+    }
+
     public static void scanExternalFont(Context context) throws IllegalAccessException, NoSuchMethodException, NoSuchFieldException {
         File filesDir = context.getExternalFilesDir("");
         File fontDir = new File(filesDir, "font");
         if (!fontDir.exists()) {
             boolean created = fontDir.mkdirs();
             if (created) {
-                Log.d(moduleName, "create fontDir success: " + fontDir.getPath());
+                log.debug("create fontDir success: {}", fontDir.getPath());
             } else {
-                Log.d(moduleName, "create fontDir failed: " + fontDir.getPath());
+                log.debug("create fontDir failed: {}", fontDir.getPath());
             }
         }
 

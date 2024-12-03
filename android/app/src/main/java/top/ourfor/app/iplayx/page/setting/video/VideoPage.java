@@ -140,4 +140,9 @@ public class VideoPage implements Page {
         onCreate(null);
         onCreateView(LayoutInflater.from(context), null, null);
     }
+
+    @Override
+    public int id() {
+        return R.id.videoPage;
+    }
 }
