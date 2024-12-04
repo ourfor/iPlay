@@ -136,4 +136,8 @@
     <string name="similar_title">类似的影片</string>
     <string name="web_homepage">Web主页地址</string>
     <string name="inject_js">注入JS代码</string>
+    <string name="play">播放</string>
+    <string name="video_source">视频源</string>
+    <string name="audio_source">音频源</string>
+    <string name="subtitle_source">字幕源</string>
 </resources>
