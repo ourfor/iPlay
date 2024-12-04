@@ -95,4 +95,9 @@ public class SettingPage implements ThemeUpdateAction, Page {
     public View view() {
         return binding.getRoot();
     }
+
+    @Override
+    public int id() {
+        return R.id.settingPage;
+    }
 }
