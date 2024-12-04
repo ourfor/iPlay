@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.DispatchAction;
@@ -21,6 +22,7 @@ import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.model.SiteModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
 
+@Slf4j
 public class SiteViewCell extends ConstraintLayout implements UpdateModelAction {
     private SiteModel model;
     SiteCellBinding binding = null;
@@ -75,13 +77,13 @@ public class SiteViewCell extends ConstraintLayout implements UpdateModelAction 
 
     void bind() {
         binding.content.setOnClickListener(v -> callOnClick());
-
         binding.delete.setOnClickListener(v -> XGET(GlobalStore.class).removeSite(model));
-        boolean allowModify = XGET(Navigator.class).getCurrentPageId() == R.id.sitePage;
+        val currentPageId = XGET(Navigator.class).getCurrentPageId();
+        boolean allowModify = currentPageId == R.id.sitePage || currentPageId == R.id.settingPage;
         binding.modify.setVisibility(allowModify ? VISIBLE : GONE);
         binding.modify.setOnClickListener(v -> {
-            val dst = XGET(Navigator.class).getCurrentPageId();
-            if (dst == R.id.sitePage) {
+            val pageId = XGET(Navigator.class).getCurrentPageId();
+            if (pageId == R.id.sitePage || pageId == R.id.settingPage) {
                 val action = XGET(SiteUpdateAction.class);
                 if (action == null) return;
                 XGET(DispatchAction.class).runOnUiThread(() -> action.onSiteModify(model));
