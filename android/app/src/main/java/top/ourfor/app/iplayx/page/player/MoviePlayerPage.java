@@ -61,6 +61,7 @@ import top.ourfor.app.iplayx.config.AppSetting;
 import top.ourfor.app.iplayx.model.EmbyMediaModel;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.page.home.MediaViewCell;
+import top.ourfor.app.iplayx.page.media.PlayerConfigPanelViewModel;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.util.IntervalCaller;
 import top.ourfor.app.iplayx.util.WindowUtil;
@@ -80,13 +81,14 @@ public class MoviePlayerPage implements Page {
     private String id = null;
     private String url = null;
     private String title = null;
+    private PlayerConfigPanelViewModel.MediaSourceModel source = null;
     private EmbyPlaybackData playbackData = null;
     private IntervalCaller caller;
 
     @Getter
     Context context;
 
-    HashMap<String, Object> params;
+    Map<String, Object> params;
 
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -95,6 +97,7 @@ public class MoviePlayerPage implements Page {
         id = (String) args.getOrDefault("id", null);
         url = (String) args.getOrDefault("url", null);
         title = (String) args.getOrDefault("title", null);
+        source = (PlayerConfigPanelViewModel.MediaSourceModel) args.getOrDefault("source", null);
         setupUI(getContext());
         bind();
         WindowUtil.enterFullscreen();
@@ -119,11 +122,17 @@ public class MoviePlayerPage implements Page {
     }
 
     void bind() {
-        if (id != null) {
+        if (source != null) {
+            setupWithSource(source);
+        } else if (id != null) {
             setupWithId(id);
         } else if (url != null) {
             setupWithUrl(url);
         }
+    }
+
+    private void setupWithSource(PlayerConfigPanelViewModel.MediaSourceModel source) {
+        playEmbyMediaWithId(source.getMedia().getId());
     }
 
     void setupWithUrl(String url) {
@@ -149,7 +158,12 @@ public class MoviePlayerPage implements Page {
     }
 
     void setupWithId(String id) {
+        playEmbyMediaWithId(id);
+    }
+
+    void playEmbyMediaWithId(String id) {
         val store = XGET(GlobalStore.class);
+        assert store != null;
         val media = store.getDataSource().getMediaMap().get(id);
         if (media == null) return;
         val name = media.getSeriesName() != null ? media.getSeriesName() : media.getName();
@@ -178,7 +192,7 @@ public class MoviePlayerPage implements Page {
         store.getPlayback(media.getId(), playback -> {
             if (playback == null) return;
             val sources = store.getPlaySources(media, playback);
-            val video = sources.stream().filter(v -> v.getType() == PlayerSourceModel.PlayerSourceType.Video).findFirst().get();
+            val video = source != null && source.getVideo() != null ? source.getVideo() : sources.stream().filter(v -> v.getType() == PlayerSourceModel.PlayerSourceType.Video).findFirst().get();
             playbackData = EmbyPlaybackData.builder()
                     .playSessionId(playback.getSessionId())
                     .isMuted(false)
@@ -190,7 +204,7 @@ public class MoviePlayerPage implements Page {
                     .nowPlayingQueue(List.of(new EmbyPlayingQueue("", "playlistItem0")))
                     .build();
             XGET(GlobalStore.class).trackPlay(MediaPlayState.OPENING, playbackData);
-            val url = store.getPlayUrl(playback);
+            val url = source != null ? video.getUrl() : store.getPlayUrl(playback);
             log.debug("video url: {}", url);
             if (url == null) return;
             this.playerView.post(() -> {
@@ -359,7 +373,7 @@ public class MoviePlayerPage implements Page {
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
-        this.params = (HashMap<String, Object>)params;
+        this.params = (Map<String, Object>)params;
         onCreate(null);
         onCreateView(LayoutInflater.from(context), null, null);
     }
@@ -367,6 +381,11 @@ public class MoviePlayerPage implements Page {
     @Override
     public View view() {
         return contentView;
+    }
+
+    @Override
+    public int id() {
+        return R.id.playerPage;
     }
 }
 
