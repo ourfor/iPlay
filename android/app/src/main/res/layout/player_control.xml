@@ -91,6 +91,19 @@
         <top.ourfor.app.iplayx.view.video.PlayerControlItemView
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:id="@+id/advance_config"
+            app:size="48dp"
+            app:cornerRadius="24dp"
+            android:layout_margin="5dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pip_enter"
+            app:src="@drawable/ic_fluent_settings_24_filled"
+            />
+
+        <top.ourfor.app.iplayx.view.video.PlayerControlItemView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:id="@+id/pip_enter"
             app:size="48dp"
             app:cornerRadius="24dp"

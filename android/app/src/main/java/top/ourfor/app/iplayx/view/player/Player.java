@@ -35,6 +35,8 @@ public interface Player {
     default String currentAudioId() { return "no"; }
     default void setSubtitleFontName(String subtitleFontName) {}
     default void setSubtitleFontDirectory(String directory) {}
+    default void setSubtitleDelay(double delay) {}
+    default void setSubtitlePosition(double position) {}
     default void destroy() {}
 
     void useSubtitle(String id);
