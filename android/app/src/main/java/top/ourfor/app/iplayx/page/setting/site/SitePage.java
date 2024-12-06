@@ -32,6 +32,7 @@ import top.ourfor.app.iplayx.action.SiteListUpdateAction;
 import top.ourfor.app.iplayx.action.SiteUpdateAction;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.databinding.SitePageBinding;
+import top.ourfor.app.iplayx.model.EmbySiteInfo;
 import top.ourfor.app.iplayx.model.SiteModel;
 import top.ourfor.app.iplayx.page.Activity;
 import top.ourfor.app.iplayx.page.Page;
@@ -113,7 +114,19 @@ public class SitePage implements Page, SiteListUpdateAction, SiteUpdateAction {
     @Override
     public void updateSiteList() {
         val store = XGET(GlobalStore.class);
-        listView.viewModel.isSelected = (model) -> model.getUser().equals(store.getSite().getUser()) && model.getId().equals(store.getSite().getId());
+        assert store != null;
+        val currentSite = store.getSite();
+        if (currentSite.getRemark() == null || currentSite.getRemark().isEmpty()) {
+            val api = store.getApi();
+            if (api == null) return;
+            api.getSiteInfo((info) -> {
+                if (!(info instanceof EmbySiteInfo embyInfo)) return;
+                currentSite.setRemark(embyInfo.getServerName());
+                store.save();
+                updateSiteList();
+            });
+        }
+        listView.viewModel.isSelected = (model) -> model.getUser().equals(currentSite.getUser()) && model.getId().equals(currentSite.getId());
         listView.setItems(store.getSites());
     }
 
