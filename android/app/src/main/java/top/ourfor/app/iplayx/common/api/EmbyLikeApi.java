@@ -13,6 +13,8 @@ public interface EmbyLikeApi {
 
     static void login(String server, String username, String password, Consumer<Object> completion) { }
 
+    default void getSiteInfo(Consumer<Object> completion) { }
+
     default void getAlbums(Consumer<Object> completion) { }
 
     default void getAlbumLatestMedias(String id, Consumer<Object> completion) { }
