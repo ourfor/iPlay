@@ -12,4 +12,5 @@ public interface PlayerEventListener {
     default void onTapComment() {}
 
     default void onOrientationChange() {};
+    default void onAdvanceConfig() {}
 }
