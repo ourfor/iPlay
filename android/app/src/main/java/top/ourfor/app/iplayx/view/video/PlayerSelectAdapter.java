@@ -28,7 +28,6 @@ public class PlayerSelectAdapter<T> extends RecyclerView.Adapter<PlayerSelectAda
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         PlayerSelectItemView view = new PlayerSelectItemView(parent.getContext());
-        view.getTextView().setTextColor(Color.WHITE);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -56,7 +55,6 @@ public class PlayerSelectAdapter<T> extends RecyclerView.Adapter<PlayerSelectAda
                 else delegate.onDeselect(item);
             }
             notifyDataSetChanged();
-            Log.d(TAG, "position: " + position + " data: " + item);
         });
         holder.rootView.setIsSelected(model.isSelected);
     }

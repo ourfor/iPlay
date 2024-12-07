@@ -1,6 +1,7 @@
 package top.ourfor.app.iplayx.view.video;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -15,11 +16,11 @@ import java.util.List;
 
 import lombok.Setter;
 
+@SuppressLint("ViewConstructor")
 public class PlayerSelectView<T> extends ConstraintLayout implements PlayerSelectDelegate<PlayerSelectModel<T>> {
-    private static int CLOSE_ICON_SIZE = 56;
+    RecyclerView listView;
+    PlayerSelectAdapter listViewModel;
 
-    private RecyclerView listView;
-    private PlayerSelectAdapter listViewModel;
     @Setter
     private List<PlayerSelectModel<T>> datasource;
     @Setter

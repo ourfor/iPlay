@@ -436,7 +436,7 @@ public class PlayerView extends ConstraintLayout
         var currentSubtitleId = player.currentSubtitleId();
         var subtitles = (List<TrackItem>)player.subtitles();
         controlView.updateControlVisible(false);
-        eventView.showSelectView(subtitles, currentSubtitleId);
+        eventView.showSelectView(subtitles, currentSubtitleId, "\uD83D\uDCD1 ");
     }
 
     @Override
@@ -450,7 +450,7 @@ public class PlayerView extends ConstraintLayout
                 .type(VideoTrackName)
                 .build()).collect(Collectors.toList());
         controlView.updateControlVisible(false);
-        eventView.showSelectView(videos, currentSubtitleId);
+        eventView.showSelectView(videos, currentSubtitleId, "\uD83C\uDFA5 ");
     }
 
     @Override
@@ -459,7 +459,7 @@ public class PlayerView extends ConstraintLayout
         var currentAudioId = player.currentAudioId();
         var audios = (List<TrackItem>)player.audios();
         controlView.updateControlVisible(false);
-        eventView.showSelectView(audios, currentAudioId);
+        eventView.showSelectView(audios, currentAudioId, "\uD83D\uDD0A ");
     }
 
     void copySubtitleFont(String configDir) throws IOException {
