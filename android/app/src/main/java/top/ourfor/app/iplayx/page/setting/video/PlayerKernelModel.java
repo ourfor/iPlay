@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import top.ourfor.app.iplayx.common.type.PlayerKernelType;
-import top.ourfor.app.iplayx.page.setting.theme.ThemeModel;
 
 @Builder
 @With
