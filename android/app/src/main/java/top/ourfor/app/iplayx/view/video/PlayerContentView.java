@@ -23,14 +23,14 @@ public class PlayerContentView extends SurfaceView implements SurfaceHolder.Call
 
     public void initialize(String configDir, String cacheDir, String fontDir) {
         switch (AppSetting.shared.playerKernel) {
-            case VLC:
-                viewModel = new VLCPlayerViewModel(this);
-                break;
             case MPV:
                 viewModel = new MPVPlayerViewModel(configDir, cacheDir, fontDir);
                 break;
             case EXO:
                 viewModel = new ExoPlayerViewModel(this);
+                break;
+            case VLC:
+                viewModel = new VLCPlayerViewModel(this);
                 break;
             default:
                 log.info("Using default player: MPV");

@@ -32,6 +32,7 @@
     <color name="errorContainer">#FFDAD6</color>
     <color name="onErrorContainer">#410002</color>
     <color name="background">#F7FBF1</color>
+    <color name="background_alpha_50">#80F7FBF1</color>
     <color name="onBackground">#181D17</color>
     <color name="surface">#F7FBF1</color>
     <color name="onSurface">#181D17</color>

@@ -1,12 +1,19 @@
 package top.ourfor.app.iplayx.view.video;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Build;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.TypefaceSpan;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -14,6 +21,9 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
+import top.ourfor.app.iplayx.R;
+import top.ourfor.app.iplayx.util.FontUtil;
 
 @Getter
 @Setter
@@ -28,7 +38,6 @@ public class PlayerSelectAdapter<T> extends RecyclerView.Adapter<PlayerSelectAda
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         PlayerSelectItemView view = new PlayerSelectItemView(parent.getContext());
-        view.getTextView().setTextColor(Color.WHITE);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
@@ -39,12 +48,14 @@ public class PlayerSelectAdapter<T> extends RecyclerView.Adapter<PlayerSelectAda
         return new ViewHolder(view);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         PlayerSelectModel<T> model = localDataSet.get(position);
         T text = localDataSet.get(position).item;
-        holder.getTextView()
-                .setText(text.toString());
+        val textView = holder.getTextView();
+        val spannableString = FontUtil.applyEmojiFont(textView.getContext(), text.toString(), R.font.twemoji_mozilla);
+        textView.setText(spannableString);
         holder.rootView.setOnClickListener(v -> {
             PlayerSelectModel<T> item = localDataSet.get(position);
             if (!multiSelectSupport) {
@@ -56,7 +67,6 @@ public class PlayerSelectAdapter<T> extends RecyclerView.Adapter<PlayerSelectAda
                 else delegate.onDeselect(item);
             }
             notifyDataSetChanged();
-            Log.d(TAG, "position: " + position + " data: " + item);
         });
         holder.rootView.setIsSelected(model.isSelected);
     }

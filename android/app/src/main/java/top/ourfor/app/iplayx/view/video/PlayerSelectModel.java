@@ -16,4 +16,5 @@ import lombok.With;
 public class PlayerSelectModel<T> {
     T item;
     boolean isSelected;
+    String prefixText;
 }

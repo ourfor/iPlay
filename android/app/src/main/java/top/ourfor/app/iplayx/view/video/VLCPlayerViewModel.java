@@ -1,5 +1,8 @@
 package top.ourfor.app.iplayx.view.video;
 
+import static top.ourfor.lib.mpv.TrackItem.AudioTrackName;
+import static top.ourfor.lib.mpv.TrackItem.SubtitleTrackName;
+
 import android.net.Uri;
 import android.util.Size;
 import android.view.SurfaceHolder;
@@ -151,6 +154,18 @@ public class VLCPlayerViewModel implements Player {
     }
 
     @Override
+    public String currentSubtitleId() {
+        val selectedTrack = mediaPlayer.getSelectedTrack(IMedia.Track.Type.Text);
+        return selectedTrack != null ? selectedTrack.id : "";
+    }
+
+    @Override
+    public String currentAudioId() {
+        val selectedTrack = mediaPlayer.getSelectedTrack(IMedia.Track.Type.Audio);
+        return selectedTrack != null ? selectedTrack.id : "";
+    }
+
+    @Override
     public void useSubtitle(String id) {
         mediaPlayer.selectTracks(IMedia.Track.Type.Text, id);
     }
@@ -178,7 +193,7 @@ public class VLCPlayerViewModel implements Player {
             val builder = TrackItem.builder();
             builder.id(String.valueOf(track.id));
             builder.title(track.name);
-            builder.type("subtitle");
+            builder.type(SubtitleTrackName);
             builder.lang(track.language);
             return builder.build();
         }).collect(Collectors.toList());
@@ -192,7 +207,7 @@ public class VLCPlayerViewModel implements Player {
             val builder = TrackItem.builder();
             builder.id(String.valueOf(track.id));
             builder.title(track.name);
-            builder.type("audio");
+            builder.type(AudioTrackName);
             builder.lang(track.language);
             return builder.build();
         }).collect(Collectors.toList());

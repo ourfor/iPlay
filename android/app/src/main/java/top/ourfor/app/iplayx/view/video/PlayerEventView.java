@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import top.ourfor.app.iplayx.R;
+import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.util.LayoutUtil;
 import top.ourfor.app.iplayx.view.infra.RotateGestureDetector;
 import top.ourfor.lib.mpv.TrackItem;
@@ -189,12 +191,20 @@ public class PlayerEventView extends ConstraintLayout implements GestureDetector
     }
 
     public void showSelectView(List<TrackItem> items, String currentId) {
+        showSelectView(items, currentId, "");
+    }
+
+    public void showSelectView(List<TrackItem> items, String currentId, String prefixText) {
         if (selectView != null) return;
         Context context = getContext();
-        List<PlayerSelectModel> subtitles = items.stream()
-                .map(item -> new PlayerSelectModel(item, String.valueOf(item.id).equals(currentId)))
+        List<PlayerSelectModel> tracks = items.stream()
+                .map(item -> {
+                    item.setPrefix(prefixText);
+                    return new PlayerSelectModel(item, String.valueOf(item.id).equals(currentId), prefixText);
+                })
                 .collect(Collectors.toList());
-        selectView = new PlayerSelectView(context, subtitles);
+        selectView = new PlayerSelectView(context, tracks);
+        selectView.setBackgroundResource(R.drawable.dialog_alpha_bg);
         selectView.setDelegate(this);
         LayoutParams layout = new LayoutParams(0, 0);
         layout.leftToLeft = LayoutParams.PARENT_ID;
@@ -202,9 +212,9 @@ public class PlayerEventView extends ConstraintLayout implements GestureDetector
         layout.rightToRight = LayoutParams.PARENT_ID;
         layout.bottomToBottom = LayoutParams.PARENT_ID;
         layout.matchConstraintPercentHeight = 0.75f;
-        layout.matchConstraintMaxHeight = 640;
+        layout.matchConstraintMaxHeight = (int) (DeviceUtil.screenSize(context).getHeight() * 0.65);
         layout.matchConstraintPercentWidth = 0.5f;
-        layout.matchConstraintMaxWidth = 800;
+        layout.matchConstraintMaxWidth = (int) (DeviceUtil.screenSize(context).getWidth() * 0.5);
         post(() -> {
             addView(selectView, layout);
             requestLayout();

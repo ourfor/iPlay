@@ -53,9 +53,9 @@ public class VideoPage implements Page {
             }
         }
         var kernelOptions = List.of(
-                new OptionModel<>(PlayerKernelType.VLC, getContext().getString(R.string.player_vlc)),
                 new OptionModel<>(PlayerKernelType.MPV, getContext().getString(R.string.player_mpv)),
-                new OptionModel<>(PlayerKernelType.EXO, getContext().getString(R.string.player_exo))
+                new OptionModel<>(PlayerKernelType.EXO, getContext().getString(R.string.player_exo)),
+                new OptionModel<>(PlayerKernelType.VLC, getContext().getString(R.string.player_vlc))
         );
         var defaultPlayerKernelOption = kernelOptions.get(0);
         for (val option : kernelOptions) {
