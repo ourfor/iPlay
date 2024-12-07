@@ -204,7 +204,7 @@ public class PlayerEventView extends ConstraintLayout implements GestureDetector
                 })
                 .collect(Collectors.toList());
         selectView = new PlayerSelectView(context, tracks);
-        selectView.setBackgroundResource(R.drawable.dialog_bg);
+        selectView.setBackgroundResource(R.drawable.dialog_alpha_bg);
         selectView.setDelegate(this);
         LayoutParams layout = new LayoutParams(0, 0);
         layout.leftToLeft = LayoutParams.PARENT_ID;
