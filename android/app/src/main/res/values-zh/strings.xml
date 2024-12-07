@@ -143,4 +143,8 @@
     <string name="subtitle_delay">调整字幕延时</string>
     <string name="subtitle_position">字幕显示位置偏移</string>
     <string name="advance_config_warning">对于部分播放器实现，某些配置可能无效</string>
+    <string name="select_player_kernel">播放器实现</string>
+    <string name="player_vlc">VLC</string>
+    <string name="player_mpv">MPV</string>
+    <string name="player_exo">EXO</string>
 </resources>

@@ -7,6 +7,7 @@ fluentSystemIcons = "1.1.249"
 glide = "4.16.0"
 hiltAndroidCompiler = "2.52"
 jacksonCore = "2.11.1"
+libvlcAll = "4.0.0-eap17"
 logbackAndroid = "3.0.0"
 lombokVersion = "1.18.32"
 material = "1.12.0"
@@ -20,6 +21,7 @@ recyclerview = "1.3.2"
 roomRuntime = "2.6.1"
 slf4jApi = "2.0.7"
 swiperefreshlayoutVersion = "1.1.0"
+userCertificateTrust = "1.0.0"
 
 [libraries]
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
@@ -41,6 +43,7 @@ hilt-android-gradle-plugin = { module = "com.google.dagger:hilt-android-gradle-p
 jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jacksonCore" }
 jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jacksonCore" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonCore" }
+libvlc-all = { module = "org.videolan.android:libvlc-all", version.ref = "libvlcAll" }
 logback-android = { module = "com.github.tony19:logback-android", version.ref = "logbackAndroid" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
@@ -52,6 +55,7 @@ okhttp3-integration = { module = "com.github.bumptech.glide:okhttp3-integration"
 projectlombok-lombok = { module = "org.projectlombok:lombok", version.ref = "lombokVersion" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4jApi" }
 swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayoutVersion" }
+user-certificate-trust = { module = "com.reqable.android:user-certificate-trust", version.ref = "userCertificateTrust" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

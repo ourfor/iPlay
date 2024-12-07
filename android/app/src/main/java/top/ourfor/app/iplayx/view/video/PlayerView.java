@@ -414,7 +414,7 @@ public class PlayerView extends ConstraintLayout
 
     @Override
     public void onAdvanceConfig() {
-        var dialog = new Dialog(getContext());
+        var dialog = new Dialog(getContext(), R.style.PlayerAdvanceConfigDialog);
         var contentView = new PlayerAdvanceConfigView(getContext());
         contentView.player = this.controlView.player;
         dialog.setContentView(contentView);

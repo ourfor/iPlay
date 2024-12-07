@@ -7,6 +7,7 @@ import java.util.Map;
 
 import top.ourfor.app.iplayx.view.video.PlayerEventListener;
 import top.ourfor.app.iplayx.view.video.PlayerSourceModel;
+import top.ourfor.lib.mpv.TrackItem;
 
 public interface Player {
     default void setDelegate(PlayerEventListener delegate) {}
@@ -28,8 +29,8 @@ public interface Player {
     default void jumpForward(int seconds) {}
     default void stop() {}
     default void resize(String newSize) {}
-    default List audios() { return null; }
-    default List subtitles() { return null; }
+    default List<TrackItem> audios() { return null; }
+    default List<TrackItem> subtitles() { return null; }
     default void loadSubtitle(List<PlayerSourceModel> subtitles) {}
     default String currentSubtitleId() { return "no"; }
     default String currentAudioId() { return "no"; }
@@ -39,15 +40,15 @@ public interface Player {
     default void setSubtitlePosition(double position) {}
     default void destroy() {}
 
-    void useSubtitle(String id);
-    void useAudio(String id);
+    default void useSubtitle(String id) {};
+    default void useAudio(String id) {};
+    default void useVideo(String id) {};
 
     default void applyOption(Map<String, String> option) {};
 
     default void speedUp(float speed) {}
     default void speedDown(float speed) {}
 
-    default void useVideo(String id) {};
 
     default void setLastWatchPosition(long lastWatchPosition) {};
 

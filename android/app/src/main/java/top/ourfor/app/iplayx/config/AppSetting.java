@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import top.ourfor.app.iplayx.bean.KVStorage;
 import top.ourfor.app.iplayx.common.type.LayoutType;
+import top.ourfor.app.iplayx.common.type.PlayerKernelType;
 import top.ourfor.app.iplayx.common.type.VideoDecodeType;
 import top.ourfor.app.iplayx.common.type.PictureQuality;
 import top.ourfor.app.iplayx.page.setting.theme.ThemeColorModel;
@@ -42,6 +43,7 @@ public class AppSetting {
     public PictureQuality pictureQuality;
     public boolean usePictureMultiThread;
     public boolean useExoPlayer;
+    public PlayerKernelType playerKernel;
     public String mpvConfig;
     public String fontFamily;
     public String webHomePage;
@@ -58,11 +60,11 @@ public class AppSetting {
             instance.turnOffAutoUpgrade = DeviceUtil.isTV || DeviceUtil.isDebugPackage;
             instance.webHomePage = "https://bing.com";
             instance.pictureQuality = PictureQuality.Auto;
-            instance.useExoPlayer = false;
+            instance.playerKernel = PlayerKernelType.MPV;
             instance.layoutType = LayoutType.Auto;
             if (DeviceUtil.isTV) {
                 instance.videoDecodeType = VideoDecodeType.Hardware;
-                instance.useExoPlayer = true;
+                instance.playerKernel = PlayerKernelType.EXO;
             }
         }
         return instance;
