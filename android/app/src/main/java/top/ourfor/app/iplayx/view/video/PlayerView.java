@@ -8,16 +8,19 @@ import static top.ourfor.lib.mpv.TrackItem.VideoTrackName;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Build;
+import android.util.Size;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -212,7 +215,8 @@ public class PlayerView extends ConstraintLayout
                 controlView.pipButton,
                 controlView.playlistButton,
                 controlView.orientationButton,
-                controlView.speedButton
+                controlView.speedButton,
+                controlView.advanceConfigButton
         );
         eventView.delegate = this;
         eventView.trackSelectDelegate = this;
@@ -409,12 +413,30 @@ public class PlayerView extends ConstraintLayout
     }
 
     @Override
+    public void onAdvanceConfig() {
+        var dialog = new Dialog(getContext(), R.style.PlayerAdvanceConfigDialog);
+        var contentView = new PlayerAdvanceConfigView(getContext());
+        contentView.player = this.controlView.player;
+        dialog.setContentView(contentView);
+        Window window = dialog.getWindow();
+        if (window != null) {
+            Size size = DeviceUtil.screenSize(getContext());
+            WindowManager.LayoutParams dialogLayoutParams = new WindowManager.LayoutParams();
+            dialogLayoutParams.copyFrom(window.getAttributes());
+            dialogLayoutParams.width = (int) (size.getWidth() * 0.5);
+            dialogLayoutParams.height = (int) (size.getHeight() * 0.8);
+            window.setAttributes(dialogLayoutParams);
+        }
+        dialog.show();
+    }
+
+    @Override
     public void onSelectSubtitle() {
         var player = contentView.viewModel;
         var currentSubtitleId = player.currentSubtitleId();
         var subtitles = (List<TrackItem>)player.subtitles();
         controlView.updateControlVisible(false);
-        eventView.showSelectView(subtitles, currentSubtitleId);
+        eventView.showSelectView(subtitles, currentSubtitleId, "\uD83D\uDCD1 ");
     }
 
     @Override
@@ -428,7 +450,7 @@ public class PlayerView extends ConstraintLayout
                 .type(VideoTrackName)
                 .build()).collect(Collectors.toList());
         controlView.updateControlVisible(false);
-        eventView.showSelectView(videos, currentSubtitleId);
+        eventView.showSelectView(videos, currentSubtitleId, "\uD83C\uDFA5 ");
     }
 
     @Override
@@ -437,7 +459,7 @@ public class PlayerView extends ConstraintLayout
         var currentAudioId = player.currentAudioId();
         var audios = (List<TrackItem>)player.audios();
         controlView.updateControlVisible(false);
-        eventView.showSelectView(audios, currentAudioId);
+        eventView.showSelectView(audios, currentAudioId, "\uD83D\uDD0A ");
     }
 
     void copySubtitleFont(String configDir) throws IOException {

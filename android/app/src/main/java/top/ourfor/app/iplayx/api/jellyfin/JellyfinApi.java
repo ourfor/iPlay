@@ -28,6 +28,7 @@ import top.ourfor.app.iplayx.model.EmbyMediaModel;
 import top.ourfor.app.iplayx.model.EmbyPageableModel;
 import top.ourfor.app.iplayx.model.EmbyPlaybackData;
 import top.ourfor.app.iplayx.model.EmbyPlaybackModel;
+import top.ourfor.app.iplayx.model.EmbySiteInfo;
 import top.ourfor.app.iplayx.model.EmbyUserData;
 import top.ourfor.app.iplayx.model.EmbyUserModel;
 import top.ourfor.app.iplayx.model.ImageType;
@@ -36,6 +37,7 @@ import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.util.HTTPModel;
 import top.ourfor.app.iplayx.util.HTTPUtil;
 
+@Setter
 @Builder
 @With
 @EqualsAndHashCode
@@ -45,7 +47,6 @@ public class JellyfinApi implements EmbyLikeApi {
     private static final String authHeaderValue = String.format("MediaBrowser Client=\"%s\", Device=\"%s\", DeviceId=\"%s\", Version=\"%s\"", "iPlay", "Android", "9999999", "v1.0.0");
 
 
-    @Setter
     SiteModel site;
 
     public static void login(String server, String username, String password, Consumer<Object> completion) {
@@ -574,6 +575,32 @@ public class JellyfinApi implements EmbyLikeApi {
                 List<EmbyMediaModel> items = ((EmbyPageableModel<EmbyMediaModel>) response).getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
                 completion.accept(items);
+                return;
+            }
+            completion.accept(null);
+        });
+    }
+
+    @Override
+    public void getSiteInfo(Consumer<Object> completion) {
+        if (site == null ||
+                site.getEndpoint() == null ||
+                site.getUser() == null) return;
+
+        // /emby/system/info/public
+        HTTPModel model = HTTPModel.builder()
+                .url(site.getEndpoint().getBaseUrl() + "system/info/public")
+                .method("GET")
+                .modelClass(EmbySiteInfo.class)
+                .build();
+
+        HTTPUtil.request(model, response -> {
+            if (Objects.isNull(response)) {
+                completion.accept(null);
+                return;
+            }
+            if (response instanceof EmbySiteInfo) {
+                completion.accept(response);
                 return;
             }
             completion.accept(null);

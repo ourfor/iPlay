@@ -126,4 +126,15 @@
     <string name="similar_title">类似的影片</string>
     <string name="web_homepage">Web主页地址</string>
     <string name="inject_js">注入JS代码</string>
+    <string name="play">播放</string>
+    <string name="video_source">视频源</string>
+    <string name="audio_source">音频源</string>
+    <string name="subtitle_source">字幕源</string>
+    <string name="subtitle_delay">调整字幕延时</string>
+    <string name="subtitle_position">字幕显示位置偏移</string>
+    <string name="advance_config_warning">对于部分播放器实现，某些配置可能无效</string>
+    <string name="select_player_kernel">播放器实现</string>
+    <string name="player_vlc">VLC</string>
+    <string name="player_mpv">MPV</string>
+    <string name="player_exo">EXO</string>
 </resources>

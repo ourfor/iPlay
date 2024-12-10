@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
+import top.ourfor.app.iplayx.common.type.PlayerKernelType;
 import top.ourfor.app.iplayx.config.AppSetting;
 import top.ourfor.app.iplayx.common.type.VideoDecodeType;
 import top.ourfor.app.iplayx.page.Page;
@@ -51,15 +52,28 @@ public class VideoPage implements Page {
                 break;
             }
         }
+        var kernelOptions = List.of(
+                new OptionModel<>(PlayerKernelType.MPV, getContext().getString(R.string.player_mpv)),
+                new OptionModel<>(PlayerKernelType.EXO, getContext().getString(R.string.player_exo)),
+                new OptionModel<>(PlayerKernelType.VLC, getContext().getString(R.string.player_vlc))
+        );
+        var defaultPlayerKernelOption = kernelOptions.get(0);
+        for (val option : kernelOptions) {
+            if (option.value == AppSetting.shared.playerKernel) {
+                defaultPlayerKernelOption = option;
+                break;
+            }
+        }
         settingModels = List.of(
                 SettingModel.builder()
-                        .title(getContext().getString(R.string.use_exo_player))
-                        .type(SettingType.SWITCH)
-                        .value(AppSetting.shared.useExoPlayer)
+                        .title(getContext().getString(R.string.select_player_kernel))
+                        .type(SettingType.SELECT)
+                        .value(defaultPlayerKernelOption)
+                        .options(kernelOptions)
                         .onClick(object -> {
-                            if (!(object instanceof Boolean)) return;
-                            val value = (Boolean) object;
-                            AppSetting.shared.useExoPlayer = value;
+                            if (!(object instanceof OptionModel<?>)) return;
+                            val value = (OptionModel<PlayerKernelType>) object;
+                            AppSetting.shared.playerKernel = value.value;
                             AppSetting.shared.save();
                         })
                         .build(),
@@ -139,5 +153,10 @@ public class VideoPage implements Page {
         this.context = context;
         onCreate(null);
         onCreateView(LayoutInflater.from(context), null, null);
+    }
+
+    @Override
+    public int id() {
+        return R.id.videoPage;
     }
 }

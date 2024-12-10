@@ -7,8 +7,6 @@ import android.content.Context;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -18,10 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
 import top.ourfor.app.iplayx.bean.KVStorage;
-import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.config.AppSetting;
 import top.ourfor.app.iplayx.module.FontModule;
-import top.ourfor.app.iplayx.util.AnnotationUtil;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.util.JacksonJsonAdapter;
 import top.ourfor.app.iplayx.util.MMKVStorage;
@@ -39,11 +35,7 @@ public class App extends Application {
         val crashManager = new CrashManager(this);
         Thread.setDefaultUncaughtExceptionHandler(crashManager);
         val context = getApplicationContext();
-        try {
-            FontModule.scanExternalFont(context);
-        } catch (Exception e) {
-            log.error("failed scan external font", e);
-        }
+        FontModule.initFont(context);
         DeviceUtil.init(context);
         XSET(Application.class, this);
         XSET(Context.class, context);

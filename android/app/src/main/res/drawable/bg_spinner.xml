@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:state_pressed="false">
+        <layer-list>
+            <item android:drawable="@drawable/ic_fluent_caret_down_24_filled"
+                android:gravity="end"
+                android:tintMode="src_in"
+                android:tint="@color/onBackground"
+                android:right="15dp" />
+        </layer-list>
+    </item>
+    <item android:state_window_focused="true" android:state_pressed="true">
+        <layer-list>
+            <item android:drawable="@drawable/ic_fluent_caret_up_24_filled"
+                android:gravity="end"
+                android:tintMode="src_in"
+                android:tint="@color/onBackground"
+                android:right="15dp" />
+        </layer-list>
+    </item>
+</selector>

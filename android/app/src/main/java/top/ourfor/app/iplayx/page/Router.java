@@ -61,6 +61,8 @@ public class Router implements Navigator {
         pageType.put(R.id.audioPage, PageType.AUDIO_CONFIG);
         pageType.put(R.id.playerPage, PageType.PLAYER);
         pageType.put(R.id.musicPage, PageType.MUSIC);
+        pageType.put(R.id.cachePage, PageType.CACHE);
+        pageType.put(R.id.picturePage, PageType.IMAGE_CONFIG);
         pageType.put(R.id.musicPlayerPage, PageType.MUSIC_PLAYER);
         pageType.put(R.id.webPage, PageType.WEB);
     }
@@ -156,9 +158,9 @@ public class Router implements Navigator {
     public void pushPage(Page newPage, Map<String, Object> params) {
         val pages = navigators.computeIfAbsent(stackId, k -> new Stack<>());
         if (pages.isEmpty()) return;
-        val page = pages.peek();
-        page.viewWillDisappear();
-        pageId.put(newPage, page.id());
+        val oldPage = pages.peek();
+        oldPage.viewWillDisappear();
+        pageId.put(newPage, oldPage.id());
         newPage.create(container.getContext(), params);
         pages.push(newPage);
         val view = newPage.view();
@@ -168,8 +170,8 @@ public class Router implements Navigator {
         if (view instanceof PageLifecycle lifecycle) {
             lifecycle.onAttach();
         }
-        pushPageAnimation(page, newPage);
-        onNavigateChange(page.id());
+        pushPageAnimation(oldPage, newPage);
+        onNavigateChange(newPage.id());
     }
 
     @Override

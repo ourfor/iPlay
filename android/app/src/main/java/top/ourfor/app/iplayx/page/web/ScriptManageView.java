@@ -1,40 +1,35 @@
-package top.ourfor.app.iplayx.page.setting.common;
+package top.ourfor.app.iplayx.page.web;
 
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.google.android.flexbox.FlexboxLayout;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.Consumer;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
-import top.ourfor.app.iplayx.action.UpdateModelAction;
 import top.ourfor.app.iplayx.bean.KVStorage;
 import top.ourfor.app.iplayx.databinding.ScriptManageBinding;
-import top.ourfor.app.iplayx.databinding.SettingCellBinding;
 import top.ourfor.app.iplayx.util.DeviceUtil;
-import top.ourfor.app.iplayx.view.TagView;
 
 public class ScriptManageView extends ConstraintLayout {
     ScriptManageBinding binding = null;
     @Getter
     ScriptManageViewModel viewModel = new ScriptManageViewModel();
+
+    @Getter @Setter
+    Consumer<View> onSaveButtonClick;
 
     public ScriptManageView(@NonNull Context context) {
         super(context);
@@ -48,8 +43,14 @@ public class ScriptManageView extends ConstraintLayout {
         viewModel.value = XGET(KVStorage.class).get("@script");
         setupTextArea();
 
-        binding.settingButton.setOnClickListener(v -> {
-            XGET(KVStorage.class).set("@script", viewModel.value);
+        binding.saveButton.setOnClickListener(v -> {
+            val kv = XGET(KVStorage.class);
+            if (kv != null) {
+                kv.set("@script", viewModel.value);
+            }
+            if (onSaveButtonClick != null) {
+                onSaveButtonClick.accept(v);
+            }
         });
 
         if (!DeviceUtil.isTV) return;

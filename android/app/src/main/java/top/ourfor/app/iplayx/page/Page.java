@@ -7,6 +7,7 @@ import java.util.Map;
 
 public interface Page {
     default int id() { return -1; }
+    default String title() { return null; }
     default void create(Context context, Map<String, Object> params) {}
     default void destroy() {}
 

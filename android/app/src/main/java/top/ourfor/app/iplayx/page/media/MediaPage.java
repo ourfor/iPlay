@@ -16,6 +16,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +41,7 @@ import top.ourfor.app.iplayx.model.EmbyUserData;
 import top.ourfor.app.iplayx.module.GlideApp;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.page.home.MediaViewCell;
+import top.ourfor.app.iplayx.page.web.ScriptManageView;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.util.LayoutUtil;
@@ -182,8 +185,7 @@ public class MediaPage implements Page {
         if (model == null) return;
 
         var backdrop = model.getImage().getBackdrop();
-        if (model instanceof EmbyMediaModel) {
-            val media = (EmbyMediaModel)model;
+        if (model instanceof EmbyMediaModel media) {
             backdrop = media.isEpisode() ? media.getImage().getPrimary() : media.getImage().getBackdrop();
         }
         GlideApp.with(context)
@@ -278,6 +280,24 @@ public class MediaPage implements Page {
             binding.actorList.setVisibility(View.GONE);
             binding.actorLabel.setVisibility(View.GONE);
         }
+
+        var isPlayable = model instanceof EmbyMediaModel media && (media.isEpisode() || media.isMovie());
+        binding.playerConfig.setVisibility(isPlayable ? View.VISIBLE : View.GONE);
+        binding.playerConfig.setOnClickListener(v -> {
+            showPlayConfigPanel();
+        });
+    }
+
+    void showPlayConfigPanel() {
+        var dialog = new BottomSheetDialog(getContext(), R.style.SiteBottomSheetDialog);
+        dialog.setOnDismissListener(dlg -> { });
+        var view = new PlayerConfigPanelView(context, (EmbyMediaModel)model);
+        view.setOnPlayButtonClick(v -> dialog.dismiss());
+        dialog.setContentView(view);
+        var behavior = BottomSheetBehavior.from((View) view.getParent());
+        val height = (int) (DeviceUtil.screenSize(getContext()).getHeight() * 0.6);
+        behavior.setPeekHeight(height);
+        dialog.show();
     }
 
     void showSimilarList() {

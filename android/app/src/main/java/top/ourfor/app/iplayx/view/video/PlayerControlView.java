@@ -53,6 +53,7 @@ public class PlayerControlView extends ConstraintLayout implements PlayerEventLi
     public PlayerControlItemView orientationButton;
     public PlayerControlItemView speedButton;
     public PlayerControlItemView commentButton;
+    public PlayerControlItemView advanceConfigButton;
     public TextView timeLabel;
     public TextView titleLabel;
     public PlayerSlider progressBar;
@@ -133,6 +134,7 @@ public class PlayerControlView extends ConstraintLayout implements PlayerEventLi
         orientationButton = binding.orientation;
         speedButton = binding.speed;
         commentButton = binding.comment;
+        advanceConfigButton = binding.advanceConfig;
         updatePlayerSlider();
     }
 
@@ -184,6 +186,7 @@ public class PlayerControlView extends ConstraintLayout implements PlayerEventLi
             });
             popup.show();
         });
+        binding.advanceConfig.setOnClickListener(v -> delegate.onAdvanceConfig());
         binding.pipEnter.setOnClickListener(v -> delegate.onPipEnter());
         binding.playlist.setOnClickListener(v -> delegate.onTapPlaylist());
         binding.comment.setOnClickListener(v -> delegate.onTapComment());

@@ -108,7 +108,9 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
             actionBar.setDisplayHomeAsUpEnabled(true);
             XGET(BottomNavigationView.class).setVisibility(View.GONE);
         }
-        val context = container == null ? XGET(Activity.class) : container.getContext();
+        if (context == null) {
+            context = container == null ? XGET(Activity.class) : container.getContext();
+        }
         setupUI(context);
         refreshUI();
         XWATCH(OneDriveAction.class, this);
@@ -125,7 +127,9 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
             actionBar.setDisplayHomeAsUpEnabled(true);
             XGET(BottomNavigationView.class).setVisibility(View.GONE);
         }
-        val context = container == null ? XGET(Activity.class) : container.getContext();
+        if (context == null) {
+            context = container == null ? XGET(Activity.class) : container.getContext();
+        }
         setupUI(context);
         refreshUI();
         XWATCH(OneDriveAction.class, this);
@@ -158,7 +162,6 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
 
     @SuppressLint("NewApi")
     void setupUI(Context context) {
-        KVStorage kv = XGET(KVStorage.class);
         if (siteModel != null) {
             binding.remarkInput.setText(siteModel.getEndpoint().getRemark());
             binding.serverInput.setText(siteModel.getEndpoint().getBaseUrl());
@@ -183,77 +186,9 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
             // do login
             log.info("remake: {}, server: {}, username: {}, password: {}", remake, server, username, password);
             if (serverType == ServerType.Emby) {
-                EmbyApi.login(server, username, password, (response) -> {
-                    log.info("login response: {}", response);
-                    if (response != null) {
-                        kv.set(remarkKey, remake);
-                        kv.set(serverKey, server);
-                        kv.set(usernameKey, username);
-                        kv.set(passwordKey, password);
-
-                        val site = (SiteModel) response;
-                        site.setSync(binding.allowSyncSwitch.isChecked());
-                        site.setShowSensitive(binding.showSensitiveSwitch.isChecked());
-                        site.setRemark(remake);
-                        site.setServerType(ServerType.Emby);
-                        XGET(GlobalStore.class).addNewSite(site);
-                        XGET(DispatchAction.class).runOnUiThread(() -> {
-                            val action = XGET(SiteUpdateAction.class);
-                            action.onSiteUpdate();
-                            Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
-                            if (isFragment) {
-                                XGET(Navigator.class).popPage();
-                            } else {
-                                dismiss();
-                            }
-                        });
-                    } else {
-                        XGET(Activity.class).runOnUiThread(() ->
-                                Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
-                        );
-                    }
-
-                    binding.loginButton.post(() -> {
-                        binding.loginButton.setEnabled(true);
-                        binding.loginButton.setText(R.string.login);
-                    });
-                });
+                loginToEmby(remake, server, username, password);
             } else if (serverType == ServerType.Jellyfin) {
-                JellyfinApi.login(server, username, password, (response) -> {
-                    log.info("login response: {}", response);
-                    if (response != null) {
-                        kv.set(remarkKey, remake);
-                        kv.set(serverKey, server);
-                        kv.set(usernameKey, username);
-                        kv.set(passwordKey, password);
-
-                        val site = (SiteModel) response;
-                        site.setSync(binding.allowSyncSwitch.isChecked());
-                        site.setShowSensitive(binding.showSensitiveSwitch.isChecked());
-                        site.setRemark(remake);
-                        site.setServerType(ServerType.Jellyfin);
-                        XGET(GlobalStore.class).addNewSite(site);
-                        getActivity().runOnUiThread(() -> {
-                            val action = XGET(SiteUpdateAction.class);
-                            action.onSiteUpdate();
-                            Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
-                            if (isFragment) {
-                                XGET(Navigator.class).popPage();
-                            } else {
-                                dismiss();
-                            }
-                        });
-                    } else {
-                        getActivity().runOnUiThread(() ->
-                                Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
-                        );
-                    }
-
-                    binding.loginButton.post(() -> {
-                        binding.loginButton.setEnabled(true);
-                        binding.loginButton.setText(R.string.login);
-                    });
-                });
+                loginToJellyfin(remake, server, username, password);
             } else if (serverType == ServerType.Cloud189) {
                 loginTo189(remake, username, password);
             } else if (serverType == ServerType.OneDrive) {
@@ -344,6 +279,86 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
             if (isDialogModel) {
                 dismiss();
             }
+        });
+    }
+
+    private void loginToEmby(String remake, String server, String username, String password) {
+        EmbyApi.login(server, username, password, (response) -> {
+            log.info("login response: {}", response);
+            if (response != null) {
+                var kv = XGET(KVStorage.class);
+                assert kv != null;
+                kv.set(remarkKey, remake);
+                kv.set(serverKey, server);
+                kv.set(usernameKey, username);
+                kv.set(passwordKey, password);
+
+                val site = (SiteModel) response;
+                site.setSync(binding.allowSyncSwitch.isChecked());
+                site.setShowSensitive(binding.showSensitiveSwitch.isChecked());
+                site.setRemark(remake);
+                site.setServerType(ServerType.Emby);
+                XGET(GlobalStore.class).addNewSite(site);
+                XGET(Activity.class).runOnUiThread(() -> {
+                    val action = XGET(SiteUpdateAction.class);
+                    action.onSiteUpdate();
+                    Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
+                    if (isFragment) {
+                        XGET(Navigator.class).popPage();
+                    } else {
+                        dismiss();
+                    }
+                });
+            } else {
+                XGET(Activity.class).runOnUiThread(() ->
+                        Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
+                );
+            }
+
+            binding.loginButton.post(() -> {
+                binding.loginButton.setEnabled(true);
+                binding.loginButton.setText(R.string.login);
+            });
+        });
+    }
+
+    private void loginToJellyfin(String remake, String server, String username, String password) {
+        JellyfinApi.login(server, username, password, (response) -> {
+            log.info("login response: {}", response);
+            if (response != null) {
+                var kv = XGET(KVStorage.class);
+                assert kv != null;
+                kv.set(remarkKey, remake);
+                kv.set(serverKey, server);
+                kv.set(usernameKey, username);
+                kv.set(passwordKey, password);
+
+                val site = (SiteModel) response;
+                site.setSync(binding.allowSyncSwitch.isChecked());
+                site.setShowSensitive(binding.showSensitiveSwitch.isChecked());
+                site.setRemark(remake);
+                site.setServerType(ServerType.Jellyfin);
+                XGET(GlobalStore.class).addNewSite(site);
+                getActivity().runOnUiThread(() -> {
+                    val action = XGET(SiteUpdateAction.class);
+                    action.onSiteUpdate();
+                    Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
+                    if (isFragment) {
+                        XGET(Navigator.class).popPage();
+                    } else {
+                        dismiss();
+                    }
+                });
+            } else {
+                getActivity().runOnUiThread(() ->
+                        Toast.makeText(context, "Login failed", Toast.LENGTH_SHORT).show()
+                );
+            }
+
+            binding.loginButton.post(() -> {
+                binding.loginButton.setEnabled(true);
+                binding.loginButton.setText(R.string.login);
+            });
         });
     }
 

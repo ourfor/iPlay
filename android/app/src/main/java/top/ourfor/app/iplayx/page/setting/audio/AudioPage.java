@@ -81,4 +81,9 @@ public class AudioPage implements Page {
         onCreate(null);
         onCreateView(LayoutInflater.from(context), null, null);
     }
+
+    @Override
+    public int id() {
+        return R.id.audioPage;
+    }
 }

@@ -247,4 +247,9 @@ public class CloudPage implements DriveUpdateAction, Page {
     public View view() {
         return binding.getRoot();
     }
+
+    @Override
+    public int id() {
+        return R.id.cloudPage;
+    }
 }

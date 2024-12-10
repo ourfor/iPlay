@@ -151,4 +151,9 @@ public class ThemePage implements Page {
     public View view() {
         return contentView;
     }
+
+    @Override
+    public int id() {
+        return R.id.themePage;
+    }
 }

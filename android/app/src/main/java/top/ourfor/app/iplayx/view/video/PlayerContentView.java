@@ -22,7 +22,20 @@ public class PlayerContentView extends SurfaceView implements SurfaceHolder.Call
     }
 
     public void initialize(String configDir, String cacheDir, String fontDir) {
-        viewModel = AppSetting.shared.useExoPlayer ? new ExoPlayerViewModel(this) : new MPVPlayerViewModel(configDir, cacheDir, fontDir);
+        switch (AppSetting.shared.playerKernel) {
+            case MPV:
+                viewModel = new MPVPlayerViewModel(configDir, cacheDir, fontDir);
+                break;
+            case EXO:
+                viewModel = new ExoPlayerViewModel(this);
+                break;
+            case VLC:
+                viewModel = new VLCPlayerViewModel(this);
+                break;
+            default:
+                log.info("Using default player: MPV");
+                viewModel = new MPVPlayerViewModel(configDir, cacheDir, fontDir);
+        }
         setZOrderMediaOverlay(false);
         // we need to call write-watch-later manually
         getHolder().addCallback(this);

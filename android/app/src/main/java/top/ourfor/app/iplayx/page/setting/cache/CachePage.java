@@ -90,4 +90,9 @@ public class CachePage implements Page {
     public View view() {
         return contentView;
     }
+
+    @Override
+    public int id() {
+        return R.id.cachePage;
+    }
 }

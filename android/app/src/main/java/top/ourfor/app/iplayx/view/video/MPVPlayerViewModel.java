@@ -338,6 +338,18 @@ public class MPVPlayerViewModel implements Player {
     }
 
     @Override
+    public void setSubtitleDelay(double delay) {
+        if (mpv == null) return;
+        mpv.setOptionString("sub-delay", String.valueOf(delay));
+    }
+
+    @Override
+    public void setSubtitlePosition(double position) {
+        if (mpv == null) return;
+        mpv.setOptionString("sub-pos", String.valueOf(position));
+    }
+
+    @Override
     public void destroy() {
         if (mpv == null) return;
         mpv.command("stop");
