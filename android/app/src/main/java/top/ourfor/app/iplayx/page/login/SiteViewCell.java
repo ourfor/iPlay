@@ -9,6 +9,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
+
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
@@ -24,6 +27,7 @@ import top.ourfor.app.iplayx.store.GlobalStore;
 
 @Slf4j
 public class SiteViewCell extends ConstraintLayout implements UpdateModelAction {
+    private static final RequestOptions options = new RequestOptions().transform(new RoundedCorners(DeviceUtil.dpToPx(24)));
     private SiteModel model;
     SiteCellBinding binding = null;
 
@@ -60,6 +64,7 @@ public class SiteViewCell extends ConstraintLayout implements UpdateModelAction 
         GlideApp.with(this)
                 .load(model.avatarUrl())
                 .placeholder(R.drawable.avatar)
+                .apply(options)
                 .into(binding.siteImage);
     }
 

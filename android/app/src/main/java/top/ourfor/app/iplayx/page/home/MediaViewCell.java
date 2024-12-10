@@ -11,7 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 
 import lombok.val;
 import top.ourfor.app.iplayx.R;
@@ -26,6 +28,7 @@ import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.view.infra.TextView;
 
 public class MediaViewCell extends ConstraintLayout implements UpdateModelAction {
+    private static final RequestOptions options = new RequestOptions().transform(new RoundedCorners(DeviceUtil.dpToPx(8)));
     private MediaModel model;
     private MediaCellBinding binding;
     private TextView nameLabel;
@@ -64,6 +67,7 @@ public class MediaViewCell extends ConstraintLayout implements UpdateModelAction
                 .load(imageUrl)
                 .placeholder(isAlbum ? R.drawable.hand_drawn_3 : R.drawable.abstract_3)
                 .transition(DrawableTransitionOptions.withCrossFade())
+                .apply(options)
                 .into(coverImage);
         if (model instanceof EmbyMediaModel media) {
             if (media.getUserData() != null && media.getUserData().getUnplayedItemCount() != null) {
