@@ -82,7 +82,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
     );
 
     LoginPageBinding binding = null;
-    boolean isFragment = false;
+    boolean isPage = false;
     @Setter
     public boolean isDialogModel = false;
     @Setter
@@ -100,7 +100,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         binding = LoginPageBinding.inflate(inflater, container, false);
-        isFragment = container != null;
+        isPage = false;
         val actionBar = XGET(ActionBar.class);
         if (!isDialogModel) {
             XGET(NavigationTitleBar.class).setNavTitle(R.string.login);
@@ -119,7 +119,6 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
 
     void setup(LayoutInflater inflater, ViewGroup container) {
         binding = LoginPageBinding.inflate(inflater, container, false);
-        isFragment = container != null;
         val actionBar = XGET(ActionBar.class);
         if (!isDialogModel) {
             XGET(NavigationTitleBar.class).setNavTitle(R.string.login);
@@ -302,7 +301,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                     val action = XGET(SiteUpdateAction.class);
                     action.onSiteUpdate();
                     Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
-                    if (isFragment) {
+                    if (isPage) {
                         XGET(Navigator.class).popPage();
                     } else {
                         dismiss();
@@ -342,7 +341,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                     val action = XGET(SiteUpdateAction.class);
                     action.onSiteUpdate();
                     Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
-                    if (isFragment) {
+                    if (isPage) {
                         XGET(Navigator.class).popPage();
                     } else {
                         dismiss();
@@ -586,6 +585,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
+        this.isPage = true;
         setup(LayoutInflater.from(context), null);
     }
 }
