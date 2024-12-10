@@ -36,6 +36,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
+import top.ourfor.app.iplayx.action.DispatchAction;
 import top.ourfor.app.iplayx.action.SiteUpdateAction;
 import top.ourfor.app.iplayx.api.alist.AlistApi;
 import top.ourfor.app.iplayx.api.cloud189.Cloud189Api;
@@ -196,7 +197,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                         site.setRemark(remake);
                         site.setServerType(ServerType.Emby);
                         XGET(GlobalStore.class).addNewSite(site);
-                        getActivity().runOnUiThread(() -> {
+                        XGET(DispatchAction.class).runOnUiThread(() -> {
                             val action = XGET(SiteUpdateAction.class);
                             action.onSiteUpdate();
                             Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
@@ -571,6 +572,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
+        this.isFragment = true;
         setup(LayoutInflater.from(context), null);
     }
 }

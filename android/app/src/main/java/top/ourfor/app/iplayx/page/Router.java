@@ -126,6 +126,7 @@ public class Router implements Navigator {
         page.viewWillDisappear();
         val newPage = makePage(id);
         pageId.put(newPage, id);
+        assert newPage != null;
         newPage.create(container.getContext(), params);
         pages.push(newPage);
         val view = newPage.view();

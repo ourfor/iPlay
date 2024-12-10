@@ -138,7 +138,9 @@ public class PlayerCommentView extends FrameLayout implements LifecycleOwner {
             @Override
             public void onAnimationEnd(Animator animation) {
                 view.setVisibility(View.GONE);
-                ((ViewGroup) view.getParent()).removeView(view);
+                val superview = view.getParent();
+                if (superview == null) return;
+                ((ViewGroup) superview).removeView(view);
                 recycleView((TextView) view);
             }
 
