@@ -184,7 +184,7 @@ public class SettingViewCell extends ConstraintLayout implements UpdateModelActi
 
     public void onItemClick() {
         val context = getContext();
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.SettingItemDialog);
 
         builder.setTitle(model.title);
 
