@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -192,7 +195,8 @@ public class SettingViewCell extends ConstraintLayout implements UpdateModelActi
         if (model.type == SettingType.SWITCH) {
             buttonTitles.add(context.getString(R.string.turn_on));
             buttonTitles.add(context.getString(R.string.turn_off));
-        } else if (model.type == SettingType.SELECT) {
+        } else if (model.type == SettingType.SELECT ||
+                   model.type == SettingType.SPINNER) {
             for (val option : model.options) {
                 buttonTitles.add(option.toString());
             }
