@@ -7,6 +7,8 @@ import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.WeakHashMap;
 
+import javax.annotation.Nullable;
+
 import lombok.NonNull;
 import lombok.val;
 
@@ -15,6 +17,7 @@ public class Bean {
     private static HashMap<String, BeanProxy> listener = new HashMap<>(20);
     private static HashMap<String, Object> proxyBeans = new HashMap<>(20);
 
+    @Nullable
     public static <T> T XGET(Class<T> clazz) {
         WeakReference<T> ref = null;
         String key = null;
@@ -27,7 +30,7 @@ public class Bean {
         return ref != null ? ref.get() : null;
     }
 
-    public static <T> void XSET(Class<T> clazz, T bean) {
+    public static <T> void XSET(Class<T> clazz, @Nullable T bean) {
         WeakReference<T> ref = new WeakReference<>(bean);
         String key = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -38,7 +41,7 @@ public class Bean {
         beans.put(key, ref);
     }
 
-    public static <T> void XSET(Class<T>[] clazzs, T bean) {
+    public static <T> void XSET(Class<T>[] clazzs, @Nullable T bean) {
         WeakReference<T> ref = new WeakReference(bean);
         for (Class<?> clazz : clazzs) {
             String key = null;
