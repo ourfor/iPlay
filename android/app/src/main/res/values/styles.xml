@@ -44,6 +44,12 @@
         <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
     </style>
 
+    <style name="SettingItemDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/dialog_bg</item>
+        <item name="android:textColor">@color/onBackground</item>
+        <item name="colorAccent">@color/onBackground</item>
+    </style>
+
     <style name="SiteBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/dialog_bg</item>
         <item name="android:paddingTop">5dp</item>

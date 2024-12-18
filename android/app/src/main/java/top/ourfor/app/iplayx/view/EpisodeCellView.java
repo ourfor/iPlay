@@ -19,7 +19,7 @@ import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.model.EmbyMediaModel;
 
 public class EpisodeCellView extends ConstraintLayout implements UpdateModelAction {
-    private static RequestOptions options = new RequestOptions().transform(new RoundedCorners(DeviceUtil.dpToPx(5)));
+    private static final RequestOptions options = new RequestOptions().transform(new RoundedCorners(DeviceUtil.dpToPx(5)));
     EpisodeCellBinding binding = null;
 
     public EpisodeCellView(@NonNull Context context) {
