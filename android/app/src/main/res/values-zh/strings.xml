@@ -147,4 +147,5 @@
     <string name="player_vlc">VLC</string>
     <string name="player_mpv">MPV</string>
     <string name="player_exo">EXO</string>
+    <string name="exit_after_crash">遇到未处理异常，退出应用</string>
 </resources>

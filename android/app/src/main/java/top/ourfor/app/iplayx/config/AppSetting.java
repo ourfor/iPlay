@@ -47,6 +47,7 @@ public class AppSetting {
     public String mpvConfig;
     public String fontFamily;
     public String webHomePage;
+    public boolean exitAfterCrash;
 
     static AppSetting getShared() {
         var instance = XGET(KVStorage.class).getObject(settingCacheKey, AppSetting.class);

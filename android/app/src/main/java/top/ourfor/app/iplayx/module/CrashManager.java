@@ -11,6 +11,8 @@ import android.os.Build;
 import android.os.Looper;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,9 +25,8 @@ import top.ourfor.app.iplayx.page.Activity;
 
 @Slf4j
 public class CrashManager implements Thread.UncaughtExceptionHandler {
-    private Thread.UncaughtExceptionHandler mDefaultHandler;
-    private Map<String, String> infos;
-    private Application application;
+    private final Thread.UncaughtExceptionHandler mDefaultHandler;
+    private final Application application;
     public CrashManager(Application application){
         mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
         this.application = application;
@@ -51,11 +52,11 @@ public class CrashManager implements Thread.UncaughtExceptionHandler {
 
     private void collectDeviceAndUserInfo(Context context){
         PackageManager pm = context.getPackageManager();
-        infos = new HashMap<String, String>();
+        Map<String, String> infos = new HashMap<>();
         try {
             PackageInfo pi = pm.getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
             if (pi != null) {
-                String versionName = pi.versionName == null?"null":pi.versionName;
+                String versionName = pi.versionName == null ? "null" : pi.versionName;
                 String versionCode = pi.versionCode + "";
                 infos.put("versionName",versionName);
                 infos.put("versionCode",versionCode);
@@ -72,12 +73,14 @@ public class CrashManager implements Thread.UncaughtExceptionHandler {
             }
         } catch (IllegalAccessException e) {
             log.error("{}", e.getMessage());
+        } finally {
+            log.info("{}",infos);
         }
     }
 
 
     @Override
-    public void uncaughtException(Thread thread, Throwable throwable) {
+    public void uncaughtException(@NonNull Thread thread, @NonNull Throwable throwable) {
         if(!handleException(throwable) && mDefaultHandler != null){
             mDefaultHandler.uncaughtException(thread, throwable);
         } else {
@@ -87,6 +90,7 @@ public class CrashManager implements Thread.UncaughtExceptionHandler {
             for (StackTraceElement stackTraceElement : throwable.getStackTrace()) {
                 log.error("\t{}", stackTraceElement.toString());
             }
+
             Toast.makeText(application.getApplicationContext(), application.getString(R.string.unhandled_exception), Toast.LENGTH_LONG).show();
             try{
                 Thread.sleep(2000);
