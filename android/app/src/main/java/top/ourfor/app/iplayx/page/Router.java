@@ -7,6 +7,8 @@ import android.app.Application;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
 
@@ -40,12 +42,11 @@ public class Router implements Navigator {
     private static final Map<Page, Integer> pageId = new HashMap<>();
     private static final Map<String, Class<Page>> pageMap = new HashMap<>();
 
-    Interpolator interpolator = new AccelerateDecelerateInterpolator();
-    long duration = 300;
-
     ViewGroup container;
     BottomNavigationView bottomNavigation;
     Toolbar toolbar;
+    Animation pushAnimation;
+    Animation popAnimation;
 
     static {
         pageType = new HashMap<>();
@@ -71,6 +72,8 @@ public class Router implements Navigator {
         this.container = container;
         this.bottomNavigation = bottomNavigation;
         this.toolbar = toolbar;
+        pushAnimation = AnimationUtils.loadAnimation(container.getContext(), R.anim.slide_in);
+        popAnimation = AnimationUtils.loadAnimation(container.getContext(), R.anim.slide_out);
         navigators = new HashMap<>();
         bottomNavigation.setOnItemSelectedListener(item -> {
             navigate(item.getItemId());
@@ -124,8 +127,7 @@ public class Router implements Navigator {
     public void pushPage(int id, Map<String, Object> params) {
         val pages = navigators.computeIfAbsent(stackId, k -> new Stack<>());
         if (pages.isEmpty()) return;
-        val page = pages.peek();
-        page.viewWillDisappear();
+        val oldPage = pages.peek();
         val newPage = makePage(id);
         pageId.put(newPage, id);
         assert newPage != null;
@@ -133,12 +135,11 @@ public class Router implements Navigator {
         pages.push(newPage);
         val view = newPage.view();
         view.setBackgroundResource(R.drawable.bg);
-        newPage.viewWillAppear();
         container.addView(view, LayoutUtil.fill());
         if (view instanceof PageLifecycle lifecycle) {
             lifecycle.onAttach();
         }
-        pushPageAnimation(page, newPage);
+        pushPageAnimation(oldPage, newPage);
         onNavigateChange(id);
     }
 
@@ -178,17 +179,15 @@ public class Router implements Navigator {
     public boolean popPage() {
         val pages = navigators.computeIfAbsent(stackId, k -> new Stack<>());
         if (pages.isEmpty()) return false;
-        val page = pages.pop();
-        pageId.remove(page);
-        page.viewWillDisappear();
-        if (page.view() instanceof PageLifecycle lifecycle) {
+        val oldPage = pages.pop();
+        pageId.remove(oldPage);
+        if (oldPage.view() instanceof PageLifecycle lifecycle) {
             lifecycle.onDetach();
         }
         val newPage = pages.peek();
         val view = newPage.view();
-        newPage.viewWillAppear();
         container.addView(view, 0, LayoutUtil.fill());
-        popPageAnimation(page, newPage);
+        popPageAnimation(oldPage, newPage);
         onNavigateChange(pageId.get(newPage));
         newPage.viewDidAppear();
         return true;
@@ -266,29 +265,47 @@ public class Router implements Navigator {
     }
 
     void pushPageAnimation(Page oldPage, Page newPage) {
-        newPage.view().setTranslationX(oldPage.view().getWidth());
-        newPage.view().animate()
-                .translationX(0)
-                .setDuration(duration)
-                .setInterpolator(interpolator)
-                .withEndAction(() -> {
-                    container.removeView(oldPage.view());
-                    oldPage.viewDidDisappear();
-                    newPage.viewDidAppear();
-                })
-                .start();
+        val view = newPage.view();
+        view.setVisibility(View.INVISIBLE);
+        pushAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                view.setVisibility(View.VISIBLE);
+                oldPage.viewWillDisappear();
+                newPage.viewWillAppear();
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                container.removeView(oldPage.view());
+                oldPage.viewDidDisappear();
+                newPage.viewDidAppear();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) { }
+        });
+        container.post(() -> view.startAnimation(pushAnimation));
     }
 
     void popPageAnimation(Page oldPage, Page newPage) {
-        oldPage.view().animate()
-                .translationX(oldPage.view().getWidth())
-                .setDuration(duration)
-                .setInterpolator(interpolator)
-                .withEndAction(() -> {
-                    container.removeView(oldPage.view());
-                    oldPage.viewDidDisappear();
-                    newPage.viewDidAppear();
-                })
-                .start();
+        popAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                oldPage.viewWillDisappear();
+                newPage.viewWillAppear();
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                container.removeView(oldPage.view());
+                oldPage.viewDidDisappear();
+                newPage.viewDidAppear();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) { }
+        });
+        container.post(() -> oldPage.view().startAnimation(popAnimation));
     }
 }
