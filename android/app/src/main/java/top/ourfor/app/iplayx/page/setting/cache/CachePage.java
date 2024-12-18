@@ -9,13 +9,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 
 import java.util.List;
 import java.util.Map;
 
 import lombok.Getter;
-import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.config.AppSetting;
@@ -38,16 +36,6 @@ public class CachePage implements Page {
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         settingModels = List.of(
-                SettingModel.builder()
-                        .title(getContext().getString(R.string.exit_after_crash))
-                        .type(SettingType.SWITCH)
-                        .value(AppSetting.shared.exitAfterCrash)
-                        .onClick(object -> {
-                            if (!(object instanceof Boolean)) return;
-                            AppSetting.shared.exitAfterCrash = (Boolean) object;
-                            AppSetting.shared.save();
-                        })
-                        .build(),
                 SettingModel.builder()
                         .title(getContext().getString(R.string.autoupgrade_turn_off))
                         .type(SettingType.SWITCH)
