@@ -5,6 +5,7 @@ import static top.ourfor.app.iplayx.module.Bean.XWATCH;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -103,7 +104,7 @@ public class SiteLineManageView extends ConstraintLayout implements SiteLineUpda
             return false;
         });
 
-        binding.loginButton.setOnClickListener(v -> {
+        binding.addLineButton.setOnClickListener(v -> {
             val server = binding.serverInput.getText().toString();
             val remark = binding.remarkInput.getText().toString();
             try {
@@ -127,7 +128,7 @@ public class SiteLineManageView extends ConstraintLayout implements SiteLineUpda
                 binding.serverInput.setText(null);
                 binding.remarkInput.setText(null);
             } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+                Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
