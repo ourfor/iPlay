@@ -20,6 +20,7 @@ import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 import top.ourfor.app.iplayx.R;
+import top.ourfor.app.iplayx.config.AppSetting;
 import top.ourfor.app.iplayx.util.DateTimeUtil;
 import top.ourfor.app.iplayx.page.Activity;
 
@@ -91,20 +92,24 @@ public class CrashManager implements Thread.UncaughtExceptionHandler {
                 log.error("\t{}", stackTraceElement.toString());
             }
 
-            Toast.makeText(application.getApplicationContext(), application.getString(R.string.unhandled_exception), Toast.LENGTH_LONG).show();
-            try{
-                Thread.sleep(2000);
-            } catch (InterruptedException e){
-                log.warn("{}",e.getMessage());
+            if (AppSetting.shared.exitAfterCrash) {
+                Toast.makeText(application.getApplicationContext(), application.getString(R.string.unhandled_exception), Toast.LENGTH_LONG).show();
+                try{
+                    Thread.sleep(2000);
+                } catch (InterruptedException e){
+                    log.warn("{}",e.getMessage());
+                }
+                Intent intent = new Intent(application.getApplicationContext(), Activity.class);
+                PendingIntent restartIntent = PendingIntent.getActivity(
+                        application.getApplicationContext(), 0, intent,
+                        PendingIntent.FLAG_IMMUTABLE);
+                AlarmManager mgr = (AlarmManager)application.getSystemService(Context.ALARM_SERVICE);
+                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000,
+                        restartIntent);
+                android.os.Process.killProcess(android.os.Process.myPid());
+            } else {
+                Toast.makeText(application, throwable.toString(), Toast.LENGTH_SHORT).show();
             }
-            Intent intent = new Intent(application.getApplicationContext(), Activity.class);
-            PendingIntent restartIntent = PendingIntent.getActivity(
-                    application.getApplicationContext(), 0, intent,
-                    PendingIntent.FLAG_IMMUTABLE);
-            AlarmManager mgr = (AlarmManager)application.getSystemService(Context.ALARM_SERVICE);
-            mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000,
-                    restartIntent);
-            android.os.Process.killProcess(android.os.Process.myPid());
         }
     }
 }

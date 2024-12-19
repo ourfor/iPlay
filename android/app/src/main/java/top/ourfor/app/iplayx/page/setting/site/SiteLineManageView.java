@@ -129,6 +129,7 @@ public class SiteLineManageView extends ConstraintLayout implements SiteLineUpda
                 binding.remarkInput.setText(null);
             } catch (MalformedURLException e) {
                 Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                throw new RuntimeException(e);
             }
         });
 

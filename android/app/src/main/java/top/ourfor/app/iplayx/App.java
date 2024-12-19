@@ -4,6 +4,8 @@ import static top.ourfor.app.iplayx.module.Bean.XSET;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -45,6 +47,22 @@ public class App extends Application {
         executor = new ThreadPoolExecutor(4, 8, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
         XSET(ThreadPoolExecutor.class, executor);
         AppCompatDelegate.setDefaultNightMode(AppSetting.shared.appTheme());
+
+        var exitAfterCrash = AppSetting.shared.exitAfterCrash;
+        if (exitAfterCrash) {
+            return;
+        }
+
+        new Handler(Looper.getMainLooper()).post(() -> {
+            //noinspection InfiniteLoopStatement
+            while (true) {
+                try {
+                    Looper.loop();
+                } catch (Throwable e) {
+                    log.error("loop error", e);
+                }
+            }
+        });
     }
 
     @Override

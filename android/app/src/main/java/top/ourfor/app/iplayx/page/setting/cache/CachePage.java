@@ -37,6 +37,16 @@ public class CachePage implements Page {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         settingModels = List.of(
                 SettingModel.builder()
+                        .title(getContext().getString(R.string.exit_after_crash))
+                        .type(SettingType.SWITCH)
+                        .value(AppSetting.shared.exitAfterCrash)
+                        .onClick(object -> {
+                            if (!(object instanceof Boolean)) return;
+                            AppSetting.shared.exitAfterCrash = (Boolean) object;
+                            AppSetting.shared.save();
+                        })
+                        .build(),
+                SettingModel.builder()
                         .title(getContext().getString(R.string.autoupgrade_turn_off))
                         .type(SettingType.SWITCH)
                         .value(AppSetting.shared.turnOffAutoUpgrade)
