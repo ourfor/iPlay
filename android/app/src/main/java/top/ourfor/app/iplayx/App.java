@@ -34,8 +34,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        val crashManager = new CrashManager(this);
-        Thread.setDefaultUncaughtExceptionHandler(crashManager);
         val context = getApplicationContext();
         FontModule.initFont(context);
         DeviceUtil.init(context);
@@ -44,10 +42,17 @@ public class App extends Application {
         XSET(JSONAdapter.class, JacksonJsonAdapter.shared);
         XSET(KVStorage.class, MMKVStorage.shared);
         XSET(GlobalStore.class, GlobalStore.shared);
-        executor = new ThreadPoolExecutor(4, 8, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
+        // get device cpu core count
+        val coreCount = DeviceUtil.cpuCoreCount();
+        executor = new ThreadPoolExecutor(coreCount, coreCount * 2, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
         XSET(ThreadPoolExecutor.class, executor);
         AppCompatDelegate.setDefaultNightMode(AppSetting.shared.appTheme());
+        setupExceptionHandler();
+    }
 
+    void setupExceptionHandler() {
+        val crashManager = new CrashManager(this);
+        Thread.setDefaultUncaughtExceptionHandler(crashManager);
         var exitAfterCrash = AppSetting.shared.exitAfterCrash;
         if (exitAfterCrash) {
             return;

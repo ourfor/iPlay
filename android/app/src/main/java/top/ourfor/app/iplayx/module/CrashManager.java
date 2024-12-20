@@ -39,14 +39,11 @@ public class CrashManager implements Thread.UncaughtExceptionHandler {
         if (exc instanceof IndexOutOfBoundsException) {
             return true;
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                log.info("{}","save crash info to file");
-                collectDeviceAndUserInfo(application);
-                Looper.loop();
-            }
+        new Thread(() -> {
+            Looper.prepare();
+            log.info("{}","save crash info to file");
+            collectDeviceAndUserInfo(application);
+            Looper.loop();
         }).start();
         return true;
     }

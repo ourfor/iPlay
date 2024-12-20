@@ -12,6 +12,13 @@ import android.util.DisplayMetrics;
 import android.util.Size;
 import android.view.WindowManager;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.regex.Pattern;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class DeviceUtil {
     public static float density;
     public static int width;
@@ -133,5 +140,26 @@ public class DeviceUtil {
         }
 
         return name;
+    }
+
+    public static int cpuCoreCount() {
+        var CPU_CORES = 0;
+        try {
+            File dir = new File("/sys/devices/system/cpu/");
+            File[] files = dir.listFiles((file) -> Pattern.matches("cpu[0-9]+", file.getName()));
+            assert files != null;
+            CPU_CORES = files.length;
+        } catch (Exception e) {
+            log.error("CPU core count error", e);
+        }
+
+        if (CPU_CORES < 1) {
+            CPU_CORES = Runtime.getRuntime().availableProcessors();
+        }
+
+        if (CPU_CORES < 1) {
+            CPU_CORES = 1;
+        }
+        return CPU_CORES;
     }
 }
