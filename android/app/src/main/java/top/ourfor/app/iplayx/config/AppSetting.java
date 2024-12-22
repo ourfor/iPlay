@@ -43,6 +43,7 @@ public class AppSetting {
     public PictureQuality pictureQuality;
     public boolean usePictureMultiThread;
     public boolean useExoPlayer;
+    public boolean autoPlayNextEpisode;
     public PlayerKernelType playerKernel;
     public String mpvConfig;
     public String fontFamily;

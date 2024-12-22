@@ -36,8 +36,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -89,6 +92,8 @@ public class MoviePlayerPage implements Page {
     Context context;
 
     Map<String, Object> params;
+
+    Queue<EmbyMediaModel> playlist;
 
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -249,6 +254,16 @@ public class MoviePlayerPage implements Page {
             });
         });
 
+        playerView.setOnPlayEnd(() -> {
+            if (playlist != null && !playlist.isEmpty()) {
+                val next = playlist.poll();
+                if (next != null) {
+                    log.info("play next: {}", next);
+                    onSelectMedia(next);
+                }
+            }
+        });
+
         playerView.setOnPlaylistTap(playerView -> {
             val context = getContext();
             val listView = new ListView<EmbyMediaModel>(context);
@@ -324,12 +339,45 @@ public class MoviePlayerPage implements Page {
                 window.setWindowAnimations(R.style.DialogAnimation);
             }
         });
+
+        if (AppSetting.shared.isAutoPlayNextEpisode()) {
+            setupPlaylist(media);
+        }
+    }
+
+    private void setupPlaylist(EmbyMediaModel media) {
+        var store = XGET(GlobalStore.class);
+        assert store != null;
+        List<EmbyMediaModel> items = null;
+        if (media.isEpisode()) {
+            items = store.getDataSource().getSeasonEpisodes().get(media.getSeasonId());
+        } else {
+            return;
+        }
+        if (items == null || items.isEmpty()) {
+            store.getEpisodes(media.getSeriesId(), media.getSeasonId(), episodes -> {
+                // add all items next to current item
+                val idx = episodes.indexOf(media);
+                if (idx >= 0) {
+                    playlist = episodes.stream().skip(idx + 1).collect(Collectors.toCollection(LinkedList::new));
+                    log.info("playlist: {}", playlist);
+                }
+            });
+        } else {
+            // add all items next to current item
+            val idx = items.indexOf(media);
+            if (idx >= 0) {
+                playlist = items.stream().skip(idx + 1).collect(Collectors.toCollection(LinkedList::new));
+                log.info("playlist: {}", playlist);
+            }
+        }
     }
 
     void onSelectMedia(EmbyMediaModel media) {
         if (media == null) return;
         id = media.getId();
         val store = XGET(GlobalStore.class);
+        assert store != null;
         store.getPlayback(media.getId(), playback -> {
             if (playback == null) return;
             val sources = store.getPlaySources(media, playback);
@@ -353,6 +401,7 @@ public class MoviePlayerPage implements Page {
                 playerView.setOption(AppSetting.shared.getPlayerConfig());
                 playerView.setSources(sources);
                 playerView.setUrl(url);
+                playerView.resume();
             });
         });
     }
