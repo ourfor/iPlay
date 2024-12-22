@@ -79,6 +79,8 @@ public class PlayerView extends ConstraintLayout
     private double volumeValue = 0;
     @Setter
     private Consumer<HashMap<String, Object>> onPlayStateChange;
+    @Setter
+    private Runnable onPlayEnd;
     private IntervalCaller cachedProgressCaller = new IntervalCaller(500, 0);
     private String url;
     private String title;
@@ -303,19 +305,19 @@ public class PlayerView extends ConstraintLayout
     }
 
     @Override
-    public void onPropertyChange(PlayerPropertyType name, Object value) {
-        post(() -> controlView.onPropertyChange(name, value));
+    public void onPropertyChange(PlayerPropertyType propertyType, Object value) {
+        post(() -> controlView.onPropertyChange(propertyType, value));
 
         if (value == null) {
             return;
         }
 
-        if (name == PlayerPropertyType.TimePos ||
-            name == PlayerPropertyType.PausedForCache||
-            name == PlayerPropertyType.Pause) {
+        if (propertyType == PlayerPropertyType.TimePos ||
+            propertyType == PlayerPropertyType.PausedForCache||
+            propertyType == PlayerPropertyType.Pause) {
             PlayerEventType.PlayEventType state = PlayerEventType.PlayEventType.PlayEventTypeOnProgress;
             HashMap<String, Object> data = new HashMap<>();
-            if (name == PlayerPropertyType.TimePos) {
+            if (propertyType == PlayerPropertyType.TimePos) {
                 state = PlayerEventType.PlayEventType.PlayEventTypeOnProgress;
                 position = (Double) value;
                 data.put("duration", duration);
@@ -331,7 +333,7 @@ public class PlayerView extends ConstraintLayout
                         commentView.getCurrentTime().postValue((float) position);
                     }
                 }
-            } else if (name == PlayerPropertyType.Pause) {
+            } else if (propertyType == PlayerPropertyType.Pause) {
                 state = PlayerEventType.PlayEventType.PlayEventTypeOnPause;
                 data.put("duration", duration);
                 data.put("position", position);
@@ -349,15 +351,20 @@ public class PlayerView extends ConstraintLayout
             if (onPlayStateChange != null) {
                 onPlayStateChange.accept(data);
             }
-        } else if (name == PlayerPropertyType.Duration) {
+        } else if (propertyType == PlayerPropertyType.Duration) {
             duration = (Double) value;
-        } else if (name == PlayerPropertyType.DemuxerCacheState) {
-            if (!(value instanceof SeekableRange[])) {
+        } else if (propertyType == PlayerPropertyType.DemuxerCacheState) {
+            if (!(value instanceof SeekableRange[] ranges)) {
                 return;
             }
-            val ranges = (SeekableRange[])value;
             double maxValue = duration;
             cachedProgressCaller.invoke(() -> post(() -> controlView.progressBar.setRanges(ranges, maxValue)));
+        } else if (propertyType == PlayerPropertyType.EofReached &&
+                duration >= 0.05 && position >= 0.05 &&
+                Math.abs(duration - position) < 5.0) {
+            if (onPlayEnd != null) {
+                onPlayEnd.run();
+            }
         }
     }
 
@@ -656,5 +663,14 @@ public class PlayerView extends ConstraintLayout
 
     public void setLastWatchPosition(long lastWatchPosition) {
         contentView.viewModel.setLastWatchPosition(lastWatchPosition);
+    }
+
+    public void resume() {
+        if (contentView.viewModel.isPlaying()) return;
+        controlView.playButton.performClick();
+    }
+
+    public void showLoading() {
+        eventView.post(() -> eventView.showLoadIndicator(true));
     }
 }

@@ -2,7 +2,6 @@ package top.ourfor.app.iplayx.view.video;
 
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 
-import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.SurfaceHolder;

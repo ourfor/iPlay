@@ -63,7 +63,7 @@ public class SettingViewCell extends ConstraintLayout implements UpdateModelActi
         }
         model = (SettingModel) other;
         if (model.type == null) return;
-
+        resetLayoutForReuse();
         switch (model.type) {
             case SWITCH:
                 binding.settingSwitch.setVisibility(VISIBLE);
@@ -101,6 +101,13 @@ public class SettingViewCell extends ConstraintLayout implements UpdateModelActi
                 binding.nameLabel.setText(model.title);
                 break;
         }
+    }
+
+    private void resetLayoutForReuse() {
+        binding.textArea.setVisibility(GONE);
+        binding.settingContainer.removeAllViews();
+        binding.settingButton.setVisibility(GONE);
+        binding.settingSwitch.setVisibility(GONE);
     }
 
     private void setupSpinner() {

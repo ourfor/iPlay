@@ -82,9 +82,18 @@ public class VideoPage implements Page {
                         .type(SettingType.SWITCH)
                         .value(AppSetting.shared.useFullScreenPlayer)
                         .onClick(object -> {
-                            if (!(object instanceof Boolean)) return;
-                            val value = (Boolean) object;
-                            AppSetting.shared.useFullScreenPlayer = value;
+                            if (!(object instanceof Boolean value)) return;
+                            AppSetting.shared.setUseFullScreenPlayer(value);
+                            AppSetting.shared.save();
+                        })
+                        .build(),
+                SettingModel.builder()
+                        .title(getContext().getString(R.string.auto_play_next_episode))
+                        .type(SettingType.SWITCH)
+                        .value(AppSetting.shared.isAutoPlayNextEpisode())
+                        .onClick(object -> {
+                            if (!(object instanceof Boolean value)) return;
+                            AppSetting.shared.setAutoPlayNextEpisode(value);
                             AppSetting.shared.save();
                         })
                         .build(),
@@ -93,8 +102,7 @@ public class VideoPage implements Page {
                         .type(SettingType.SWITCH)
                         .value(AppSetting.shared.isUseStrmFirst())
                         .onClick(object -> {
-                            if (!(object instanceof Boolean)) return;
-                            val value = (Boolean) object;
+                            if (!(object instanceof Boolean value)) return;
                             AppSetting.shared.setUseStrmFirst(value);
                             AppSetting.shared.save();
                         })
@@ -116,8 +124,7 @@ public class VideoPage implements Page {
                         .value(AppSetting.shared.mpvConfig)
                         .onClick(object -> {
                             if (!(object instanceof String)) return;
-                            val value = (String) object;
-                            AppSetting.shared.mpvConfig = value;
+                            AppSetting.shared.mpvConfig = (String) object;
                             AppSetting.shared.save();
                         })
                         .type(SettingType.TEXTAREA)
