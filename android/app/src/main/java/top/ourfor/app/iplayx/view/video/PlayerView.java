@@ -360,9 +360,8 @@ public class PlayerView extends ConstraintLayout
             double maxValue = duration;
             cachedProgressCaller.invoke(() -> post(() -> controlView.progressBar.setRanges(ranges, maxValue)));
         } else if (propertyType == PlayerPropertyType.EofReached &&
-                duration >= 0.05 &&
-                position >= 0.05 &&
-                Math.abs(duration - position) < 1.0) {
+                duration >= 0.05 && position >= 0.05 &&
+                Math.abs(duration - position) < 5.0) {
             if (onPlayEnd != null) {
                 onPlayEnd.run();
             }
@@ -667,6 +666,11 @@ public class PlayerView extends ConstraintLayout
     }
 
     public void resume() {
+        if (contentView.viewModel.isPlaying()) return;
         controlView.playButton.performClick();
+    }
+
+    public void showLoading() {
+        eventView.post(() -> eventView.showLoadIndicator(true));
     }
 }

@@ -259,6 +259,7 @@ public class MoviePlayerPage implements Page {
                 val next = playlist.poll();
                 if (next != null) {
                     log.info("play next: {}", next);
+                    playerView.showLoading();
                     onSelectMedia(next);
                 }
             }
