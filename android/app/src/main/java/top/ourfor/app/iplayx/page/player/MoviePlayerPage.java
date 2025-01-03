@@ -317,7 +317,11 @@ public class MoviePlayerPage implements Page {
                 }
             }
             listView.viewModel.onClick = e -> {
-                onSelectMedia(e.getModel());
+                val model = e.getModel();
+                onSelectMedia(model);
+                if (model.isEpisode()) {
+                    setupPlaylist(model);
+                }
                 XGET(DispatchAction.class).runOnUiThread(() -> {
                     if (dialog != null) {
                         dialog.cancel();
