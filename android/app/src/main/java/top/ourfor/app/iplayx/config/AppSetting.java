@@ -2,6 +2,8 @@ package top.ourfor.app.iplayx.config;
 
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 
+import android.content.Context;
+
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,6 +17,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.val;
+import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.bean.KVStorage;
 import top.ourfor.app.iplayx.common.type.LayoutType;
 import top.ourfor.app.iplayx.common.type.PlayerKernelType;
@@ -64,6 +67,7 @@ public class AppSetting {
             instance.pictureQuality = PictureQuality.Auto;
             instance.playerKernel = PlayerKernelType.MPV;
             instance.layoutType = LayoutType.Auto;
+            instance.fontFamily = XGET(Context.class).getResources().getResourceEntryName(R.font.lxgw_wen_kai_screen);
             if (DeviceUtil.isTV) {
                 instance.videoDecodeType = VideoDecodeType.Hardware;
                 instance.playerKernel = PlayerKernelType.EXO;
