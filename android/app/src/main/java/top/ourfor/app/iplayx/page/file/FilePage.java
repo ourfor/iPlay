@@ -46,7 +46,6 @@ import top.ourfor.app.iplayx.page.login.LoginPage;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.util.AnimationUtil;
 import top.ourfor.app.iplayx.util.DeviceUtil;
-import top.ourfor.app.iplayx.util.NavigationUtil;
 import top.ourfor.app.iplayx.util.PathUtil;
 import top.ourfor.app.iplayx.util.WindowUtil;
 import top.ourfor.app.iplayx.view.ListView;
@@ -68,7 +67,7 @@ public class FilePage implements DriveUpdateAction, ThemeUpdateAction, Page {
     private LottieAnimationView activityIndicator = null;
     private SwipeRefreshLayout swipeRefreshLayout = null;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void init() {
         binding = FilePageBinding.inflate(LayoutInflater.from(context), null, false);
         store = XGET(GlobalStore.class);
         val view = binding.getRoot();
@@ -118,10 +117,9 @@ public class FilePage implements DriveUpdateAction, ThemeUpdateAction, Page {
         });
     }
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setupUI(getContext());
+    public void setup() {
+        setupUI(context);
         bind();
-        return binding.getRoot();
     }
 
     void setupUI(Context context) {
@@ -235,15 +233,16 @@ public class FilePage implements DriveUpdateAction, ThemeUpdateAction, Page {
         page.show(XGET(Activity.class).getSupportFragmentManager(), "addDrive");
     }
 
-    public void onDestroyView() {
-        binding = null;
-    }
-
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
+    }
+
+    @Override
+    public void destroy() {
+        binding = null;
     }
 
     @Override

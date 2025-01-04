@@ -54,7 +54,7 @@ public class EpisodePage implements Page {
     Context context;
 
     
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void init() {
         val args = params;
         title = args.getOrDefault("title", "").toString();
         seriesId = args.getOrDefault("seriesId", "").toString();
@@ -79,12 +79,11 @@ public class EpisodePage implements Page {
         });
     }
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void setup() {
         XGET(NavigationTitleBar.class).setNavTitle(title);
-        setupUI(getContext());
+        setupUI(context);
         bind();
         binding.getRoot().setPadding(0, WindowUtil.defaultToolbarBottom, 0, 0);
-        return binding.getRoot();
     }
 
     @Override
@@ -184,7 +183,12 @@ public class EpisodePage implements Page {
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
         this.params = (HashMap<String, Object>) params;
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
+    }
+
+    @Override
+    public void destroy() {
+        binding = null;
     }
 }

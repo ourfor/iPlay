@@ -6,14 +6,10 @@ import static top.ourfor.app.iplayx.module.Bean.XWATCH;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.SearchView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.MenuItemCompat;
 
@@ -39,7 +35,6 @@ import top.ourfor.app.iplayx.common.model.ColorScheme;
 import top.ourfor.app.iplayx.databinding.SearchPageBinding;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.util.DeviceUtil;
-import top.ourfor.app.iplayx.util.NavigationUtil;
 import top.ourfor.app.iplayx.model.EmbyMediaModel;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.page.home.MediaViewCell;
@@ -61,7 +56,7 @@ public class SearchPage implements SiteUpdateAction, ThemeUpdateAction, Page {
     AnimationAction activityIndicator;
     ListView<EmbyMediaModel> listView = null;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void init() {
         binding = SearchPageBinding.inflate(LayoutInflater.from(context));
         store = XGET(GlobalStore.class);
         val view = binding.getRoot();
@@ -175,13 +170,12 @@ public class SearchPage implements SiteUpdateAction, ThemeUpdateAction, Page {
         });
     }
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setupUI(getContext());
-        bind(savedInstanceState);
-        return binding.getRoot();
+    public void setup() {
+        setupUI();
+        bind();
     }
 
-    void setupUI(Context context) {
+    void setupUI() {
         listView = new ListView<>(getContext());
         listView.setId(View.generateViewId());
         FlexLayoutManager layoutManager = new FlexLayoutManager(getContext());
@@ -194,7 +188,7 @@ public class SearchPage implements SiteUpdateAction, ThemeUpdateAction, Page {
         binding.getRoot().setPadding(0, WindowUtil.defaultToolbarBottom, 0, 0);
     }
 
-    void bind(Bundle savedInstanceState) {
+    void bind() {
         XWATCH(ThemeUpdateAction.class, this);
         XWATCH(SiteUpdateAction.class, this);
         listView.viewModel.onClick = event -> {
@@ -219,9 +213,8 @@ public class SearchPage implements SiteUpdateAction, ThemeUpdateAction, Page {
                 return false;
             }
         });
-        if (savedInstanceState == null) {
-            viewModel.fetchSearchSuggestion();
-        }
+
+        viewModel.fetchSearchSuggestion();
     }
 
     void search() {
@@ -241,15 +234,17 @@ public class SearchPage implements SiteUpdateAction, ThemeUpdateAction, Page {
         });
     }
 
-    public void onDestroyView() {
+
+    @Override
+    public void destroy() {
         binding = null;
     }
 
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
     }
 
     @Override

@@ -1,15 +1,9 @@
 package top.ourfor.app.iplayx.page.setting.picture;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +13,6 @@ import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.type.PictureQuality;
-import top.ourfor.app.iplayx.common.type.VideoDecodeType;
 import top.ourfor.app.iplayx.config.AppSetting;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.page.setting.common.OptionModel;
@@ -39,7 +32,7 @@ public class PicturePage implements Page {
     @Getter
     Context context;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void init() {
         val pictureOptions = List.of(
                 new OptionModel<>(PictureQuality.Auto, getContext().getString(R.string.pic_quality_auto)),
                 new OptionModel<>(PictureQuality.High, getContext().getString(R.string.pic_quality_high)),
@@ -80,12 +73,11 @@ public class PicturePage implements Page {
         );
     }
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void setup() {
         contentView = new ConstraintLayout(context);
         setupUI(context);
         bind();
         contentView.setPadding(0, WindowUtil.defaultToolbarBottom, 0, 0);
-        return contentView;
     }
 
     void setupUI(Context context) {
@@ -106,8 +98,8 @@ public class PicturePage implements Page {
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
     }
 
     @Override

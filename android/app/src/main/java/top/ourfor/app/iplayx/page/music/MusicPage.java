@@ -4,7 +4,6 @@ import static top.ourfor.app.iplayx.module.Bean.XGET;
 
 import android.content.Context;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
-import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
 
@@ -26,7 +24,6 @@ import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.DispatchAction;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
-import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.databinding.EpisodePageBinding;
 import top.ourfor.app.iplayx.model.EmbyMediaModel;
@@ -35,8 +32,6 @@ import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.util.AnimationUtil;
 import top.ourfor.app.iplayx.util.DeviceUtil;
-import top.ourfor.app.iplayx.util.LayoutUtil;
-import top.ourfor.app.iplayx.util.NavigationUtil;
 import top.ourfor.app.iplayx.view.ListView;
 import top.ourfor.app.iplayx.view.infra.Toolbar;
 import top.ourfor.app.iplayx.view.infra.ToolbarAction;
@@ -56,19 +51,17 @@ public class MusicPage implements Page {
     Context context;
     HashMap<String, Object> params;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void init() {
         val args = params;
         title = (String) args.getOrDefault("title", "");
         id = (String) args.getOrDefault("id", "");
     }
 
-    @Nullable
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = EpisodePageBinding.inflate(inflater, container, false);
+    public void setup() {
+        binding = EpisodePageBinding.inflate(LayoutInflater.from(context), null, false);
         XGET(NavigationTitleBar.class).setNavTitle(title);
         setupUI(getContext());
         bind();
-        return binding.getRoot();
     }
 
     void setupUI(Context context) {
@@ -163,7 +156,7 @@ public class MusicPage implements Page {
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
         this.params = new HashMap<>(params);
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
     }
 }
