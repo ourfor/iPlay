@@ -7,18 +7,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -64,7 +60,7 @@ public class WebPage implements ThemeUpdateAction, Page {
     private SwipeRefreshLayout swipeRefreshLayout = null;
 
     @SuppressLint({"SetJavaScriptEnabled", "JavascriptInterface"})
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void init() {
         binding = WebPageBinding.inflate(LayoutInflater.from(context), null, false);
         store = XGET(GlobalStore.class);
         val view = binding.getRoot();
@@ -177,10 +173,9 @@ public class WebPage implements ThemeUpdateAction, Page {
         });
     }
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setupUI(getContext());
+    public void setup() {
+        setupUI(context);
         bind();
-        return binding.getRoot();
     }
 
     void setupUI(Context context) {
@@ -221,8 +216,8 @@ public class WebPage implements ThemeUpdateAction, Page {
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
     }
 
     @Override

@@ -5,22 +5,16 @@ import static top.ourfor.app.iplayx.module.Bean.XGET;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 import android.os.Environment;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.fragment.app.Fragment;
 
 import com.azhon.appupdate.manager.DownloadManager;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,11 +48,10 @@ public class AboutPage implements Page {
     @Getter
     Context context;
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = AboutPageBinding.inflate(inflater, container, false);
+    public void setup() {
+        binding = AboutPageBinding.inflate(LayoutInflater.from(context), null, false);
         binding.getRoot().setPadding(0, WindowUtil.defaultToolbarBottom, 0, 0);
         setupUI(context);
-        return binding.getRoot();
     }
 
     @Override
@@ -131,7 +124,7 @@ public class AboutPage implements Page {
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
-        onCreateView(LayoutInflater.from(context), null, null);
+        setup();
     }
 
 }

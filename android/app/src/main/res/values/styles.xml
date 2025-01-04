@@ -47,6 +47,8 @@
     <style name="SettingItemDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:windowBackground">@drawable/dialog_bg</item>
         <item name="android:textColor">@color/onBackground</item>
+        <item name="android:textColorPrimary">@color/onBackground</item>
+        <item name="tint">@color/onBackground</item>
         <item name="colorAccent">@color/onBackground</item>
     </style>
 

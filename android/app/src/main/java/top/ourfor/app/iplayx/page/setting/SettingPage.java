@@ -47,12 +47,12 @@ public class SettingPage implements ThemeUpdateAction, Page {
             new SettingItemModel(Type.About, R.string.setting_item_about, com.microsoft.fluent.mobile.icons.R.drawable.ic_fluent_megaphone_24_filled)
     );
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        binding = SettingPageBinding.inflate(LayoutInflater.from(getContext()));
+    public void init() {
+        binding = SettingPageBinding.inflate(LayoutInflater.from(context));
+        listView = binding.settingList;
     }
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        listView = binding.settingList;
+    public View setup() {
         setupUI(context);
         bind();
         return binding.getRoot();
@@ -87,8 +87,8 @@ public class SettingPage implements ThemeUpdateAction, Page {
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
     }
 
     @Override

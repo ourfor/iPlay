@@ -1,19 +1,16 @@
 package top.ourfor.app.iplayx.page.home;
 
 import static top.ourfor.app.iplayx.module.Bean.XGET;
-import static top.ourfor.app.iplayx.module.Bean.XSET;
 import static top.ourfor.app.iplayx.module.Bean.XWATCH;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.MenuItemCompat;
 
@@ -34,7 +31,6 @@ import top.ourfor.app.iplayx.action.SiteUpdateAction;
 import top.ourfor.app.iplayx.action.ThemeUpdateAction;
 import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
-import top.ourfor.app.iplayx.common.type.MediaType;
 import top.ourfor.app.iplayx.databinding.HomePageBinding;
 import top.ourfor.app.iplayx.model.SiteModel;
 import top.ourfor.app.iplayx.page.Page;
@@ -61,7 +57,7 @@ public class HomePage implements SiteUpdateAction, ThemeUpdateAction, SiteListUp
     GlobalStore store;
     HomeViewModel viewModel;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void init() {
         val inflater = LayoutInflater.from(context);
         binding = HomePageBinding.inflate(inflater, null, false);
         val view = binding.getRoot();
@@ -125,12 +121,13 @@ public class HomePage implements SiteUpdateAction, ThemeUpdateAction, SiteListUp
         binding.getRoot().setPadding(0, WindowUtil.defaultToolbarBottom, 0, 0);
     }
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setupUI(getContext());
+    public void setup() {
+        setupUI(context);
         bind();
-        return binding.getRoot();
+        binding.getRoot();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void showSiteSelectPanel() {
         val site = store.getSite();
         siteListView.viewModel.isSelected = (model) -> model.getUser().equals(site.getUser()) && model.getId().equals(site.getId());
@@ -260,8 +257,13 @@ public class HomePage implements SiteUpdateAction, ThemeUpdateAction, SiteListUp
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
+    }
+
+    @Override
+    public void destroy() {
+        binding = null;
     }
 
     @Override

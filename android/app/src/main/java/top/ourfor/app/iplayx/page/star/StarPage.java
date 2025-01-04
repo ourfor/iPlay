@@ -17,7 +17,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import dagger.hilt.android.AndroidEntryPoint;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -49,7 +48,7 @@ public class StarPage implements SiteUpdateAction, ThemeUpdateAction, Page {
     StarPageBinding binding;
     AnimationAction activityIndicator;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void init() {
         binding = StarPageBinding.inflate(LayoutInflater.from(context));
         val view = binding.getRoot();
         store = XGET(GlobalStore.class);
@@ -82,12 +81,11 @@ public class StarPage implements SiteUpdateAction, ThemeUpdateAction, Page {
         activityIndicator.setVisibility(View.GONE);
     }
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void setup() {
         contentView = binding.getRoot();
-        setupUI(getContext());
-        bind(savedInstanceState);
+        setupUI(context);
+        bind();
         contentView.setPadding(0, WindowUtil.defaultToolbarBottom, 0, 0);
-        return contentView;
     }
 
     void setupUI(Context context) {
@@ -102,12 +100,10 @@ public class StarPage implements SiteUpdateAction, ThemeUpdateAction, Page {
         }
     }
 
-    void bind(Bundle savedInstanceState) {
+    void bind() {
         XWATCH(ThemeUpdateAction.class, this);
         XWATCH(SiteUpdateAction.class, this);
-        if (savedInstanceState == null) {
-            XGET(ThreadPoolExecutor.class).execute(viewModel::fetchStarData);
-        }
+        XGET(ThreadPoolExecutor.class).execute(viewModel::fetchStarData);
     }
 
     @Override
@@ -129,8 +125,13 @@ public class StarPage implements SiteUpdateAction, ThemeUpdateAction, Page {
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
+    }
+
+    @Override
+    public void destroy() {
+        binding = null;
     }
 
     @Override

@@ -4,13 +4,18 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.util.Log;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.config.AppSetting;
 
 @Slf4j
@@ -58,9 +63,20 @@ public class FontModule {
 
     public static void initFont(Context context) {
         try {
+            scanInternalFont(context);
             scanExternalFont(context);
         } catch (Exception e) {
             log.error("scan external font failed", e);
+        }
+    }
+
+    public static void scanInternalFont(Context context) throws NoSuchFieldException, IllegalAccessException {
+        var fonts = List.of(R.font.lxgw_wen_kai_screen, R.font.twemoji_mozilla);
+        var fontMap = getSystemFontMap();
+        for (int resId : fonts) {
+            Typeface font = ResourcesCompat.getFont(context, resId);
+            var familyName = context.getResources().getResourceEntryName(resId);
+            fontMap.put(familyName, font);
         }
     }
 
@@ -77,10 +93,10 @@ public class FontModule {
         }
 
         File[] ttfs = fontDir.listFiles(f -> f.isFile() && f.getName().endsWith("ttf"));
-        Map<String, Typeface> fontMap = getSystemFontMap();
+        var fontMap = getSystemFontMap();
         for (File ttf : ttfs) {
             Typeface font = Typeface.createFromFile(ttf);
-            String familyName = ttf.getName().replace(".ttf", "");
+            var familyName = ttf.getName().replace(".ttf", "");
             fontMap.put(familyName, font);
         }
     }

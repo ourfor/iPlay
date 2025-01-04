@@ -1,15 +1,9 @@
 package top.ourfor.app.iplayx.page.setting.audio;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +30,7 @@ public class AudioPage implements Page {
     @Getter
     Context context;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void init() {
         settingModels = List.of(
                 SettingModel.builder()
                         .title(getContext().getString(R.string.audio_turn_off))
@@ -52,12 +46,11 @@ public class AudioPage implements Page {
         );
     }
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void setup() {
         contentView = new ConstraintLayout(context);
         setupUI(context);
         bind();
         contentView.setPadding(0, WindowUtil.defaultToolbarBottom, 0, 0);
-        return contentView;
     }
 
     void setupUI(Context context) {
@@ -78,8 +71,8 @@ public class AudioPage implements Page {
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
     }
 
     @Override

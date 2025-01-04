@@ -1,34 +1,23 @@
 package top.ourfor.app.iplayx.page.setting.cloud;
 
-import static android.app.Activity.RESULT_OK;
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 import static top.ourfor.app.iplayx.module.Bean.XWATCH;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.documentfile.provider.DocumentFile;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,7 +41,6 @@ import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.page.login.LoginPage;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.store.GlobalStore;
-import top.ourfor.app.iplayx.util.PathUtil;
 import top.ourfor.app.iplayx.util.WindowUtil;
 
 @Slf4j
@@ -65,13 +53,12 @@ public class CloudPage implements DriveUpdateAction, Page {
     @Getter
     Context context;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void init() {
         binding = CloudPageBinding.inflate(LayoutInflater.from(context), null, false);
         XWATCH(DriveUpdateAction.class, this);
     }
 
-    @Nullable
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void setup() {
         val actionBar = XGET(ActionBar.class);
         XGET(NavigationTitleBar.class).setNavTitle(R.string.page_cloud);
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -79,7 +66,6 @@ public class CloudPage implements DriveUpdateAction, Page {
         setupUI(getContext());
         bind();
         binding.getRoot().setPadding(0, WindowUtil.defaultToolbarBottom, 0, 0);
-        return binding.getRoot();
     }
 
     void setupUI(Context context) {
@@ -239,8 +225,8 @@ public class CloudPage implements DriveUpdateAction, Page {
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
     }
 
     @Override

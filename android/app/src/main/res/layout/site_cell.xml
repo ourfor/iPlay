@@ -29,7 +29,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <top.ourfor.app.iplayx.view.infra.TextView
             android:id="@+id/site_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
             app:layout_constraintLeft_toLeftOf="@id/site_image"
             app:layout_constraintTop_toBottomOf="@id/site_image" />
 
-        <TextView
+        <top.ourfor.app.iplayx.view.infra.TextView
             android:id="@+id/site_remark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -61,12 +61,12 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <top.ourfor.app.iplayx.view.infra.TextView
             android:id="@+id/site_url"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp"
             android:layout_marginBottom="5dp"
             android:gravity="start"
             android:text="Site URL"
@@ -78,27 +78,27 @@
             app:layout_constraintTop_toBottomOf="@id/site_remark" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
+    <top.ourfor.app.iplayx.view.infra.TextView
         android:id="@+id/modify"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:background="@color/blue_1"
         android:gravity="center"
         android:paddingStart="35dp"
-        android:paddingRight="35dp"
+        android:paddingEnd="35dp"
         android:text="@string/modify"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="18sp" />
 
-    <TextView
+    <top.ourfor.app.iplayx.view.infra.TextView
         android:id="@+id/delete"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:background="@color/error"
         android:gravity="center"
         android:paddingStart="35dp"
-        android:paddingRight="35dp"
+        android:paddingEnd="35dp"
         android:text="@string/delete"
         android:textAlignment="center"
         android:textColor="@color/white"

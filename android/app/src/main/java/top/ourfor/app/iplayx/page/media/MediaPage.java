@@ -3,15 +3,10 @@ package top.ourfor.app.iplayx.page.media;
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 
@@ -41,11 +36,9 @@ import top.ourfor.app.iplayx.model.EmbyUserData;
 import top.ourfor.app.iplayx.module.GlideApp;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.page.home.MediaViewCell;
-import top.ourfor.app.iplayx.page.web.ScriptManageView;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.util.LayoutUtil;
-import top.ourfor.app.iplayx.util.NavigationUtil;
 import top.ourfor.app.iplayx.util.WindowUtil;
 import top.ourfor.app.iplayx.view.ActorCellView;
 import top.ourfor.app.iplayx.view.LinearLayoutManager;
@@ -71,7 +64,7 @@ public class MediaPage implements Page {
     MediaViewModel viewModel;
 
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void init() {
         binding = MediaPageBinding.inflate(LayoutInflater.from(context), null, false);
         store = XGET(GlobalStore.class);
         viewModel = new MediaViewModel(store);
@@ -98,7 +91,7 @@ public class MediaPage implements Page {
     }
 
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void setup() {
         title = params.getOrDefault("title", "").toString();
         id = params.getOrDefault("id", "").toString();
         model = store.getDataSource().getMediaMap().get(id);
@@ -108,7 +101,6 @@ public class MediaPage implements Page {
         XGET(NavigationTitleBar.class).setNavTitle(title);
         setupUI(getContext());
         bind();
-        return binding.getRoot();
     }
 
     @Override
@@ -327,8 +319,13 @@ public class MediaPage implements Page {
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
         this.params = params;
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
+    }
+
+    @Override
+    public void destroy() {
+        binding = null;
     }
 
     @Override

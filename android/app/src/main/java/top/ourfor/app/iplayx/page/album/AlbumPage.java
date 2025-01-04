@@ -61,7 +61,7 @@ public class AlbumPage implements Page {
     AlbumViewModel viewModel;
     HashMap<String, Object> params;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void init() {
         binding = AlbumPageBinding.inflate(LayoutInflater.from(context), null, false);
         val args = params;
         id = args.getOrDefault("id", "").toString();
@@ -125,10 +125,9 @@ public class AlbumPage implements Page {
         });
     }
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void setup() {
         setupUI(getContext());
         bind();
-        return binding.getRoot();
     }
 
     public void onDestroyView() {
@@ -286,8 +285,13 @@ public class AlbumPage implements Page {
         this.context = context;
         this.params = new HashMap<>(params);
         store = XGET(GlobalStore.class);
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
+    }
+
+    @Override
+    public void destroy() {
+        binding = null;
     }
 
     @Override

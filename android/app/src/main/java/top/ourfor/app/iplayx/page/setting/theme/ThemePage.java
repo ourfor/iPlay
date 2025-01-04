@@ -3,13 +3,8 @@ package top.ourfor.app.iplayx.page.setting.theme;
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.List;
@@ -42,7 +37,7 @@ public class ThemePage implements Page {
     @Getter
     Context context;
 
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void init() {
         val themeOptions = List.of(
                 new ThemeModel(ThemeModel.ThemeType.FOLLOW_SYSTEM, getContext().getString(R.string.theme_follow_system)),
                 new ThemeModel(ThemeModel.ThemeType.DARK_MODE, getContext().getString(R.string.theme_dark_mode)),
@@ -75,17 +70,18 @@ public class ThemePage implements Page {
                         .value(defaultThemeOption)
                         .options(themeOptions)
                         .onClick(object -> {
-                            if (!(object instanceof ThemeModel)) return;
-                            val option = (ThemeModel) object;
+                            if (!(object instanceof ThemeModel option)) return;
+                            val titleBar = XGET(NavigationTitleBar.ThemeManageAction.class);
+                            assert titleBar != null;
                             switch (option.type) {
                                 case FOLLOW_SYSTEM:
-                                    XGET(NavigationTitleBar.ThemeManageAction.class).switchToAutoModel();
+                                    titleBar.switchToAutoModel();
                                     break;
                                 case DARK_MODE:
-                                    XGET(NavigationTitleBar.ThemeManageAction.class).switchToDarkMode(true);
+                                    titleBar.switchToDarkMode(true);
                                     break;
                                 case LIGHT_MODE:
-                                    XGET(NavigationTitleBar.ThemeManageAction.class).switchToDarkMode(false);
+                                    titleBar.switchToDarkMode(false);
                                     break;
                             }
                             AppSetting.shared.appearance = option.type;
@@ -112,9 +108,8 @@ public class ThemePage implements Page {
                         .options(FontModule.getFontFamilyList())
                         .onClick(object -> {
                             if (!(object instanceof String)) return;
-                            val option = (String) object;
 
-                            AppSetting.shared.fontFamily = option;
+                            AppSetting.shared.fontFamily = (String) object;
                             AppSetting.shared.save();
                         })
                         .type(SettingType.SPINNER)
@@ -122,12 +117,11 @@ public class ThemePage implements Page {
         );
     }
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void setup() {
         contentView = new ConstraintLayout(getContext());
-        setupUI(getContext());
+        setupUI(context);
         bind();
         contentView.setPadding(0, WindowUtil.defaultToolbarBottom, 0, 0);
-        return contentView;
     }
 
     void setupUI(Context context) {
@@ -143,8 +137,8 @@ public class ThemePage implements Page {
     @Override
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        init();
+        setup();
     }
 
     @Override
