@@ -4,6 +4,7 @@ import static top.ourfor.app.iplayx.module.Bean.XGET;
 import static top.ourfor.app.iplayx.module.Bean.XSET;
 import static top.ourfor.app.iplayx.module.Bean.XWATCH;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Build;
@@ -196,9 +197,9 @@ public class FilePage implements DriveUpdateAction, ThemeUpdateAction, Page {
         driveListView.setItems(store.getDrives());
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     void showDriveSelectPanel() {
-        val drive = store.getDrive();
-        driveListView.viewModel.isSelected = (model) -> drive != null && model != null && model.equals(drive);
+        driveListView.viewModel.isSelected = (model) -> model != null && model.equals(store.getDrive());
         driveListView.setItems(store.getDrives());
         driveListView.setOnTouchListener((v1, event) -> {
             if (!driveListView.listView.canScrollVertically(-1)) {
@@ -228,7 +229,7 @@ public class FilePage implements DriveUpdateAction, ThemeUpdateAction, Page {
 
     void addDrive() {
         LoginPage page = new LoginPage();
-        page.setAllowServerType(List.of(ServerType.OneDrive, ServerType.Cloud189, ServerType.WebDAV, ServerType.Alist));
+        page.setAllowServerType(List.of(ServerType.OneDrive, ServerType.Cloud189, ServerType.WebDAV, ServerType.Alist, ServerType.Local));
         page.setServerType(ServerType.OneDrive);
         page.show(XGET(Activity.class).getSupportFragmentManager(), "addDrive");
     }

@@ -7,12 +7,20 @@ import static top.ourfor.lib.mpv.TrackItem.SubtitleTrackName;
 import static top.ourfor.lib.mpv.TrackItem.VideoTrackName;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.PendingIntent;
+import android.app.PictureInPictureParams;
+import android.app.RemoteAction;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
 import android.graphics.Color;
+import android.graphics.drawable.Icon;
 import android.media.AudioManager;
 import android.os.Build;
 import android.util.Size;
@@ -413,10 +421,12 @@ public class PlayerView extends ConstraintLayout
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     public void onPipEnter() {
         controlView.updateControlVisible(false);
-        XGET(Activity.class).enterPictureInPictureMode();
+        val activity = XGET(Activity.class);
+        activity.enterPictureInPictureMode();
     }
 
     @Override

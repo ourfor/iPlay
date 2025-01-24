@@ -18,6 +18,9 @@ import androidx.appcompat.app.ActionBar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,6 +44,7 @@ import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.page.login.LoginPage;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.store.GlobalStore;
+import top.ourfor.app.iplayx.util.PathUtil;
 import top.ourfor.app.iplayx.util.WindowUtil;
 
 @Slf4j
@@ -81,7 +85,6 @@ public class CloudPage implements DriveUpdateAction, Page {
     }
 
     void bind() {
-
         binding.fromButton.setOnClickListener(v -> {
             XGET(DispatchAction.class).runOnUiThread(() -> {
                 binding.fromButton.setEnabled(false);
@@ -119,12 +122,9 @@ public class CloudPage implements DriveUpdateAction, Page {
                     syncFailed();
                     return;
                 }
-                if (result instanceof Boolean) {
-                    val success = (Boolean) result;
-                    if (success) {
-                        syncSuccess();
-                        return;
-                    }
+                if (result) {
+                    syncSuccess();
+                    return;
                 }
                 syncFailed();
             });
@@ -153,9 +153,7 @@ public class CloudPage implements DriveUpdateAction, Page {
 
     @Override
     public void onDriveAdded(Drive drive) {
-        XGET(DispatchAction.class).runOnUiThread(() -> {
-            showDriveSelection();
-        });
+        XGET(DispatchAction.class).runOnUiThread(this::showDriveSelection);
     }
 
     void showDriveSelection() {
@@ -195,6 +193,21 @@ public class CloudPage implements DriveUpdateAction, Page {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("application/json");
         val launcher = XGET(ActivityEvent.class);
+        launcher.setConfirmCallback(dir -> {
+            if (!dir.isFile()) return;
+
+            try {
+                val is = getContext().getContentResolver().openInputStream(dir.getUri());
+                val store = XGET(GlobalStore.class);
+                final var content = PathUtil.getContent(is);
+                assert is != null;
+                is.close();
+                store.fromSiteJSON(content);
+                Toast.makeText(getContext(), R.string.local_sync_success, Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         launcher.setRequestFile(true);
         launcher.getLauncher().launch(intent);
     }
@@ -202,6 +215,25 @@ public class CloudPage implements DriveUpdateAction, Page {
     void showFolderPicker() {
         val intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         val launcher = XGET(ActivityEvent.class);
+        launcher.setConfirmCallback(dir -> {
+            if (!dir.isDirectory()) return;
+            Arrays.stream(dir.listFiles()).forEach(file -> {
+                if (file.getName().endsWith("sites.json")) {
+                    file.delete();
+                }
+            });
+            val file = dir.createFile("application/json", "sites.json");
+            try {
+                val os = getContext().getContentResolver().openOutputStream(file.getUri());
+                BufferedOutputStream bos = new BufferedOutputStream(os);
+                bos.write(GlobalStore.shared.toSiteJSON().getBytes());
+                bos.close();
+                os.close();
+                Toast.makeText(getContext(), R.string.local_sync_success, Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         launcher.setRequestFile(false);
         launcher.getLauncher().launch(intent);
     }

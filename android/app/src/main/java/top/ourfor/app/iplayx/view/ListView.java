@@ -144,7 +144,9 @@ public class ListView<T> extends ConstraintLayout {
             if (oldItems.size() <= oldItemPosition || newItems.size() <= newItemPosition) {
                 return false;
             }
-            return oldItems.get(oldItemPosition).equals(newItems.get(newItemPosition));
+            val oldItem = oldItems.get(oldItemPosition);
+            val newItem = newItems.get(newItemPosition);
+            return (oldItem != null && oldItem.equals(newItem)) || (oldItem == null && newItem == null);
         }
 
         @Override

@@ -3,13 +3,19 @@ package top.ourfor.app.iplayx.page.login;
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 import static top.ourfor.app.iplayx.module.Bean.XWATCH;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
@@ -21,6 +27,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -53,8 +60,10 @@ import top.ourfor.app.iplayx.common.type.ServerType;
 import top.ourfor.app.iplayx.databinding.LoginPageBinding;
 import top.ourfor.app.iplayx.model.drive.AlistDriveModel;
 import top.ourfor.app.iplayx.model.drive.Cloud189Model;
+import top.ourfor.app.iplayx.model.drive.LocalDriveModel;
 import top.ourfor.app.iplayx.model.drive.OneDriveModel;
 import top.ourfor.app.iplayx.model.drive.WebDAVModel;
+import top.ourfor.app.iplayx.page.ActivityEvent;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.util.LayoutUtil;
@@ -78,7 +87,8 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
             ServerType.WebDAV, R.string.webdav,
             ServerType.IPTV, R.string.iptv,
             ServerType.Alist, R.string.alist,
-            ServerType.Cloud189, R.string.cloud189
+            ServerType.Cloud189, R.string.cloud189,
+            ServerType.Local, R.string.local_file
     );
 
     LoginPageBinding binding = null;
@@ -195,6 +205,8 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                 loginToWebDAV(remake, server, username, password);
             } else if (serverType == ServerType.Alist) {
                 loginToAlist(remake, server, username, password);
+            } else if (serverType == ServerType.Local) {
+                loginToLocalDrive();
             }
         });
 
@@ -212,6 +224,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                     type != ServerType.Cloud189 &&
                     type != ServerType.WebDAV &&
                     type != ServerType.Alist &&
+                    type != ServerType.Local &&
                     type != ServerType.OneDrive) {
                     Toast.makeText(context, R.string.not_implementation, Toast.LENGTH_SHORT).show();
                     return;
@@ -219,8 +232,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                 serverType = type;
                 for (int i = 0; i < binding.serverTypeContainer.getChildCount(); i++) {
                     val child = binding.serverTypeContainer.getChildAt(i);
-                    if (child instanceof TagView) {
-                        val tag = (TagView) child;
+                    if (child instanceof TagView tag) {
                         tag.setColor(tag.equals(context.getString(value)) ? "purple" : "green");
                     }
                 }
@@ -229,6 +241,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                     case Emby, Jellyfin -> setupEmbyUI();
                     case WebDAV -> setupWebDAVUI();
                     case OneDrive -> setupOneDriveUI();
+                    case Local -> setupLocalDriveUI();
                     case Alist -> setupAlistUI();
                     default -> { }
                 }
@@ -261,6 +274,56 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
         startActivity(intent);
     }
 
+    private void loginToLocalDrive() {
+        var canAccessAllFile = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            String[] perms = {
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_PHONE_STATE
+            };
+            for (String p : perms) {
+                int ret = ContextCompat.checkSelfPermission(XGET(Application.class), p);
+                if (ret != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(perms, 0XCF);
+                    break;
+                } else {
+                    canAccessAllFile = true;
+                }
+            }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                intent.setData(Uri.parse("package:" + XGET(Application.class).getPackageName()));
+                startActivityForResult(intent, 1024);
+            } else {
+                canAccessAllFile = true;
+            }
+        }
+
+        if (!canAccessAllFile) {
+            return;
+        }
+
+        val remark = binding.remarkInput.getText().toString();
+        val drive = LocalDriveModel.builder()
+                .remark(remark.isBlank() || remark.isEmpty() ? "/" : remark)
+                .path("/")
+                .build();
+        val store = XGET(GlobalStore.class);
+        store.addDrive(drive);
+        store.switchDrive(drive);
+        XGET(Activity.class).runOnUiThread(() -> {
+            val resId = R.string.add_folder_success;
+            Toast.makeText(getContext(), resId, Toast.LENGTH_SHORT).show();
+            binding.loginButton.setEnabled(true);
+            if (!isPage) {
+                dismiss();
+            }
+        });
+    }
+
     @Override
     public void onedriveReadyUpdate(OneDriveAuth auth) {
         val drive = OneDriveModel.builder()
@@ -274,7 +337,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
         XGET(Activity.class).runOnUiThread(() -> {
             Toast.makeText(getContext(), R.string.login_success, Toast.LENGTH_SHORT).show();
             binding.loginButton.setEnabled(true);
-            if (isDialogModel) {
+            if (!isPage) {
                 dismiss();
             }
         });
@@ -468,6 +531,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
             case WebDAV -> setupWebDAVUI();
             case Cloud189 -> setup189UI();
             case OneDrive -> setupOneDriveUI();
+            case Local -> setupLocalDriveUI();
             case Alist -> setupAlistUI();
             default -> { }
         }
@@ -490,6 +554,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                 binding.showSensitiveSwitch
         );
         visible.forEach(view -> view.setVisibility(View.VISIBLE));
+        binding.loginButton.setText(R.string.login);
     }
 
     void setupAlistUI() {
@@ -509,6 +574,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                 binding.showSensitiveSwitch
         );
         visible.forEach(view -> view.setVisibility(View.VISIBLE));
+        binding.loginButton.setText(R.string.login);
     }
 
     void setup189UI() {
@@ -531,6 +597,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
         );
         visible.forEach(view -> view.setVisibility(View.VISIBLE));
         invisible.forEach(view -> view.setVisibility(View.GONE));
+        binding.loginButton.setText(R.string.login);
     }
 
     void setupWebDAVUI() {
@@ -553,6 +620,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
         );
         visible.forEach(view -> view.setVisibility(View.VISIBLE));
         invisible.forEach(view -> view.setVisibility(View.GONE));
+        binding.loginButton.setText(R.string.login);
     }
 
     void setupOneDriveUI() {
@@ -575,6 +643,30 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
         );
         visible.forEach(view -> view.setVisibility(View.VISIBLE));
         invisible.forEach(view -> view.setVisibility(View.GONE));
+        binding.loginButton.setText(R.string.login);
+    }
+
+    void setupLocalDriveUI() {
+        val visible = List.of(
+                binding.remarkLabel,
+                binding.remarkInput,
+                binding.loginButton
+        );
+        val invisible = List.of(
+                binding.usernameLabel,
+                binding.usernameInput,
+                binding.passwordLabel,
+                binding.passwordInput,
+                binding.serverLabel,
+                binding.serverInput,
+                binding.allowSyncLabel,
+                binding.allowSyncSwitch,
+                binding.showSensitiveLabel,
+                binding.showSensitiveSwitch
+        );
+        visible.forEach(view -> view.setVisibility(View.VISIBLE));
+        invisible.forEach(view -> view.setVisibility(View.GONE));
+        binding.loginButton.setText(R.string.add_folder);
     }
 
     @Override

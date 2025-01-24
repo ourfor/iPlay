@@ -12,9 +12,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.documentfile.provider.DocumentFile;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,6 +39,9 @@ public class ActivityEvent {
     @Setter
     boolean isRequestFile = false;
 
+    @Setter
+    Consumer<DocumentFile> confirmCallback;
+
     public void register() {
         launcher = XGET(Activity.class).registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             log.info("result: {}", result);
@@ -53,36 +58,9 @@ public class ActivityEvent {
                 }
 
                 if (dir != null && dir.exists()) {
-                    val isDirectory = dir.isDirectory();
-                    log.info("isDirectory: {}", isDirectory);
-                    if (isDirectory) {
-                        Arrays.stream(dir.listFiles()).forEach(file -> {
-                            if (file.getName().endsWith("sites.json")) {
-                                file.delete();
-                            }
-                        });
-                        val file = dir.createFile("application/json", "sites.json");
-                        try {
-                            val os = getContext().getContentResolver().openOutputStream(file.getUri());
-                            BufferedOutputStream bos = new BufferedOutputStream(os);
-                            bos.write(GlobalStore.shared.toSiteJSON().getBytes());
-                            bos.close();
-                            os.close();
-                            Toast.makeText(getContext(), R.string.local_sync_success, Toast.LENGTH_SHORT).show();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    } else if (dir.isFile()) {
-                        try {
-                            val is = getContext().getContentResolver().openInputStream(dir.getUri());
-                            val store = XGET(GlobalStore.class);
-                            final var content = PathUtil.getContent(is);
-                            is.close();
-                            store.fromSiteJSON(content);
-                            Toast.makeText(getContext(), R.string.local_sync_success, Toast.LENGTH_SHORT).show();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                    if (confirmCallback != null) {
+                        confirmCallback.accept(dir);
+                        confirmCallback = null;
                     }
                 }
             }
