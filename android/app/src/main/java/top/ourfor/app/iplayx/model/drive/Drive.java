@@ -11,7 +11,8 @@ import top.ourfor.app.iplayx.common.type.ServerType;
         @JsonSubTypes.Type(value = OneDriveModel.class, name = "onedrive"),
         @JsonSubTypes.Type(value = Cloud189Model.class, name = "cloud189"),
         @JsonSubTypes.Type(value = WebDAVModel.class, name = "webdav"),
-        @JsonSubTypes.Type(value = AlistDriveModel.class, name = "alist")
+        @JsonSubTypes.Type(value = AlistDriveModel.class, name = "alist"),
+        @JsonSubTypes.Type(value = LocalDriveModel.class, name = "local"),
 })
 public interface Drive {
     default ServerType getType() {
