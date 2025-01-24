@@ -95,4 +95,7 @@
     <string name="exit_after_crash">遇到未处理异常，退出应用</string>
     <string name="auto_play_next_episode">自动播放下一集(如果有)</string>
     <string name="app_logo">App Logo</string>
+    <string name="local_file">本地文件</string>
+    <string name="add_folder">添加目录</string>
+    <string name="add_folder_success">目录添加成功</string>
 </resources>

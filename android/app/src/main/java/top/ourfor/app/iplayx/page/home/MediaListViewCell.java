@@ -33,17 +33,21 @@ import top.ourfor.app.iplayx.view.ListView;
 import top.ourfor.app.iplayx.view.infra.TextView;
 
 @Slf4j
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class MediaListViewCell extends ConstraintLayout implements UpdateModelAction {
     private ListView<MediaModel> listView = new ListView(getContext());
     private TextView titleLabel = null;
     private TextView viewMoreLabel = null;
     private LayoutParams titleLayout = null;
     private LayoutParams listLayout = null;
-    private static Typeface themeFont = XGET(FontModule.class).getThemeFont();
+    private static Typeface themeFont = null;
     public Consumer<ListItemClickEvent<MediaModel>> onClick;
     public MediaListViewCell(@NonNull Context context) {
         super(context);
         setupUI(context);
+        if (themeFont == null) {
+            themeFont = XGET(FontModule.class).getThemeFont();
+        }
     }
 
     private void setupUI(Context context) {

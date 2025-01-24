@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -79,6 +80,7 @@ public class GlobalStore {
     public static GlobalStore shared = defaultStore();
 
     public GlobalStore() {
+        drives = new ArrayList<>();
         sites = new ArrayList<>();
         dataSource = createDataSource();
     }
@@ -107,6 +109,7 @@ public class GlobalStore {
             if (instance.dataSource == null) {
                 instance.dataSource = createDataSource();
             }
+            instance.drives.removeIf(Objects::isNull);
         }
         return instance;
     }
@@ -744,7 +747,7 @@ public class GlobalStore {
     }
 
     public boolean hasValidDrive() {
-        return drive != null && drives != null;
+        return drive != null && drives != null && !drives.isEmpty();
     }
 
     public void searchSuggestion(Consumer<List<EmbyMediaModel>> prompts) {

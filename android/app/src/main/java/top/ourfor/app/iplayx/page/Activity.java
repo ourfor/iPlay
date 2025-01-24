@@ -5,6 +5,10 @@ import static top.ourfor.app.iplayx.module.Bean.XSET;
 import static top.ourfor.app.iplayx.module.Bean.XWATCH;
 import static top.ourfor.app.iplayx.page.PageMaker.makePage;
 
+import android.annotation.SuppressLint;
+import android.app.PendingIntent;
+import android.app.PictureInPictureParams;
+import android.app.RemoteAction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,8 +16,10 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.KeyEvent;
@@ -25,11 +31,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.OnPictureInPictureModeChangedProvider;
 
 import com.azhon.appupdate.manager.DownloadManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.inject.Inject;
@@ -56,6 +64,7 @@ import top.ourfor.app.iplayx.util.PackageUtil;
 import top.ourfor.app.iplayx.util.PathUtil;
 import top.ourfor.app.iplayx.util.WindowUtil;
 import top.ourfor.app.iplayx.view.infra.Toolbar;
+import top.ourfor.app.iplayx.view.player.Player;
 
 @Slf4j
 @AndroidEntryPoint
@@ -69,7 +78,9 @@ public class Activity extends AppCompatActivity implements NavigationTitleBar,
 
     Router router;
 
-    ActivityEvent event = new ActivityEvent(this, null, true);
+    ActivityEvent event = new ActivityEvent(this, null, true, null);
+
+    BroadcastReceiver mediaReceiver;
 
 
     @Override
@@ -304,4 +315,50 @@ public class Activity extends AppCompatActivity implements NavigationTitleBar,
         getResources().updateConfiguration(config, getResources().getDisplayMetrics());
     }
 
+    @Override
+    @SuppressLint({"UnspecifiedRegisterReceiverFlag", "UnspecifiedImmutableFlag"})
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode);
+        if (!isInPictureInPictureMode) {
+            if (mediaReceiver != null) {
+                unregisterReceiver(mediaReceiver);
+            }
+        }
+
+        val context = getBaseContext();
+        val player = XGET(Player.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val MEDIA_CONTROL_ACTION = "iplay.action.media_control";
+            val MEDIA_CONTROL_KEY = "action";
+            val backwardIntent = PendingIntent.getBroadcast(this, 2, new Intent(MEDIA_CONTROL_ACTION).putExtra(MEDIA_CONTROL_KEY, "backward"), PendingIntent.FLAG_IMMUTABLE);
+            val pauseIntent = PendingIntent.getBroadcast(this, 3, new Intent(MEDIA_CONTROL_ACTION).putExtra(MEDIA_CONTROL_KEY, "pause"), PendingIntent.FLAG_IMMUTABLE);
+            val forwardIntent = PendingIntent.getBroadcast(this, 4, new Intent(MEDIA_CONTROL_ACTION).putExtra(MEDIA_CONTROL_KEY, "forward"), PendingIntent.FLAG_IMMUTABLE);
+            setPictureInPictureParams(new PictureInPictureParams.Builder()
+                    .setActions(List.of(
+                            new RemoteAction(Icon.createWithResource(context, com.microsoft.fluent.mobile.icons.R.drawable.ic_fluent_skip_back_10_24_filled), "", "", backwardIntent),
+                            new RemoteAction(Icon.createWithResource(context, com.microsoft.fluent.mobile.icons.R.drawable.ic_fluent_pause_24_filled), "", "", pauseIntent),
+                            new RemoteAction(Icon.createWithResource(context, com.microsoft.fluent.mobile.icons.R.drawable.ic_fluent_skip_forward_10_24_filled), "", "", forwardIntent)
+                    ))
+                    .build());
+            mediaReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (intent == null || intent.getExtras() == null) return;
+                    val action = intent.getExtras().getString(MEDIA_CONTROL_KEY);
+                    if (action == null) return;
+                    switch (action) {
+                        case "pause" -> player.pause();
+                        case "forward" -> player.jumpForward(10);
+                        case "backward" -> player.jumpBackward(10);
+                        case "resume" -> player.resume();
+                    }
+                }
+            };
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(mediaReceiver, new IntentFilter(MEDIA_CONTROL_ACTION), RECEIVER_EXPORTED);
+            } else {
+                registerReceiver(mediaReceiver, new IntentFilter(MEDIA_CONTROL_ACTION));
+            }
+        }
+    }
 }

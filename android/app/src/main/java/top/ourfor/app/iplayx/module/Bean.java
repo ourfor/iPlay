@@ -12,12 +12,13 @@ import javax.annotation.Nullable;
 import lombok.NonNull;
 import lombok.val;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class Bean {
-    private static WeakHashMap<String, WeakReference> beans = new WeakHashMap<>(20);
-    private static HashMap<String, BeanProxy> listener = new HashMap<>(20);
-    private static HashMap<String, Object> proxyBeans = new HashMap<>(20);
+    private static final WeakHashMap<String, WeakReference> beans = new WeakHashMap<>(20);
+    private static final HashMap<String, BeanProxy> listener = new HashMap<>(20);
+    private static final HashMap<String, Object> proxyBeans = new HashMap<>(20);
 
-    @Nullable
+    @NonNull
     public static <T> T XGET(Class<T> clazz) {
         WeakReference<T> ref = null;
         String key = null;
@@ -27,7 +28,7 @@ public class Bean {
             key = clazz.getName();
         }
         ref = beans.get(key);
-        return ref != null ? ref.get() : null;
+        return ref != null ? ref.get() : Null.shared.proxy(clazz);
     }
 
     public static <T> void XSET(Class<T> clazz, @Nullable T bean) {
@@ -42,7 +43,7 @@ public class Bean {
     }
 
     public static <T> void XSET(Class<T>[] clazzs, @Nullable T bean) {
-        WeakReference<T> ref = new WeakReference(bean);
+        WeakReference<T> ref = new WeakReference<>(bean);
         for (Class<?> clazz : clazzs) {
             String key = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -55,13 +56,14 @@ public class Bean {
     }
 
     public static <T> void XWATCH(Class<T> clazz, T bean) {
-        String key = null;
+        String key;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             key = clazz.getTypeName();
         } else {
             key = clazz.getName();
         }
         BeanProxy proxy = listener.getOrDefault(key, new BeanProxy());
+        assert proxy != null;
         proxy.beans.put(bean.getClass().getName(), bean);
         listener.put(key, proxy);
         if (!beans.containsKey(key)) {
@@ -83,7 +85,7 @@ public class Bean {
         } else {
             ref = beans.get(clazz.getName());
         }
-        return ref != null ? ref.get() : null;
+        return ref != null ? ref.get() : Null.shared.proxy(clazz);
     }
 
     @Deprecated
@@ -112,13 +114,14 @@ public class Bean {
 
     @Deprecated
     public static <T> void watch(Class<T> clazz, T bean) {
-        String key = null;
+        String key;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             key = clazz.getTypeName();
         } else {
             key = clazz.getName();
         }
         BeanProxy proxy = listener.getOrDefault(key, new BeanProxy());
+        assert proxy != null;
         proxy.beans.put(bean.getClass().getName(), bean);
         listener.put(key, proxy);
         if (!beans.containsKey(key)) {
