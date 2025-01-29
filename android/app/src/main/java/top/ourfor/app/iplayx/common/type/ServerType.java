@@ -9,6 +9,7 @@ public enum ServerType {
     WebDAV("webdav"),
     Alist("alist"),
     IPTV("iptv"),
+    iPlay("iplay"),
     Cloud189("189"),
     Local("local");
 

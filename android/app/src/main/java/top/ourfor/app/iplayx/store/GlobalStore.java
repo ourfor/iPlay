@@ -19,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,8 @@ import top.ourfor.app.iplayx.action.DriveUpdateAction;
 import top.ourfor.app.iplayx.action.SiteListUpdateAction;
 import top.ourfor.app.iplayx.action.SiteUpdateAction;
 import top.ourfor.app.iplayx.api.emby.EmbyApi;
+import top.ourfor.app.iplayx.api.iplay.iPlayApi;
+import top.ourfor.app.iplayx.api.iplay.iPlayModel;
 import top.ourfor.app.iplayx.api.jellyfin.JellyfinApi;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
 import top.ourfor.app.iplayx.bean.KVStorage;
@@ -47,6 +50,7 @@ import top.ourfor.app.iplayx.model.EmbyPageableModel;
 import top.ourfor.app.iplayx.model.EmbyPlaybackData;
 import top.ourfor.app.iplayx.model.EmbyPlaybackModel;
 import top.ourfor.app.iplayx.model.EmbyUserData;
+import top.ourfor.app.iplayx.model.ImageModel;
 import top.ourfor.app.iplayx.model.SiteModel;
 import top.ourfor.app.iplayx.model.drive.Drive;
 import top.ourfor.app.iplayx.view.video.PlayerSourceModel;
@@ -101,6 +105,10 @@ public class GlobalStore {
                 instance.api = JellyfinApi.builder()
                         .site(instance.site)
                         .build();
+            } else if (serverType == ServerType.iPlay) {
+                instance.api = iPlayApi.builder()
+                        .site(instance.site)
+                        .build();
             } else {
                 instance.api = EmbyApi.builder()
                         .site(instance.site)
@@ -125,6 +133,10 @@ public class GlobalStore {
              api = JellyfinApi.builder()
                      .site(site)
                      .build();
+        } else if (serverType == ServerType.iPlay) {
+            api = iPlayApi.builder()
+                    .site(site)
+                    .build();
         }
         if (dataSource == null) {
             dataSource = createDataSource();
@@ -223,6 +235,22 @@ public class GlobalStore {
                 dataSource.getAlbums().clear();
                 dataSource.getAlbums().addAll(items);
                 completion.accept(items);
+            } else if (response instanceof List<?>){
+                val items = (List<iPlayModel.AlbumModel>) response;
+                if (dataSource.getAlbums() == null) {
+                    dataSource.setAlbums(new CopyOnWriteArrayList<>());
+                }
+                dataSource.getAlbums().clear();
+                val embyItems = items.stream().map(item -> EmbyAlbumModel.builder()
+                        .id(item.getId())
+                        .name(item.getName())
+                        .image(ImageModel.builder()
+                                .backdrop(item.getImage().getBackdrop())
+                                .primary(item.getImage().getPrimary())
+                                .build())
+                        .build()).collect(Collectors.toList());
+                dataSource.getAlbums().addAll(embyItems);
+                completion.accept(embyItems);
             } else {
                 completion.accept(null);
             }

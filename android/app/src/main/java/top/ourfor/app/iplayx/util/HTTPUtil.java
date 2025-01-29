@@ -7,6 +7,7 @@ import android.util.Base64;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +22,17 @@ import okhttp3.Response;
 import okio.BufferedSink;
 import okio.Okio;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
-import top.ourfor.app.iplayx.module.Bean;
 
 @Slf4j
 public class HTTPUtil {
-    static OkHttpClient client = new OkHttpClient();
-    static OkHttpClient no320Client = new OkHttpClient.Builder().followRedirects(false).build();
+    static OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .build();
+    static OkHttpClient no320Client = new OkHttpClient.Builder()
+            .followRedirects(false)
+            .build();
     static Map<String, String> deviceInfo = Map.of(
         "X-Emby-Client", "iPlay",
         "X-Emby-Device-Name", "Android",

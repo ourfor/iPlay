@@ -4,11 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.With;
 import top.ourfor.app.iplayx.common.model.MediaModel;
 
 @Data
+@With
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmbyAlbumModel implements MediaModel {
