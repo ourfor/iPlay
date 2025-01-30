@@ -47,6 +47,7 @@ import top.ourfor.app.iplayx.action.SiteUpdateAction;
 import top.ourfor.app.iplayx.api.alist.AlistApi;
 import top.ourfor.app.iplayx.api.cloud189.Cloud189Api;
 import top.ourfor.app.iplayx.api.emby.EmbyApi;
+import top.ourfor.app.iplayx.api.iplay.iPlayApi;
 import top.ourfor.app.iplayx.api.jellyfin.JellyfinApi;
 import top.ourfor.app.iplayx.api.onedrive.OneDriveAction;
 import top.ourfor.app.iplayx.api.onedrive.OneDriveApi;
@@ -88,6 +89,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
             ServerType.IPTV, R.string.iptv,
             ServerType.Alist, R.string.alist,
             ServerType.Cloud189, R.string.cloud189,
+            ServerType.iPlay, R.string.iplay,
             ServerType.Local, R.string.local_file
     );
 
@@ -100,7 +102,13 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
     @Setter
     private SiteModel siteModel = null;
     @Setter
-    private List<ServerType> allowServerType = List.of(ServerType.Emby, ServerType.Jellyfin, ServerType.Cloud189, ServerType.OneDrive);
+    private List<ServerType> allowServerType = List.of(
+            ServerType.Emby,
+            ServerType.Jellyfin,
+            ServerType.iPlay,
+            ServerType.Cloud189,
+            ServerType.OneDrive
+    );
 
 
     Context context;
@@ -207,6 +215,8 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                 loginToAlist(remake, server, username, password);
             } else if (serverType == ServerType.Local) {
                 loginToLocalDrive();
+            } else if (serverType == ServerType.iPlay) {
+                loginToiPlay(remake, server, username, password);
             }
         });
 
@@ -224,6 +234,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                     type != ServerType.Cloud189 &&
                     type != ServerType.WebDAV &&
                     type != ServerType.Alist &&
+                    type != ServerType.iPlay &&
                     type != ServerType.Local &&
                     type != ServerType.OneDrive) {
                     Toast.makeText(context, R.string.not_implementation, Toast.LENGTH_SHORT).show();
@@ -243,6 +254,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                     case OneDrive -> setupOneDriveUI();
                     case Local -> setupLocalDriveUI();
                     case Alist -> setupAlistUI();
+                    case iPlay -> setupiPlayUI();
                     default -> { }
                 }
                 tagView.setColor("purple");
@@ -483,6 +495,30 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
         });
     }
 
+    private void loginToiPlay(String remake, String server, String username, String password) {
+        binding.loginButton.setEnabled(false);
+        iPlayApi.login(server, username, password, response -> {
+            boolean success = response != null;
+            int resId;
+            if (success && response instanceof SiteModel newSite) {
+                val store = XGET(GlobalStore.class);
+                newSite.setRemark(remake);
+                newSite.setServerType(ServerType.iPlay);
+                store.addNewSite(newSite);
+                resId = R.string.login_success;
+            } else {
+                resId = R.string.login_failed;
+            }
+            XGET(Activity.class).runOnUiThread(() -> {
+                Toast.makeText(getContext(), resId, Toast.LENGTH_SHORT).show();
+                binding.loginButton.setEnabled(true);
+                if (success && isDialogModel) {
+                    dismiss();
+                }
+            });
+        });
+    }
+
     private void loginTo189(String remake, String username, String password) {
         binding.loginButton.setEnabled(false);
         val api = new Cloud189Api();
@@ -538,6 +574,26 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
     }
 
     private void setupEmbyUI() {
+        val visible = List.of(
+                binding.remarkLabel,
+                binding.remarkInput,
+                binding.usernameLabel,
+                binding.usernameInput,
+                binding.passwordLabel,
+                binding.passwordInput,
+                binding.loginButton,
+                binding.serverLabel,
+                binding.serverInput,
+                binding.allowSyncLabel,
+                binding.allowSyncSwitch,
+                binding.showSensitiveLabel,
+                binding.showSensitiveSwitch
+        );
+        visible.forEach(view -> view.setVisibility(View.VISIBLE));
+        binding.loginButton.setText(R.string.login);
+    }
+
+    private void setupiPlayUI() {
         val visible = List.of(
                 binding.remarkLabel,
                 binding.remarkInput,

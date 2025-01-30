@@ -4,7 +4,6 @@ import static top.ourfor.app.iplayx.module.Bean.XGET;
 
 import android.app.Activity;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -23,9 +22,9 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
-import top.ourfor.app.iplayx.model.EmbyAlbumMediaModel;
-import top.ourfor.app.iplayx.model.EmbyAlbumModel;
+import top.ourfor.app.iplayx.model.AlbumModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
 
 @Slf4j
@@ -33,7 +32,7 @@ import top.ourfor.app.iplayx.store.GlobalStore;
 @NoArgsConstructor
 @HiltViewModel
 public class HomeViewModel extends ViewModel {
-    private final MutableLiveData<List<EmbyAlbumModel>> albums = new MutableLiveData<>(null);
+    private final MutableLiveData<List<AlbumModel>> albums = new MutableLiveData<>(null);
     private final MutableLiveData<List<Object>> albumCollection = new MutableLiveData<>(new CopyOnWriteArrayList<>());
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> hasValidSite = new MutableLiveData<>(false);
@@ -53,14 +52,14 @@ public class HomeViewModel extends ViewModel {
         val context = XGET(Activity.class);
         if (albums == null || albumMedias == null) return;
         List<Object> newItems = Collections.synchronizedList(new ArrayList<>());
-        newItems.add(EmbyAlbumMediaModel.builder()
+        newItems.add(EmbyModel.EmbyAlbumMediaModel.builder()
                 .album(null)
                 .medias(new CopyOnWriteArrayList(albums))
                 .build());
 
         val resume = store.getDataSource().getResume();
         resume.forEach(item -> item.setLayoutType(MediaLayoutType.Backdrop));
-        val resumeItem = EmbyAlbumMediaModel.builder()
+        val resumeItem = EmbyModel.EmbyAlbumMediaModel.builder()
                 .album(null)
                 .title(context.getString(R.string.continue_watch))
                 .layout(MediaLayoutType.Backdrop)
@@ -72,8 +71,8 @@ public class HomeViewModel extends ViewModel {
 
         albums.forEach(album -> {
             val medias = albumMedias.get(album.getId());
-            if (album == null || medias == null || medias.size() == 0) return;
-            val item = EmbyAlbumMediaModel.builder()
+            if (album == null || medias == null || medias.isEmpty()) return;
+            val item = EmbyModel.EmbyAlbumMediaModel.builder()
                     .album(album)
                     .medias(new CopyOnWriteArrayList<>(medias))
                     .build();
@@ -82,7 +81,7 @@ public class HomeViewModel extends ViewModel {
         this.albumCollection.postValue(newItems);
     }
 
-    private void fetchEmbyAlbumModels(List<EmbyAlbumModel> albums) {
+    private void fetchEmbyAlbumModels(List<AlbumModel> albums) {
         val datasource = store.getDataSource();
         val albumMedias = datasource.getAlbumMedias();
         albumMedias.clear();

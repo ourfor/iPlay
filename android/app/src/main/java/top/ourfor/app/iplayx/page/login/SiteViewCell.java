@@ -58,7 +58,7 @@ public class SiteViewCell extends ConstraintLayout implements UpdateModelAction 
         binding.siteUsername.setVisibility(visibility);
         var remark = model.getEndpoint().getRemark();
         if (remark == null) {
-            remark = model.getUser().getServerId();
+            remark = model.getUser().getSiteId();
         }
         binding.siteRemark.setText(remark);
         GlideApp.with(this)

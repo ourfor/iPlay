@@ -24,15 +24,15 @@ import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.DispatchAction;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.model.ColorScheme;
-import top.ourfor.app.iplayx.common.model.MediaModel;
+import top.ourfor.app.iplayx.common.model.IMediaModel;
 import top.ourfor.app.iplayx.common.type.MediaType;
 import top.ourfor.app.iplayx.databinding.MediaPageBinding;
-import top.ourfor.app.iplayx.model.EmbyActorModel;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
-import top.ourfor.app.iplayx.model.EmbyUserData;
+import top.ourfor.app.iplayx.model.ActorModel;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.module.GlideApp;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.page.home.MediaViewCell;
@@ -50,11 +50,11 @@ import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 @Slf4j
 @ViewController(name = "media_page")
 public class MediaPage implements Page {
-    private String title = null;
-    private String id = null;
-    private MediaModel model = null;
-    private ListView<EmbyActorModel> actorList = null;
-    private ListView<EmbyMediaModel> similarList = null;
+    String title;
+    String id;
+    IMediaModel model;
+    ListView<ActorModel> actorList;
+    ListView<MediaModel> similarList;
 
     @Getter
     Context context;
@@ -95,7 +95,7 @@ public class MediaPage implements Page {
         title = params.getOrDefault("title", "").toString();
         id = params.getOrDefault("id", "").toString();
         model = store.getDataSource().getMediaMap().get(id);
-        if (model instanceof EmbyMediaModel episode && episode.isEpisode()) {
+        if (model instanceof EmbyModel.EmbyMediaModel episode && episode.isEpisode()) {
             title = episode.getSeriesName();
         }
         XGET(NavigationTitleBar.class).setNavTitle(title);
@@ -121,13 +121,13 @@ public class MediaPage implements Page {
         toolbar.setOnMenuItemClickListener(item -> {
             val itemId = item.getItemId();
             if (itemId == R.id.toggle_favorite) {
-                if (model instanceof EmbyMediaModel media) {
-                    val favorite = media.getUserData().getIsFavorite();
+                if (model instanceof MediaModel media) {
+                    val favorite = media.getUserData().isFavorite();
                     store.markFavorite(media.getId(), !favorite, obj -> {
-                        if (!(obj instanceof EmbyUserData)) {
+                        if (obj == null) {
                             return;
                         }
-                        media.setUserData((EmbyUserData) obj);
+                        media.setUserData(obj.toUserDataModel());
                         updateFavoriteState();
                     });
                 }
@@ -155,9 +155,9 @@ public class MediaPage implements Page {
     }
 
     private void updateFavoriteState() {
-        if (model instanceof EmbyMediaModel media) {
+        if (model instanceof MediaModel media) {
             if (media.getUserData() != null) {
-                val isFavorite = media.getUserData().getIsFavorite();
+                val isFavorite = media.getUserData().isFavorite();
                 int resId = isFavorite ? R.drawable.favorite_off : R.drawable.favorite_on;
                 if (DeviceUtil.isTV) {
                     return;
@@ -177,16 +177,16 @@ public class MediaPage implements Page {
         if (model == null) return;
 
         var backdrop = model.getImage().getBackdrop();
-        if (model instanceof EmbyMediaModel media) {
+        if (model instanceof MediaModel media) {
             backdrop = media.isEpisode() ? media.getImage().getPrimary() : media.getImage().getBackdrop();
         }
         GlideApp.with(context)
                 .load(backdrop)
                 .into(binding.posterImage);
 
-        if (model instanceof EmbyMediaModel &&
-                ((EmbyMediaModel)model).getType().equals("Movie") ||
-                ((EmbyMediaModel)model).getType().equals("Episode")) {
+        if (model instanceof MediaModel media &&
+                (media.getType().equals("Movie") ||
+                media.getType().equals("Episode"))) {
             binding.watchButton.setVisibility(View.VISIBLE);
             binding.watchButton.setOnClickListener(v -> {
                 val args = new HashMap<String, Object>();
@@ -204,9 +204,9 @@ public class MediaPage implements Page {
 
         binding.overviewLabel.setText(model.getOverview());
 
-        if (model instanceof EmbyMediaModel media &&
-                ((EmbyMediaModel) model).getGenres() != null &&
-                !((EmbyMediaModel) model).getGenres().isEmpty()) {
+        if (model instanceof MediaModel media &&
+                media.getGenres() != null &&
+                !media.getGenres().isEmpty()) {
             val padding = DeviceUtil.dpToPx(5);
             val keys = ColorScheme.shared.getScheme().keySet().toArray();
             var idx = (int)(Math.random() * keys.length);
@@ -226,14 +226,14 @@ public class MediaPage implements Page {
             }
         }
 
-        if (model instanceof EmbyMediaModel media && ( media.isSeries() || media.isEpisode())) {
+        if (model instanceof MediaModel media && ( media.isSeries() || media.isEpisode())) {
             store.getSeasons(media.isSeries() ? media.getId() : media.getSeriesId() , seasons -> {
                 if (seasons == null) return;
                 viewModel.getSeasons().postValue(seasons);
             });
             if (media.isEpisode()) {
                 binding.episodeLabel.setVisibility(View.VISIBLE);
-                binding.episodeLabel.setText(media.episodeName());
+                binding.episodeLabel.setText(media.getName());
             } else {
                 binding.episodeLabel.setVisibility(View.GONE);
             }
@@ -250,7 +250,7 @@ public class MediaPage implements Page {
                 binding.similarList.setVisibility(View.GONE);
             }
         }
-        if (model instanceof EmbyMediaModel media && media.getActors() != null && media.getActors().size() > 0) {
+        if (model instanceof MediaModel media && media.getActors() != null && media.getActors().size() > 0) {
             val layout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
             actorList = new ListView<>(getContext());
             actorList.viewModel.viewCell = ActorCellView.class;
@@ -273,7 +273,7 @@ public class MediaPage implements Page {
             binding.actorLabel.setVisibility(View.GONE);
         }
 
-        var isPlayable = model instanceof EmbyMediaModel media && (media.isEpisode() || media.isMovie());
+        var isPlayable = model instanceof EmbyModel.EmbyMediaModel media && (media.isEpisode() || media.isMovie());
         binding.playerConfig.setVisibility(isPlayable ? View.VISIBLE : View.GONE);
         binding.playerConfig.setOnClickListener(v -> {
             showPlayConfigPanel();
@@ -283,7 +283,7 @@ public class MediaPage implements Page {
     void showPlayConfigPanel() {
         var dialog = new BottomSheetDialog(getContext(), R.style.SiteBottomSheetDialog);
         dialog.setOnDismissListener(dlg -> { });
-        var view = new PlayerConfigPanelView(context, (EmbyMediaModel)model);
+        var view = new PlayerConfigPanelView(context, (MediaModel) model);
         view.setOnPlayButtonClick(v -> dialog.dismiss());
         dialog.setContentView(view);
         var behavior = BottomSheetBehavior.from((View) view.getParent());

@@ -23,9 +23,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.databinding.PlayerConfigPanelBinding;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.view.LifecycleHolder;
 import top.ourfor.app.iplayx.view.video.PlayerSourceModel;
 
@@ -43,7 +44,7 @@ public class PlayerConfigPanelView extends LifecycleHolder {
     PlayerSourceModel audioSource;
     PlayerSourceModel subtitleSource;
 
-    public PlayerConfigPanelView(@NonNull Context context, EmbyMediaModel media) {
+    public PlayerConfigPanelView(@NonNull Context context, MediaModel media) {
         super(context);
         viewModel.getMedia().setValue(media);
         binding = PlayerConfigPanelBinding.inflate(LayoutInflater.from(context), this, true);

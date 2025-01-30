@@ -10,22 +10,21 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
 import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.UpdateModelAction;
-import top.ourfor.app.iplayx.common.model.MediaModel;
+import top.ourfor.app.iplayx.common.model.IMediaModel;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
+import top.ourfor.app.iplayx.model.AlbumModel;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.module.GlideApp;
 import top.ourfor.app.iplayx.util.DeviceUtil;
-import top.ourfor.app.iplayx.model.EmbyAlbumModel;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
 import top.ourfor.app.iplayx.view.infra.TextView;
 
 public class MediaGridCell extends ConstraintLayout implements UpdateModelAction {
-    private MediaModel model;
+    private IMediaModel model;
     private final TextView nameLabel = new TextView(getContext());
     private final ImageView coverImage = new ImageView(getContext());
     private final TextView countLabel = new TextView(getContext());
@@ -40,19 +39,19 @@ public class MediaGridCell extends ConstraintLayout implements UpdateModelAction
 
     @Override
     public <T> void updateModel(T object) {
-        if (!(object instanceof EmbyAlbumModel) &&
-            !(object instanceof EmbyMediaModel)) {
+        if (!(object instanceof AlbumModel) &&
+            !(object instanceof MediaModel)) {
             return;
         }
-        model = (MediaModel) object;
+        model = (IMediaModel) object;
         updateLayout();
         nameLabel.setText(model.getName());
-        boolean isAlbum = object instanceof EmbyAlbumModel;
+        boolean isAlbum = object instanceof AlbumModel;
         String imageUrl;
         if (isAlbum) {
             imageUrl = model.getImage().getPrimary();
         } else if (layoutType == MediaLayoutType.Backdrop) {
-            if (((EmbyMediaModel) model).isEpisode()) imageUrl = model.getImage().getPrimary();
+            if (((MediaModel) model).isEpisode()) imageUrl = model.getImage().getPrimary();
             else imageUrl = model.getImage().getBackdrop();
         } else {
             imageUrl = model.getImage().getPrimary();
@@ -62,15 +61,15 @@ public class MediaGridCell extends ConstraintLayout implements UpdateModelAction
                 .placeholder(isAlbum ? R.drawable.hand_drawn_3 : R.drawable.abstract_3)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(coverImage);
-        if (model instanceof EmbyMediaModel media) {
+        if (model instanceof MediaModel media) {
             if (media.getUserData() != null && media.getUserData().getUnplayedItemCount() != null) {
                 countLabel.setText(media.getUserData().getUnplayedItemCount().toString());
                 countLabel.setVisibility(VISIBLE);
             } else {
                 countLabel.setVisibility(GONE);
             }
-            if (media.getDateTime() != null) {
-                airDateLabel.setText(media.getDateTime());
+            if (media.getAirDate() != null) {
+                airDateLabel.setText(media.getAirDate());
                 airDateLabel.setVisibility(VISIBLE);
             } else {
                 airDateLabel.setVisibility(GONE);
@@ -169,8 +168,8 @@ public class MediaGridCell extends ConstraintLayout implements UpdateModelAction
     }
 
     void updateLayout() {
-        boolean isAlbum = model instanceof EmbyAlbumModel;
-        boolean isMusic = model instanceof EmbyMediaModel && ((EmbyMediaModel) model).isMusicAlbum();
+        boolean isAlbum = model instanceof AlbumModel;
+        boolean isMusic = model instanceof MediaModel && ((MediaModel) model).isMusicAlbum();
         layoutType = model.getLayoutType();
         int width = DeviceUtil.dpToPx(isAlbum || layoutType == MediaLayoutType.Backdrop ? (isAlbum ? 150 : 174) : 111);
         LayoutParams imageLayout = new LayoutParams(width, LayoutParams.MATCH_CONSTRAINT);

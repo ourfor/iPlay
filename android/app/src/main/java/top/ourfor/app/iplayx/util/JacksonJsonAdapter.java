@@ -5,8 +5,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
 
+@Slf4j
 public class JacksonJsonAdapter implements JSONAdapter {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -38,6 +40,7 @@ public class JacksonJsonAdapter implements JSONAdapter {
         try {
             return objectMapper.readValue(json, typeReference);
         } catch (Exception e) {
+            log.error("Failed to parse json: {}", json);
             e.printStackTrace();
             return null;
         }

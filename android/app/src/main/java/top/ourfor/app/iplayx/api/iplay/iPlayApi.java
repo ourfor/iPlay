@@ -1,4 +1,4 @@
-package top.ourfor.app.iplayx.api.emby;
+package top.ourfor.app.iplayx.api.iplay;
 
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 
@@ -7,12 +7,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -20,33 +22,41 @@ import lombok.Setter;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
 import top.ourfor.app.iplayx.common.api.EmbyLikeApi;
+import top.ourfor.app.iplayx.common.model.SiteEndpointModel;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
+import top.ourfor.app.iplayx.model.ImageModel;
+import top.ourfor.app.iplayx.model.SiteModel;
 import top.ourfor.app.iplayx.model.UserModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
-import top.ourfor.app.iplayx.util.HTTPUtil;
+import top.ourfor.app.iplayx.util.Base64Util;
 import top.ourfor.app.iplayx.util.HTTPModel;
-import top.ourfor.app.iplayx.common.model.SiteEndpointModel;
-import top.ourfor.app.iplayx.model.SiteModel;
+import top.ourfor.app.iplayx.util.HTTPUtil;
 
 @With
 @Slf4j
 @Setter
 @Builder
 @EqualsAndHashCode
-public class EmbyApi implements EmbyLikeApi {
+public class iPlayApi implements EmbyLikeApi {
     private static final String kDeviceProfile = "{\"DeviceProfile\":{\"MaxStaticBitrate\":140000000,\"MaxStreamingBitrate\":140000000,\"MusicStreamingTranscodingBitrate\":192000,\"DirectPlayProfiles\":[{\"Container\":\"mp4,m4v\",\"Type\":\"Video\",\"VideoCodec\":\"h264,h265,hevc,vp8,vp9\",\"AudioCodec\":\"mp3,aac,opus,flac,vorbis\"},{\"Container\":\"mkv\",\"Type\":\"Video\",\"VideoCodec\":\"h264,h265,hevc,vp8,vp9\",\"AudioCodec\":\"mp3,aac,opus,flac,vorbis\"},{\"Container\":\"flv\",\"Type\":\"Video\",\"VideoCodec\":\"h264\",\"AudioCodec\":\"aac,mp3\"},{\"Container\":\"mov\",\"Type\":\"Video\",\"VideoCodec\":\"h264\",\"AudioCodec\":\"mp3,aac,opus,flac,vorbis\"},{\"Container\":\"opus\",\"Type\":\"Audio\"},{\"Container\":\"mp3\",\"Type\":\"Audio\",\"AudioCodec\":\"mp3\"},{\"Container\":\"mp2,mp3\",\"Type\":\"Audio\",\"AudioCodec\":\"mp2\"},{\"Container\":\"aac\",\"Type\":\"Audio\",\"AudioCodec\":\"aac\"},{\"Container\":\"m4a\",\"AudioCodec\":\"aac\",\"Type\":\"Audio\"},{\"Container\":\"mp4\",\"AudioCodec\":\"aac\",\"Type\":\"Audio\"},{\"Container\":\"flac\",\"Type\":\"Audio\"},{\"Container\":\"webma,webm\",\"Type\":\"Audio\"},{\"Container\":\"wav\",\"Type\":\"Audio\",\"AudioCodec\":\"PCM_S16LE,PCM_S24LE\"},{\"Container\":\"ogg\",\"Type\":\"Audio\"},{\"Container\":\"webm\",\"Type\":\"Video\",\"AudioCodec\":\"vorbis,opus\",\"VideoCodec\":\"VP8,VP9\"}],\"TranscodingProfiles\":[{\"Container\":\"aac\",\"Type\":\"Audio\",\"AudioCodec\":\"aac\",\"Context\":\"Streaming\",\"Protocol\":\"hls\",\"MaxAudioChannels\":\"2\",\"MinSegments\":\"2\",\"BreakOnNonKeyFrames\":true},{\"Container\":\"aac\",\"Type\":\"Audio\",\"AudioCodec\":\"aac\",\"Context\":\"Streaming\",\"Protocol\":\"http\",\"MaxAudioChannels\":\"2\"},{\"Container\":\"mp3\",\"Type\":\"Audio\",\"AudioCodec\":\"mp3\",\"Context\":\"Streaming\",\"Protocol\":\"http\",\"MaxAudioChannels\":\"2\"},{\"Container\":\"opus\",\"Type\":\"Audio\",\"AudioCodec\":\"opus\",\"Context\":\"Streaming\",\"Protocol\":\"http\",\"MaxAudioChannels\":\"2\"},{\"Container\":\"wav\",\"Type\":\"Audio\",\"AudioCodec\":\"wav\",\"Context\":\"Streaming\",\"Protocol\":\"http\",\"MaxAudioChannels\":\"2\"},{\"Container\":\"opus\",\"Type\":\"Audio\",\"AudioCodec\":\"opus\",\"Context\":\"Static\",\"Protocol\":\"http\",\"MaxAudioChannels\":\"2\"},{\"Container\":\"mp3\",\"Type\":\"Audio\",\"AudioCodec\":\"mp3\",\"Context\":\"Static\",\"Protocol\":\"http\",\"MaxAudioChannels\":\"2\"},{\"Container\":\"aac\",\"Type\":\"Audio\",\"AudioCodec\":\"aac\",\"Context\":\"Static\",\"Protocol\":\"http\",\"MaxAudioChannels\":\"2\"},{\"Container\":\"wav\",\"Type\":\"Audio\",\"AudioCodec\":\"wav\",\"Context\":\"Static\",\"Protocol\":\"http\",\"MaxAudioChannels\":\"2\"},{\"Container\":\"mkv\",\"Type\":\"Video\",\"AudioCodec\":\"mp3,aac,opus,flac,vorbis\",\"VideoCodec\":\"h264,h265,hevc,vp8,vp9\",\"Context\":\"Static\",\"MaxAudioChannels\":\"2\",\"CopyTimestamps\":true},{\"Container\":\"m4s,ts\",\"Type\":\"Video\",\"AudioCodec\":\"mp3,aac\",\"VideoCodec\":\"h264,h265,hevc\",\"Context\":\"Streaming\",\"Protocol\":\"hls\",\"MaxAudioChannels\":\"2\",\"MinSegments\":\"2\",\"BreakOnNonKeyFrames\":true,\"ManifestSubtitles\":\"vtt\"},{\"Container\":\"webm\",\"Type\":\"Video\",\"AudioCodec\":\"vorbis\",\"VideoCodec\":\"vpx\",\"Context\":\"Streaming\",\"Protocol\":\"http\",\"MaxAudioChannels\":\"2\"},{\"Container\":\"mp4\",\"Type\":\"Video\",\"AudioCodec\":\"mp3,aac,opus,flac,vorbis\",\"VideoCodec\":\"h264\",\"Context\":\"Static\",\"Protocol\":\"http\"}],\"ContainerProfiles\":[],\"CodecProfiles\":[{\"Type\":\"VideoAudio\",\"Codec\":\"aac\",\"Conditions\":[{\"Condition\":\"Equals\",\"Property\":\"IsSecondaryAudio\",\"Value\":\"false\",\"IsRequired\":\"false\"}]},{\"Type\":\"VideoAudio\",\"Conditions\":[{\"Condition\":\"Equals\",\"Property\":\"IsSecondaryAudio\",\"Value\":\"false\",\"IsRequired\":\"false\"}]},{\"Type\":\"Video\",\"Codec\":\"h264\",\"Conditions\":[{\"Condition\":\"EqualsAny\",\"Property\":\"VideoProfile\",\"Value\":\"high|main|baseline|constrained baseline|high 10\",\"IsRequired\":false},{\"Condition\":\"LessThanEqual\",\"Property\":\"VideoLevel\",\"Value\":\"62\",\"IsRequired\":false}]},{\"Type\":\"Video\",\"Codec\":\"hevc\",\"Conditions\":[{\"Condition\":\"EqualsAny\",\"Property\":\"VideoCodecTag\",\"Value\":\"hvc1\",\"IsRequired\":false}]}],\"SubtitleProfiles\":[{\"Format\":\"vtt\",\"Method\":\"Hls\"},{\"Format\":\"eia_608\",\"Method\":\"VideoSideData\",\"Protocol\":\"hls\"},{\"Format\":\"eia_708\",\"Method\":\"VideoSideData\",\"Protocol\":\"hls\"},{\"Format\":\"vtt\",\"Method\":\"External\"},{\"Format\":\"ass\",\"Method\":\"External\"},{\"Format\":\"ssa\",\"Method\":\"External\"}],\"ResponseProfiles\":[{\"Type\":\"Video\",\"Container\":\"m4v\",\"MimeType\":\"video/mp4\"}]}}\n";
 
     SiteModel site;
 
     public static void login(String server, String username, String password, Consumer<Object> completion) {
+        val token = "Basic " + Base64Util.encode(username + ":" + password);
+        log.info("Login to server: {}", server);
         HTTPModel model = HTTPModel.builder()
-                .url(server + "/emby/Users/authenticatebyname")
+                .url(server + "/sites")
                 .method("POST")
-                .headers(Map.of("Content-Type", "application/x-www-form-urlencoded"))
-                .body(String.format("Username=%s&Pw=%s", username, password))
-                .modelClass(EmbyModel.EmbyUserModel.class)
+                .headers(Map.of(
+                        "Content-Type", "application/json",
+                        "Authorization", token
+                ))
+                .body("{}")
+                .typeReference(new TypeReference<iPlayModel.Response<String>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -63,23 +73,17 @@ public class EmbyApi implements EmbyLikeApi {
                         .protocol(url.getProtocol())
                         .path(url.getPath() == null ? url.getPath() : "/")
                         .build();
-                if (response instanceof EmbyModel.EmbyUserModel user) {
-                    if (user.getAccessToken() == null || user.getUser() == null || user.getServerId() == null) {
-                        throw new NullPointerException("Access token is null");
-                    }
-                    var siteModel = SiteModel.builder()
-                            .user(UserModel.builder()
-                                    .siteId(user.getServerId())
-                                    .id(user.getUser().getId())
-                                    .username(username)
-                                    .password(password)
-                                    .accessToken(user.getAccessToken())
-                                    .build())
-                            .endpoint(endpoint)
-                            .build();
-                    completion.accept(siteModel);
-                    return;
-                }
+                var siteModel = SiteModel.builder()
+                        .user(UserModel.builder()
+                                .siteId("5")
+                                .id("")
+                                .username(username)
+                                .password(password)
+                                .accessToken(token)
+                                .build())
+                        .endpoint(endpoint)
+                        .build();
+                completion.accept(siteModel);
             } catch (MalformedURLException | NullPointerException e) {
                 log.error("Failed to parse server url: {}", server);
                 log.error("Error: ", e);
@@ -95,10 +99,11 @@ public class EmbyApi implements EmbyLikeApi {
             site.getUser() == null) return;
 
         HTTPModel model = HTTPModel.builder()
-                .url(site.getEndpoint().getBaseUrl() + "emby/Users/" + site.getUserId() + "/Views")
+                .url(site.getEndpoint().getBaseUrl() + "media/albums")
                 .method("GET")
-                .query(Map.of("X-Emby-Token", site.getAccessToken()))
-                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel>>() {})
+                .headers(Map.of("Authorization", site.getAccessToken()))
+                .query(Map.of("id", "5"))
+                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.AlbumModel>>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -106,11 +111,9 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
-                EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel> pageableModel = (EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel>) response;
-                String baseUrl = site.getEndpoint().getBaseUrl();
-                pageableModel.getItems().forEach(item -> item.buildImage(baseUrl));
-                completion.accept(pageableModel);
+            if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
+                log.info("Albums: {}", responseModel.data);
+                completion.accept(responseModel.data);
                 return;
             }
             completion.accept(null);
@@ -123,16 +126,13 @@ public class EmbyApi implements EmbyLikeApi {
             site.getUser() == null) return;
 
         HTTPModel model = HTTPModel.builder()
-                .url(site.getEndpoint().getBaseUrl() + "emby/Users/" + site.getUserId() + "/Items/Latest")
+                .url(site.getEndpoint().getBaseUrl() + "media/album/" + id)
                 .method("GET")
+                .headers(Map.of("Authorization", site.getAccessToken()))
                 .query(Map.of(
-                        "X-Emby-Token", site.getAccessToken(),
-                        "Limit", "16",
-                        "ParentId", id,
-                        "Recursive", "true",
-                        "Fields", "BasicSyncInfo,People,Genres,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated,ProductionYear,Status,EndDate"
+                        "siteId", "5"
                 ))
-                .typeReference(new TypeReference<List<EmbyModel.EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.MediaModel>>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -140,11 +140,20 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof List<?>) {
-                String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
-                items.forEach(item -> item.buildImage(baseUrl));
-                completion.accept(items);
+            if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
+                val items = (List<iPlayModel.MediaModel>) responseModel.data;
+                val embyItems = items.stream().map(item -> EmbyModel.EmbyMediaModel.builder()
+                        .id(item.id)
+                        .type("Movie")
+                        .name(item.title)
+                        .overview(item.description)
+                        .image(ImageModel.builder()
+                                .primary(item.image.primary)
+                                .backdrop(item.image.backdrop)
+                                .logo(item.image.logo)
+                                .build())
+                        .build()).collect(Collectors.toList());
+                completion.accept(embyItems);
                 return;
             }
             completion.accept(null);
@@ -254,22 +263,17 @@ public class EmbyApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        val fields = Map.of(
-                "Recursive", "true",
-                "ImageTypeLimit", "1",
-                "EnableImageTypes", "Primary,Backdrop,Thumb",
-                "MediaTypes", "",
-                "X-Emby-Token", site.getAccessToken(),
-                "Fields", "BasicSyncInfo,People,Genres,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated,ProductionYear,Status,EndDate"
-        );
         val params = new HashMap<String, String>();
-        params.putAll(fields);
-        params.putAll(query);
+        params.put("keyword", query.get("SearchTerm"));
+        params.put("siteId", "5");
         HTTPModel model = HTTPModel.builder()
-                .url(site.getEndpoint().getBaseUrl() + "emby/Users/" + site.getUserId() + "/Items")
+                .url(site.getEndpoint().getBaseUrl() + "media/search")
+                .headers(Map.of(
+                        "Authorization", site.getAccessToken()
+                ))
                 .method("GET")
                 .query(params)
-                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.MediaModel>>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -277,10 +281,19 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
-                String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
-                items.forEach(item -> item.buildImage(baseUrl));
+            if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
+                val data = (List<iPlayModel.MediaModel>)responseModel.data;
+                val items = data.stream().map(item -> EmbyModel.EmbyMediaModel.builder()
+                        .id(item.id)
+                        .type("Movie")
+                        .name(item.title)
+                        .overview(item.description)
+                        .image(ImageModel.builder()
+                                .primary(item.image.primary)
+                                .backdrop(item.image.backdrop)
+                                .logo(item.image.logo)
+                                .build())
+                        .build()).collect(Collectors.toList());
                 completion.accept(items);
                 return;
             }
@@ -360,22 +373,17 @@ public class EmbyApi implements EmbyLikeApi {
 
         val store = XGET(GlobalStore.class);
         val media = store.getDataSource().getMediaMap().get(id);
-        val startTimeTicks = media != null && media.getUserData() != null ? media.getUserData().getPlaybackPositionTicks() : 0;
         HTTPModel model = HTTPModel.builder()
-                .url(site.getEndpoint().getBaseUrl() + "emby/Items/" + id + "/PlaybackInfo")
-                .method("POST")
+                .url(site.getEndpoint().getBaseUrl() + "media/source")
+                .method("GET")
                 .query(Map.of(
-                    "StartTimeTicks", String.valueOf(startTimeTicks),
-                    "IsPlayback", "false",
-                    "AutoOpenLiveStream", "false",
-                    "MaxStreamingBitrate", "140000000",
-                    "UserId", site.getUserId(),
-                    "reqformat", "json",
-                    "X-Emby-Token", site.getAccessToken()
+                    "siteId", "5",
+                    "id", id
                 ))
-                .headers(Map.of("Content-Type", "application/json"))
-                .body(kDeviceProfile)
-                .typeReference(new TypeReference<EmbyModel.EmbyPlaybackModel>() {})
+                .headers(Map.of(
+                        "Authorization", site.getAccessToken()
+                ))
+                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.SourceModel>>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -383,11 +391,31 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPlaybackModel) {
-                String baseUrl = site.getEndpoint().getBaseUrl();
-                EmbyModel.EmbyPlaybackModel source = (EmbyModel.EmbyPlaybackModel) response;
-                source.buildUrl(baseUrl);
-                completion.accept(source);
+            if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
+                String siteBaseUrl = site.getEndpoint().getBaseUrl();
+                if (siteBaseUrl.endsWith("/")) siteBaseUrl = siteBaseUrl.substring(0, siteBaseUrl.length()-1);
+                String baseUrl = siteBaseUrl;
+                val sources = (List<iPlayModel.SourceModel>)responseModel.data;
+                val embySource = EmbyModel.EmbyPlaybackModel.builder()
+                        .sessionId("0")
+                        .mediaSources(sources.stream().map(source -> EmbyModel.EmbyMediaSource.builder()
+                                .id(Objects.requireNonNullElse(source.getName(), "0"))
+                                .name(Objects.requireNonNullElse(source.getName(), media.getName()))
+                                .container("manifest")
+                                .mediaStreams(List.of(
+                                        EmbyModel.EmbyMediaStream.builder()
+                                                .type("Video")
+                                                .displayTitle(media.getName())
+                                                .isExternal(true)
+                                                .deliveryUrl(baseUrl + source.getUrl())
+                                                .build()
+                                ))
+                                .path(baseUrl + source.getUrl())
+                                .directStreamUrl(baseUrl + source.getUrl())
+                                .build()).collect(Collectors.toList()))
+                        .build();
+                Collections.reverse(embySource.getMediaSources());
+                completion.accept(embySource);
                 return;
             }
             completion.accept(null);
@@ -433,39 +461,7 @@ public class EmbyApi implements EmbyLikeApi {
     }
 
     public void getResume(Consumer<Object> completion) {
-        if (site == null ||
-                site.getEndpoint() == null ||
-                site.getUser() == null) return;
-
-        HTTPModel model = HTTPModel.builder()
-                .url(site.getEndpoint().getBaseUrl() + "emby/Users/" + site.getUserId() + "/Items/Resume")
-                .method("GET")
-                .query(Map.of(
-                        "X-Emby-Token", site.getAccessToken(),
-                        "Recursive", "true",
-                        "Fields", "BasicSyncInfo,People,Genres,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated,ProductionYear,Status,EndDate",
-                        "ImageTypeLimit", "1",
-                        "EnableImageTypes", "Primary,Backdrop,Thumb",
-                        "MediaTypes", "Video",
-                        "Limit", "50"
-                ))
-                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {})
-                .build();
-
-        HTTPUtil.request(model, response -> {
-            if (Objects.isNull(response)) {
-                completion.accept(null);
-                return;
-            }
-            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
-                String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
-                items.forEach(item -> item.buildImage(baseUrl));
-                completion.accept(items);
-                return;
-            }
-            completion.accept(null);
-        });
+        completion.accept(null);
     }
 
     public void markFavorite(String id, boolean isFavorite, Consumer<Object> completion) {

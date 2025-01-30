@@ -1,10 +1,9 @@
 package top.ourfor.app.iplayx.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
@@ -13,9 +12,11 @@ import lombok.With;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmbyImageTag {
-    @JsonProperty("Primary")
-    private String primary;
-    @JsonProperty("Thumb")
-    private String thumb;
+@EqualsAndHashCode
+public class ActorModel {
+    String id;
+    String name;
+    ImageModel image;
+    String role;
+    String description;
 }
