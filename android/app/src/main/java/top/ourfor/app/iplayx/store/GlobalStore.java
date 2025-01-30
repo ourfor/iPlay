@@ -94,23 +94,7 @@ public class GlobalStore {
             kv.setObject(storeKey, instance);
         } else {
             val serverType = instance.site != null ? instance.site.getServerType() : ServerType.None;
-            if (serverType == ServerType.Emby) {
-                instance.api = EmbyApi.builder()
-                        .site(instance.site)
-                        .build();
-            } else if (serverType == ServerType.Jellyfin) {
-                instance.api = JellyfinApi.builder()
-                        .site(instance.site)
-                        .build();
-            } else if (serverType == ServerType.iPlay) {
-                instance.api = iPlayApi.builder()
-                        .site(instance.site)
-                        .build();
-            } else {
-                instance.api = EmbyApi.builder()
-                        .site(instance.site)
-                        .build();
-            }
+            instance.setupApi(serverType, instance.site);
             if (instance.dataSource == null) {
                 instance.dataSource = createDataSource();
             }
@@ -667,6 +651,15 @@ public class GlobalStore {
     public void switchSite(SiteModel site) {
         this.site = site;
         val serverType = site.getServerType();
+        setupApi(serverType, site);
+        dataSource = createDataSource();
+        save();
+        val action = XGET(SiteUpdateAction.class);
+        if (action == null) return;
+        action.onSiteUpdate();
+    }
+
+    void setupApi(ServerType serverType, SiteModel site) {
         if (serverType == ServerType.Emby) {
             api = EmbyApi.builder()
                     .site(site)
@@ -675,16 +668,15 @@ public class GlobalStore {
             api = JellyfinApi.builder()
                     .site(site)
                     .build();
+        } else if (serverType == ServerType.iPlay) {
+            api = iPlayApi.builder()
+                    .site(site)
+                    .build();
         } else {
             api = EmbyApi.builder()
                     .site(site)
                     .build();
         }
-        dataSource = createDataSource();
-        save();
-        val action = XGET(SiteUpdateAction.class);
-        if (action == null) return;
-        action.onSiteUpdate();
     }
 
     public void search(String keyword, Consumer<List<MediaModel>> completion) {
