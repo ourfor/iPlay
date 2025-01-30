@@ -70,8 +70,9 @@ public class HomeViewModel extends ViewModel {
         }
 
         albums.forEach(album -> {
+            if (album.getId() == null) return;
             val medias = albumMedias.get(album.getId());
-            if (album == null || medias == null || medias.isEmpty()) return;
+            if (medias == null || medias.isEmpty()) return;
             val item = EmbyModel.EmbyAlbumMediaModel.builder()
                     .album(album)
                     .medias(new CopyOnWriteArrayList<>(medias))

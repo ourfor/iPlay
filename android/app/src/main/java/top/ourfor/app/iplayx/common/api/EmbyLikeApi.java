@@ -1,10 +1,13 @@
 package top.ourfor.app.iplayx.common.api;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
+import top.ourfor.app.iplayx.model.AlbumModel;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.model.SiteModel;
 
 public interface EmbyLikeApi {
@@ -15,13 +18,13 @@ public interface EmbyLikeApi {
 
     default void getSiteInfo(Consumer<Object> completion) { }
 
-    default void getAlbums(Consumer<Object> completion) { }
+    default void getAlbums(Consumer<List<AlbumModel>> completion) { }
 
-    default void getAlbumLatestMedias(String id, Consumer<Object> completion) { }
+    default void getAlbumLatestMedias(String id, Consumer<List<MediaModel>> completion) { }
 
     default void getMediasCount(Map<String, String> query, Consumer<Integer> completion) { }
 
-    default void getMedias(Map<String, String> query, Consumer<Object> completion) { }
+    default void getMedias(Map<String, String> query, Consumer<List<MediaModel>> completion) { }
 
     default void getAllMedias(Map<String, String> query, Consumer<Object> completion) { }
 

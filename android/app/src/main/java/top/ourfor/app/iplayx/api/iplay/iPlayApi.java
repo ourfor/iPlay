@@ -26,8 +26,11 @@ import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
 import top.ourfor.app.iplayx.common.api.EmbyLikeApi;
 import top.ourfor.app.iplayx.common.model.SiteEndpointModel;
+import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
+import top.ourfor.app.iplayx.model.AlbumModel;
 import top.ourfor.app.iplayx.model.ImageModel;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.model.SiteModel;
 import top.ourfor.app.iplayx.model.UserModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
@@ -92,7 +95,7 @@ public class iPlayApi implements EmbyLikeApi {
         });
     }
 
-    public void getAlbums(Consumer<Object> completion) {
+    public void getAlbums(Consumer<List<AlbumModel>> completion) {
         if (site == null ||
             site.getEndpoint() == null ||
             site.getAccessToken() == null ||
@@ -113,14 +116,20 @@ public class iPlayApi implements EmbyLikeApi {
             }
             if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
                 log.info("Albums: {}", responseModel.data);
-                completion.accept(responseModel.data);
+                val albumItems = ((List<iPlayModel.AlbumModel>)responseModel.data).stream().map(item -> AlbumModel.builder()
+                        .id(item.getId())
+                        .title(item.getName())
+                        .type("album")
+                        .backdrop(item.getImage().getBackdrop())
+                        .build()).collect(Collectors.toList());
+                completion.accept(albumItems);
                 return;
             }
             completion.accept(null);
         });
     }
 
-    public void getAlbumLatestMedias(String id, Consumer<Object> completion) {
+    public void getAlbumLatestMedias(String id, Consumer<List<MediaModel>> completion) {
         if (site == null ||
             site.getEndpoint() == null ||
             site.getUser() == null) return;
@@ -142,18 +151,20 @@ public class iPlayApi implements EmbyLikeApi {
             }
             if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
                 val items = (List<iPlayModel.MediaModel>) responseModel.data;
-                val embyItems = items.stream().map(item -> EmbyModel.EmbyMediaModel.builder()
+                val finalItems = items.stream().map(item -> MediaModel.builder()
                         .id(item.id)
                         .type("Movie")
-                        .name(item.title)
+                        .title(item.title)
+                        .layoutType(MediaLayoutType.Backdrop)
                         .overview(item.description)
                         .image(ImageModel.builder()
                                 .primary(item.image.primary)
                                 .backdrop(item.image.backdrop)
+                                .thumb(item.image.backdrop)
                                 .logo(item.image.logo)
                                 .build())
                         .build()).collect(Collectors.toList());
-                completion.accept(embyItems);
+                completion.accept(finalItems);
                 return;
             }
             completion.accept(null);
@@ -258,7 +269,7 @@ public class iPlayApi implements EmbyLikeApi {
         });
     }
 
-    public void getMedias(Map<String, String> query, Consumer<Object> completion) {
+    public void getMedias(Map<String, String> query, Consumer<List<MediaModel>> completion) {
         if (site == null ||
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
@@ -283,14 +294,15 @@ public class iPlayApi implements EmbyLikeApi {
             }
             if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
                 val data = (List<iPlayModel.MediaModel>)responseModel.data;
-                val items = data.stream().map(item -> EmbyModel.EmbyMediaModel.builder()
+                val items = data.stream().map(item -> MediaModel.builder()
                         .id(item.id)
                         .type("Movie")
-                        .name(item.title)
+                        .title(item.title)
                         .overview(item.description)
                         .image(ImageModel.builder()
                                 .primary(item.image.primary)
                                 .backdrop(item.image.backdrop)
+                                .thumb(item.image.backdrop)
                                 .logo(item.image.logo)
                                 .build())
                         .build()).collect(Collectors.toList());
@@ -498,36 +510,7 @@ public class iPlayApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
-                .url(site.getEndpoint().getBaseUrl() + "emby/Items")
-                .method("GET")
-                .query(Map.of(
-                        "X-Emby-Token", site.getAccessToken(),
-                        "SortBy", "IsFavoriteOrLiked,Random",
-                        "IncludeItemTypes", "Movie,Series,MusicArtist",
-                        "Limit", "20",
-                        "Recursive", "true",
-                        "ImageTypeLimit", "0",
-                        "UserId", site.getUserId(),
-                        "Fields", "BasicSyncInfo,People,Genres,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated,ProductionYear,Status,EndDate"
-                ))
-                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {})
-                .build();
-
-        HTTPUtil.request(model, response -> {
-            if (Objects.isNull(response)) {
-                completion.accept(null);
-                return;
-            }
-            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
-                String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
-                items.forEach(item -> item.buildImage(baseUrl));
-                completion.accept(items);
-                return;
-            }
-            completion.accept(null);
-        });
+        completion.accept(List.of());
     }
 
     public void trackPlay(MediaPlayState state, EmbyModel.EmbyPlaybackData data, Consumer<Object> completion) {

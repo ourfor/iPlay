@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -24,7 +25,9 @@ import top.ourfor.app.iplayx.bean.JSONAdapter;
 import top.ourfor.app.iplayx.common.api.EmbyLikeApi;
 import top.ourfor.app.iplayx.common.model.SiteEndpointModel;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
+import top.ourfor.app.iplayx.model.AlbumModel;
 import top.ourfor.app.iplayx.model.ImageType;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.model.SiteModel;
 import top.ourfor.app.iplayx.model.UserModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
@@ -87,7 +90,7 @@ public class JellyfinApi implements EmbyLikeApi {
         });
     }
 
-    public void getAlbums(Consumer<Object> completion) {
+    public void getAlbums(Consumer<List<AlbumModel>> completion) {
         if (site == null ||
             site.getEndpoint() == null ||
             site.getUser() == null) return;
@@ -108,14 +111,20 @@ public class JellyfinApi implements EmbyLikeApi {
                 EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel> pageableModel = (EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel>) response;
                 String baseUrl = site.getEndpoint().getBaseUrl();
                 pageableModel.getItems().forEach(item -> item.buildImage(baseUrl, ImageType.Jellyfin));
-                completion.accept(pageableModel);
+                val albumItems = pageableModel.getItems().stream().map(item -> AlbumModel.builder()
+                        .id(item.getId())
+                        .title(item.getName())
+                        .type(item.getCollectionType())
+                        .backdrop(item.getImage().getPrimary())
+                        .build()).collect(Collectors.toList());
+                completion.accept(albumItems);
                 return;
             }
             completion.accept(null);
         });
     }
 
-    public void getAlbumLatestMedias(String id, Consumer<Object> completion) {
+    public void getAlbumLatestMedias(String id, Consumer<List<MediaModel>> completion) {
         if (site == null ||
             site.getEndpoint() == null ||
             site.getUser() == null) return;
@@ -143,7 +152,8 @@ public class JellyfinApi implements EmbyLikeApi {
                 String baseUrl = site.getEndpoint().getBaseUrl();
                 List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
                 items.forEach(item -> item.buildImage(baseUrl, ImageType.Jellyfin));
-                completion.accept(items);
+                val finalItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
+                completion.accept(finalItems);
                 return;
             }
             completion.accept(null);
@@ -189,7 +199,7 @@ public class JellyfinApi implements EmbyLikeApi {
         });
     }
 
-    public void getMedias(Map<String, String> query, Consumer<Object> completion) {
+    public void getMedias(Map<String, String> query, Consumer<List<MediaModel>> completion) {
         if (site == null ||
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
@@ -222,7 +232,8 @@ public class JellyfinApi implements EmbyLikeApi {
                 String baseUrl = site.getEndpoint().getBaseUrl();
                 List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
                 items.forEach(item -> item.buildImage(baseUrl, ImageType.Jellyfin));
-                completion.accept(items);
+                val mediaItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
+                completion.accept(mediaItems);
                 return;
             }
             completion.accept(null);
