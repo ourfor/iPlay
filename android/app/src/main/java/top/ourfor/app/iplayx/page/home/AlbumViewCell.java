@@ -7,18 +7,16 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.bumptech.glide.Glide;
-
 import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.UpdateModelAction;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.module.GlideApp;
 import top.ourfor.app.iplayx.util.DeviceUtil;
-import top.ourfor.app.iplayx.model.EmbyAlbumModel;
 import top.ourfor.app.iplayx.view.infra.TextView;
 
 public class AlbumViewCell extends ConstraintLayout implements UpdateModelAction {
-    private EmbyAlbumModel model;
+    private EmbyModel.EmbyAlbumModel model;
     private TextView nameLabel = new TextView(getContext());
     private ImageView coverImage = new ImageView(getContext());
 
@@ -29,10 +27,10 @@ public class AlbumViewCell extends ConstraintLayout implements UpdateModelAction
 
     @Override
     public <T> void updateModel(T model) {
-        if (!(model instanceof EmbyAlbumModel)) {
+        if (!(model instanceof EmbyModel.EmbyAlbumModel)) {
             return;
         }
-        this.model = (EmbyAlbumModel) model;
+        this.model = (EmbyModel.EmbyAlbumModel) model;
         nameLabel.setText(this.model.getName());
         GlideApp.with(this)
                 .load(this.model.getImage().getPrimary())
@@ -72,7 +70,7 @@ public class AlbumViewCell extends ConstraintLayout implements UpdateModelAction
     }
 
     void updateLayout() {
-        boolean isAlbum = model instanceof EmbyAlbumModel;
+        boolean isAlbum = model instanceof EmbyModel.EmbyAlbumModel;
         LayoutParams imageLayout = new LayoutParams((int) ((isAlbum ? 120 : 150) * DeviceUtil.density), LayoutParams.MATCH_CONSTRAINT);
         // set height equal to parent width multiple 1.5
         imageLayout.dimensionRatio = isAlbum ? "16:9" : "2:3";

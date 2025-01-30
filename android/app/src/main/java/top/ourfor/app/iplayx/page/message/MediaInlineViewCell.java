@@ -14,12 +14,11 @@ import com.bumptech.glide.request.RequestOptions;
 
 import lombok.val;
 import top.ourfor.app.iplayx.R;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.common.model.MediaModel;
 import top.ourfor.app.iplayx.action.UpdateModelAction;
 import top.ourfor.app.iplayx.module.GlideApp;
 import top.ourfor.app.iplayx.util.DeviceUtil;
-import top.ourfor.app.iplayx.model.EmbyAlbumModel;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
 import top.ourfor.app.iplayx.view.infra.TextView;
 
 public class MediaInlineViewCell extends ConstraintLayout implements UpdateModelAction {
@@ -38,15 +37,15 @@ public class MediaInlineViewCell extends ConstraintLayout implements UpdateModel
 
     @Override
     public <T> void updateModel(T model) {
-        if (!(model instanceof EmbyAlbumModel) &&
-            !(model instanceof EmbyMediaModel)) {
+        if (!(model instanceof EmbyModel.EmbyAlbumModel) &&
+            !(model instanceof EmbyModel.EmbyMediaModel)) {
             return;
         }
         this.model = (MediaModel) model;
-        boolean isEpisode = model instanceof EmbyMediaModel && ((EmbyMediaModel) model).getType().equals("Episode");
+        boolean isEpisode = model instanceof EmbyModel.EmbyMediaModel && ((EmbyModel.EmbyMediaModel) model).getType().equals("Episode");
         nameLabel.setText(this.model.getName());
         overviewLabel.setText(this.model.getOverview());
-        boolean isAlbum = model instanceof EmbyAlbumModel;
+        boolean isAlbum = model instanceof EmbyModel.EmbyAlbumModel;
         GlideApp.with(this)
                 .load(isEpisode ? this.model.getImage().getPrimary() : this.model.getImage().getBackdrop())
                 .placeholder(isAlbum ? R.drawable.hand_drawn_3 : R.drawable.abstract_3)

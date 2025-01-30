@@ -6,17 +6,16 @@ import android.view.LayoutInflater;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
 import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.UpdateModelAction;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.databinding.EpisodeCellBinding;
 import top.ourfor.app.iplayx.module.GlideApp;
 import top.ourfor.app.iplayx.util.DeviceUtil;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
 
 public class EpisodeCellView extends ConstraintLayout implements UpdateModelAction {
     private static final RequestOptions options = new RequestOptions().transform(new RoundedCorners(DeviceUtil.dpToPx(5)));
@@ -40,11 +39,11 @@ public class EpisodeCellView extends ConstraintLayout implements UpdateModelActi
 
     @Override
     public <T> void updateModel(T model) {
-        if (!(model instanceof EmbyMediaModel)) {
+        if (!(model instanceof EmbyModel.EmbyMediaModel)) {
             return;
         }
 
-        val episode = (EmbyMediaModel) model;
+        val episode = (EmbyModel.EmbyMediaModel) model;
         binding.titleLabel.setText(episode.getIndexNumber() + ": " + episode.getName());
         binding.overviewLabel.setText(episode.getOverview());
         GlideApp.with(this)

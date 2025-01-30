@@ -9,8 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.With;
-import top.ourfor.app.iplayx.model.EmbyAlbumModel;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 
 @Data
 @With
@@ -19,11 +18,11 @@ import top.ourfor.app.iplayx.model.EmbyMediaModel;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmbyDataSource {
-    CopyOnWriteArrayList<EmbyAlbumModel> albums;
-    CopyOnWriteArrayList<EmbyMediaModel> resume;
+    CopyOnWriteArrayList<EmbyModel.EmbyAlbumModel> albums;
+    CopyOnWriteArrayList<EmbyModel.EmbyMediaModel> resume;
 
-    ConcurrentHashMap<String, CopyOnWriteArrayList<EmbyMediaModel>> albumMedias;
-    ConcurrentHashMap<String, EmbyMediaModel> mediaMap;
-    ConcurrentHashMap<String, CopyOnWriteArrayList<EmbyMediaModel>> seriesSeasons;
-    ConcurrentHashMap<String, CopyOnWriteArrayList<EmbyMediaModel>> seasonEpisodes;
+    ConcurrentHashMap<String, CopyOnWriteArrayList<EmbyModel.EmbyMediaModel>> albumMedias;
+    ConcurrentHashMap<String, EmbyModel.EmbyMediaModel> mediaMap;
+    ConcurrentHashMap<String, CopyOnWriteArrayList<EmbyModel.EmbyMediaModel>> seriesSeasons;
+    ConcurrentHashMap<String, CopyOnWriteArrayList<EmbyModel.EmbyMediaModel>> seasonEpisodes;
 }

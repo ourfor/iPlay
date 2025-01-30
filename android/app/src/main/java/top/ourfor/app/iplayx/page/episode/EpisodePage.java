@@ -4,13 +4,8 @@ import static top.ourfor.app.iplayx.module.Bean.XGET;
 
 import android.content.Context;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieAnimationView;
 
@@ -22,14 +17,13 @@ import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.DispatchAction;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.databinding.EpisodePageBinding;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.util.AnimationUtil;
 import top.ourfor.app.iplayx.util.DeviceUtil;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
-import top.ourfor.app.iplayx.model.EmbyUserData;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.util.WindowUtil;
 import top.ourfor.app.iplayx.view.EpisodeCellView;
@@ -40,9 +34,9 @@ import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 @ViewController(name = "episode_page")
 public class EpisodePage implements Page {
     private EpisodePageBinding binding = null;
-    private ListView<EmbyMediaModel> episodeList = null;
+    private ListView<EmbyModel.EmbyMediaModel> episodeList = null;
     private LottieAnimationView activityIndicator = null;
-    private EmbyMediaModel model = null;
+    private EmbyModel.EmbyMediaModel model = null;
     private String title = null;
     private String seriesId = null;
     private String seasonId = null;
@@ -107,10 +101,10 @@ public class EpisodePage implements Page {
                 val media = model;
                 val favorite = media.getUserData().getIsFavorite();
                 store.markFavorite(media.getId(), !favorite, obj -> {
-                    if (!(obj instanceof EmbyUserData)) {
+                    if (!(obj instanceof EmbyModel.EmbyUserData)) {
                         return;
                     }
-                    val userData = (EmbyUserData) obj;
+                    val userData = (EmbyModel.EmbyUserData) obj;
                     media.setUserData(userData);
                     updateFavoriteState();
                 });

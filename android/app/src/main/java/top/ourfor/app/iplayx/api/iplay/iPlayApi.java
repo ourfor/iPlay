@@ -22,23 +22,14 @@ import lombok.Setter;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
 import top.ourfor.app.iplayx.common.api.EmbyLikeApi;
 import top.ourfor.app.iplayx.common.model.SiteEndpointModel;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
-import top.ourfor.app.iplayx.model.EmbyAlbumModel;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
-import top.ourfor.app.iplayx.model.EmbyMediaSource;
-import top.ourfor.app.iplayx.model.EmbyMediaStream;
-import top.ourfor.app.iplayx.model.EmbyPageableModel;
-import top.ourfor.app.iplayx.model.EmbyPlaybackData;
-import top.ourfor.app.iplayx.model.EmbyPlaybackModel;
-import top.ourfor.app.iplayx.model.EmbySiteInfo;
-import top.ourfor.app.iplayx.model.EmbySiteUserModel;
-import top.ourfor.app.iplayx.model.EmbyUserData;
-import top.ourfor.app.iplayx.model.EmbyUserModel;
 import top.ourfor.app.iplayx.model.ImageModel;
 import top.ourfor.app.iplayx.model.SiteModel;
+import top.ourfor.app.iplayx.model.UserModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.util.Base64Util;
 import top.ourfor.app.iplayx.util.HTTPModel;
@@ -83,13 +74,12 @@ public class iPlayApi implements EmbyLikeApi {
                         .path(url.getPath() == null ? url.getPath() : "/")
                         .build();
                 var siteModel = SiteModel.builder()
-                        .user(EmbyUserModel.builder()
+                        .user(UserModel.builder()
+                                .siteId("5")
+                                .id("")
+                                .username(username)
+                                .password(password)
                                 .accessToken(token)
-                                .serverId("iPlay")
-                                .user(EmbySiteUserModel.builder()
-                                        .id("iPlay")
-                                        .name(username)
-                                        .build())
                                 .build())
                         .endpoint(endpoint)
                         .build();
@@ -152,7 +142,7 @@ public class iPlayApi implements EmbyLikeApi {
             }
             if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
                 val items = (List<iPlayModel.MediaModel>) responseModel.data;
-                val embyItems = items.stream().map(item -> EmbyMediaModel.builder()
+                val embyItems = items.stream().map(item -> EmbyModel.EmbyMediaModel.builder()
                         .id(item.id)
                         .type("Movie")
                         .name(item.title)
@@ -190,7 +180,7 @@ public class iPlayApi implements EmbyLikeApi {
                 .url(site.getEndpoint().getBaseUrl() + "emby/Users/" + site.getUserId() + "/Items")
                 .method("GET")
                 .query(params)
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -198,9 +188,9 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(0);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
+            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                int count = ((EmbyPageableModel<EmbyMediaModel>) response).getTotalRecordCount();
+                int count = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getTotalRecordCount();
                 completion.accept(count);
                 return;
             }
@@ -229,7 +219,7 @@ public class iPlayApi implements EmbyLikeApi {
                 .url(site.getEndpoint().getBaseUrl() + "emby/Users/" + site.getUserId() + "/Items")
                 .method("GET")
                 .query(params)
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -237,19 +227,19 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?> pageableModel) {
+            if (response instanceof EmbyModel.EmbyPageableModel<?> pageableModel) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
                 val totalRecordCount = pageableModel.getTotalRecordCount();
-                val items = new ArrayList<EmbyMediaModel>();
-                items.addAll((List<EmbyMediaModel>)pageableModel.getItems());
+                val items = new ArrayList<EmbyModel.EmbyMediaModel>();
+                items.addAll((List<EmbyModel.EmbyMediaModel>)pageableModel.getItems());
                 val part_size = Integer.valueOf(params.getOrDefault("Limit", "50"));
                 val latch = new CountDownLatch((int)Math.ceil(totalRecordCount * 1.0f / part_size) - 1);
                 for (int i = items.size(); i < totalRecordCount; i+=part_size) {
                     params.put("StartIndex", String.valueOf(i));
                     model.setQuery(params);
                     HTTPUtil.request(model, res -> {
-                        if (res instanceof EmbyPageableModel<?> pageable) {
-                            items.addAll((List<EmbyMediaModel>)pageable.getItems());
+                        if (res instanceof EmbyModel.EmbyPageableModel<?> pageable) {
+                            items.addAll((List<EmbyModel.EmbyMediaModel>)pageable.getItems());
                         }
                         latch.countDown();
                     });
@@ -272,7 +262,7 @@ public class iPlayApi implements EmbyLikeApi {
         if (site == null ||
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
-        
+
         val params = new HashMap<String, String>();
         params.put("keyword", query.get("SearchTerm"));
         params.put("siteId", "5");
@@ -293,7 +283,7 @@ public class iPlayApi implements EmbyLikeApi {
             }
             if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
                 val data = (List<iPlayModel.MediaModel>)responseModel.data;
-                val items = data.stream().map(item -> EmbyMediaModel.builder()
+                val items = data.stream().map(item -> EmbyModel.EmbyMediaModel.builder()
                         .id(item.id)
                         .type("Movie")
                         .name(item.title)
@@ -324,7 +314,7 @@ public class iPlayApi implements EmbyLikeApi {
                         "UserId", site.getUserId(),
                         "Fields", "BasicSyncInfo,People,Genres,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated,ProductionYear,Status,EndDate"
                 ))
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -332,9 +322,9 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
+            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyMediaModel> items = ((EmbyPageableModel<EmbyMediaModel>) response).getItems();
+                List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
                 completion.accept(items);
                 return;
@@ -357,7 +347,7 @@ public class iPlayApi implements EmbyLikeApi {
                         "SeasonId", seasonId,
                         "Fields", "BasicSyncInfo,People,Genres,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated,ProductionYear,Status,EndDate"
                 ))
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -365,9 +355,9 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
+            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyMediaModel> items = ((EmbyPageableModel<EmbyMediaModel>) response).getItems();
+                List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
                 completion.accept(items);
                 return;
@@ -406,14 +396,14 @@ public class iPlayApi implements EmbyLikeApi {
                 if (siteBaseUrl.endsWith("/")) siteBaseUrl = siteBaseUrl.substring(0, siteBaseUrl.length()-1);
                 String baseUrl = siteBaseUrl;
                 val sources = (List<iPlayModel.SourceModel>)responseModel.data;
-                val embySource = EmbyPlaybackModel.builder()
+                val embySource = EmbyModel.EmbyPlaybackModel.builder()
                         .sessionId("0")
-                        .mediaSources(sources.stream().map(source -> EmbyMediaSource.builder()
+                        .mediaSources(sources.stream().map(source -> EmbyModel.EmbyMediaSource.builder()
                                 .id(Objects.requireNonNullElse(source.getName(), "0"))
                                 .name(Objects.requireNonNullElse(source.getName(), media.getName()))
                                 .container("manifest")
                                 .mediaStreams(List.of(
-                                        EmbyMediaStream.builder()
+                                        EmbyModel.EmbyMediaStream.builder()
                                                 .type("Video")
                                                 .displayTitle(media.getName())
                                                 .isExternal(true)
@@ -451,7 +441,7 @@ public class iPlayApi implements EmbyLikeApi {
                         "MediaTypes", "Video",
                         "Limit", "16"
                 ))
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -459,9 +449,9 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
+            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyMediaModel> items = ((EmbyPageableModel<EmbyMediaModel>) response).getItems();
+                List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
                 completion.accept(items);
                 return;
@@ -486,7 +476,7 @@ public class iPlayApi implements EmbyLikeApi {
                 .query(Map.of(
                         "X-Emby-Token", site.getAccessToken()
                 ))
-                .modelClass(EmbyUserData.class)
+                .modelClass(EmbyModel.EmbyUserData.class)
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -494,7 +484,7 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyUserData) {
+            if (response instanceof EmbyModel.EmbyUserData) {
                 completion.accept(response);
                 return;
             }
@@ -521,7 +511,7 @@ public class iPlayApi implements EmbyLikeApi {
                         "UserId", site.getUserId(),
                         "Fields", "BasicSyncInfo,People,Genres,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated,ProductionYear,Status,EndDate"
                 ))
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -529,9 +519,9 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
+            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyMediaModel> items = ((EmbyPageableModel<EmbyMediaModel>) response).getItems();
+                List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
                 completion.accept(items);
                 return;
@@ -540,7 +530,7 @@ public class iPlayApi implements EmbyLikeApi {
         });
     }
 
-    public void trackPlay(MediaPlayState state, EmbyPlaybackData data, Consumer<Object> completion) {
+    public void trackPlay(MediaPlayState state, EmbyModel.EmbyPlaybackData data, Consumer<Object> completion) {
         if (site == null ||
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
@@ -560,7 +550,7 @@ public class iPlayApi implements EmbyLikeApi {
                         "Content-Type", "application/json",
                         "reqformat", "json"
                 ))
-                .modelClass(EmbyUserData.class)
+                .modelClass(EmbyModel.EmbyUserData.class)
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -568,7 +558,7 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyUserData) {
+            if (response instanceof EmbyModel.EmbyUserData) {
                 completion.accept(response);
                 return;
             }
@@ -587,7 +577,7 @@ public class iPlayApi implements EmbyLikeApi {
         HTTPModel model = HTTPModel.builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/system/info/public")
                 .method("GET")
-                .modelClass(EmbySiteInfo.class)
+                .modelClass(EmbyModel.EmbySiteInfo.class)
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -595,7 +585,7 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbySiteInfo) {
+            if (response instanceof EmbyModel.EmbySiteInfo) {
                 completion.accept(response);
                 return;
             }

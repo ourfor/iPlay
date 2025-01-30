@@ -1,16 +1,13 @@
 package top.ourfor.app.iplayx.page.player;
 
-import static top.ourfor.app.iplayx.model.EmbyPlaybackData.kIPLXSecond2TickScale;
+import static top.ourfor.app.iplayx.api.emby.EmbyModel.EmbyPlaybackData.kIPLXSecond2TickScale;
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.ContentInfo;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,29 +21,19 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
@@ -54,6 +41,7 @@ import top.ourfor.app.iplayx.action.DispatchAction;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
 import top.ourfor.app.iplayx.api.dandan.DanDanPlayApi;
 import top.ourfor.app.iplayx.api.dandan.DanDanPlayModel;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.model.SeekableRange;
@@ -61,15 +49,12 @@ import top.ourfor.app.iplayx.common.model.WebMediaMessage;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
 import top.ourfor.app.iplayx.config.AppSetting;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.page.home.MediaViewCell;
 import top.ourfor.app.iplayx.page.media.PlayerConfigPanelViewModel;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.util.IntervalCaller;
 import top.ourfor.app.iplayx.util.WindowUtil;
-import top.ourfor.app.iplayx.model.EmbyPlaybackData;
-import top.ourfor.app.iplayx.model.EmbyPlayingQueue;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.view.ListView;
 import top.ourfor.app.iplayx.view.player.PlayerEventType;
@@ -85,7 +70,7 @@ public class MoviePlayerPage implements Page {
     private String url = null;
     private String title = null;
     private PlayerConfigPanelViewModel.MediaSourceModel source = null;
-    private EmbyPlaybackData playbackData = null;
+    private EmbyModel.EmbyPlaybackData playbackData = null;
     private IntervalCaller caller;
 
     @Getter
@@ -93,7 +78,7 @@ public class MoviePlayerPage implements Page {
 
     Map<String, Object> params;
 
-    Queue<EmbyMediaModel> playlist;
+    Queue<EmbyModel.EmbyMediaModel> playlist;
 
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -199,7 +184,7 @@ public class MoviePlayerPage implements Page {
             if (playback == null) return;
             val sources = store.getPlaySources(media, playback);
             val video = source != null && source.getVideo() != null ? source.getVideo() : sources.stream().filter(v -> v.getType() == PlayerSourceModel.PlayerSourceType.Video).findFirst().get();
-            playbackData = EmbyPlaybackData.builder()
+            playbackData = EmbyModel.EmbyPlaybackData.builder()
                     .playSessionId(playback.getSessionId())
                     .isMuted(false)
                     .isPaused(false)
@@ -207,7 +192,7 @@ public class MoviePlayerPage implements Page {
                     .eventName("")
                     .positionTicks(0L)
                     .seekableRanges(List.of(new SeekableRange(0L, 0L)))
-                    .nowPlayingQueue(List.of(new EmbyPlayingQueue("", "playlistItem0")))
+                    .nowPlayingQueue(List.of(new EmbyModel.EmbyPlayingQueue("", "playlistItem0")))
                     .build();
             XGET(GlobalStore.class).trackPlay(MediaPlayState.OPENING, playbackData);
             val url = source != null ? video.getUrl() : store.getPlayUrl(playback);
@@ -268,12 +253,12 @@ public class MoviePlayerPage implements Page {
 
         playerView.setOnPlaylistTap(playerView -> {
             val context = getContext();
-            val listView = new ListView<EmbyMediaModel>(context);
+            val listView = new ListView<EmbyModel.EmbyMediaModel>(context);
             listView.viewModel.viewCell = MediaViewCell.class;
             listView.viewModel.isSelected = (model) -> model.getId().equals(this.id);
             listView.listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
             listView.listView.setPadding(DeviceUtil.dpToPx(3), DeviceUtil.dpToPx(3), DeviceUtil.dpToPx(3), DeviceUtil.dpToPx(3));
-            List<EmbyMediaModel> items = null;
+            List<EmbyModel.EmbyMediaModel> items = null;
             if (media.isEpisode()) {
                 items = store.getDataSource().getSeasonEpisodes().get(media.getSeasonId());
             } else {
@@ -351,10 +336,10 @@ public class MoviePlayerPage implements Page {
         }
     }
 
-    private void setupPlaylist(EmbyMediaModel media) {
+    private void setupPlaylist(EmbyModel.EmbyMediaModel media) {
         var store = XGET(GlobalStore.class);
         assert store != null;
-        List<EmbyMediaModel> items = null;
+        List<EmbyModel.EmbyMediaModel> items = null;
         if (media.isEpisode()) {
             items = store.getDataSource().getSeasonEpisodes().get(media.getSeasonId());
         } else {
@@ -379,7 +364,7 @@ public class MoviePlayerPage implements Page {
         }
     }
 
-    void onSelectMedia(EmbyMediaModel media) {
+    void onSelectMedia(EmbyModel.EmbyMediaModel media) {
         if (media == null) return;
         id = media.getId();
         val store = XGET(GlobalStore.class);
@@ -388,7 +373,7 @@ public class MoviePlayerPage implements Page {
             if (playback == null) return;
             val sources = store.getPlaySources(media, playback);
             val video = sources.stream().filter(v -> v.getType() == PlayerSourceModel.PlayerSourceType.Video).findFirst().get();
-            playbackData = EmbyPlaybackData.builder()
+            playbackData = EmbyModel.EmbyPlaybackData.builder()
                     .playSessionId(playback.getSessionId())
                     .isMuted(false)
                     .isPaused(false)
@@ -396,7 +381,7 @@ public class MoviePlayerPage implements Page {
                     .eventName("")
                     .positionTicks(0L)
                     .seekableRanges(List.of(new SeekableRange(0L, 0L)))
-                    .nowPlayingQueue(List.of(new EmbyPlayingQueue("", "playlistItem0")))
+                    .nowPlayingQueue(List.of(new EmbyModel.EmbyPlayingQueue("", "playlistItem0")))
                     .build();
             XGET(GlobalStore.class).trackPlay(MediaPlayState.OPENING, playbackData);
             val url = store.getPlayUrl(playback);

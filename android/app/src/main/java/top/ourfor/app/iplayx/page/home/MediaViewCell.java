@@ -1,10 +1,7 @@
 package top.ourfor.app.iplayx.page.home;
 
 import android.content.Context;
-import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -15,14 +12,12 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 
-import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.UpdateModelAction;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.common.model.MediaModel;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.databinding.MediaCellBinding;
-import top.ourfor.app.iplayx.model.EmbyAlbumModel;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
 import top.ourfor.app.iplayx.module.GlideApp;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.view.infra.TextView;
@@ -46,19 +41,19 @@ public class MediaViewCell extends ConstraintLayout implements UpdateModelAction
 
     @Override
     public <T> void updateModel(T object) {
-        if (!(object instanceof EmbyAlbumModel) &&
-            !(object instanceof EmbyMediaModel)) {
+        if (!(object instanceof EmbyModel.EmbyAlbumModel) &&
+            !(object instanceof EmbyModel.EmbyMediaModel)) {
             return;
         }
         model = (MediaModel) object;
         updateLayout();
         nameLabel.setText(model.getName());
-        boolean isAlbum = object instanceof EmbyAlbumModel;
+        boolean isAlbum = object instanceof EmbyModel.EmbyAlbumModel;
         String imageUrl;
         if (isAlbum) {
             imageUrl = model.getImage().getPrimary();
         } else if (layoutType == MediaLayoutType.Backdrop || layoutType == MediaLayoutType.EpisodeDetail) {
-            if (((EmbyMediaModel) model).isEpisode()) imageUrl = model.getImage().getPrimary();
+            if (((EmbyModel.EmbyMediaModel) model).isEpisode()) imageUrl = model.getImage().getPrimary();
             else imageUrl = model.getImage().getThumb();
         } else {
             imageUrl = model.getImage().getPrimary();
@@ -69,7 +64,7 @@ public class MediaViewCell extends ConstraintLayout implements UpdateModelAction
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .apply(options)
                 .into(coverImage);
-        if (model instanceof EmbyMediaModel media) {
+        if (model instanceof EmbyModel.EmbyMediaModel media) {
             if (media.getUserData() != null && media.getUserData().getUnplayedItemCount() != null) {
                 countLabel.setText(media.getUserData().getUnplayedItemCount().toString());
                 countLabel.setVisibility(VISIBLE);
@@ -115,9 +110,9 @@ public class MediaViewCell extends ConstraintLayout implements UpdateModelAction
     }
 
     void updateLayout() {
-        boolean isAlbum = model instanceof EmbyAlbumModel;
-        boolean isMedia = model instanceof EmbyMediaModel;
-        EmbyMediaModel media = isMedia ? (EmbyMediaModel) model : null;
+        boolean isAlbum = model instanceof EmbyModel.EmbyAlbumModel;
+        boolean isMedia = model instanceof EmbyModel.EmbyMediaModel;
+        EmbyModel.EmbyMediaModel media = isMedia ? (EmbyModel.EmbyMediaModel) model : null;
         boolean isMusic = isMedia && (media.isMusicAlbum() || media.isAudio());
         layoutType = model.getLayoutType();
         int width = DeviceUtil.dpToPx(isAlbum || layoutType == MediaLayoutType.Backdrop || layoutType == MediaLayoutType.EpisodeDetail ? (isAlbum ? 150 : 174) : 111);

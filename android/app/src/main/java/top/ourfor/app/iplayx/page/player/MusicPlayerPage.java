@@ -1,24 +1,21 @@
 package top.ourfor.app.iplayx.page.player;
 
-import static top.ourfor.app.iplayx.model.EmbyPlaybackData.kIPLXSecond2TickScale;
+import static top.ourfor.app.iplayx.api.emby.EmbyModel.EmbyPlaybackData.kIPLXSecond2TickScale;
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.HashMap;
@@ -31,14 +28,12 @@ import lombok.SneakyThrows;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.DispatchAction;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.model.SeekableRange;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
 import top.ourfor.app.iplayx.config.AppSetting;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
-import top.ourfor.app.iplayx.model.EmbyPlaybackData;
-import top.ourfor.app.iplayx.model.EmbyPlayingQueue;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.page.home.MediaViewCell;
 import top.ourfor.app.iplayx.store.GlobalStore;
@@ -56,7 +51,7 @@ public class MusicPlayerPage implements Page {
     private ConstraintLayout contentView = null;
     private MusicPlayerView playerView = null;
     private String id = null;
-    private EmbyPlaybackData playbackData = null;
+    private EmbyModel.EmbyPlaybackData playbackData = null;
     private IntervalCaller caller;
 
     @Getter
@@ -88,7 +83,7 @@ public class MusicPlayerPage implements Page {
             if (playback == null) return;
             val sources = store.getPlaySources(media, playback);
             val video = sources.stream().filter(v -> v.getType() == PlayerSourceModel.PlayerSourceType.Video).findFirst().get();
-            playbackData = EmbyPlaybackData.builder()
+            playbackData = EmbyModel.EmbyPlaybackData.builder()
                     .playSessionId(playback.getSessionId())
                     .isMuted(false)
                     .isPaused(false)
@@ -96,7 +91,7 @@ public class MusicPlayerPage implements Page {
                     .eventName("")
                     .positionTicks(0L)
                     .seekableRanges(List.of(new SeekableRange(0L, 0L)))
-                    .nowPlayingQueue(List.of(new EmbyPlayingQueue("", "playlistItem0")))
+                    .nowPlayingQueue(List.of(new EmbyModel.EmbyPlayingQueue("", "playlistItem0")))
                     .build();
             XGET(GlobalStore.class).trackPlay(MediaPlayState.OPENING, playbackData);
             val url = store.getPlayUrl(playback);
@@ -146,7 +141,7 @@ public class MusicPlayerPage implements Page {
         playerView.setOnPlaylistTap(playerView -> {
             val site = store.getSite();
             val context = getContext();
-            val listView = new ListView<EmbyMediaModel>(context);
+            val listView = new ListView<EmbyModel.EmbyMediaModel>(context);
             listView.viewModel.viewCell = MediaViewCell.class;
             listView.viewModel.isSelected = (model) -> model.equals(media);
             listView.listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
@@ -198,14 +193,14 @@ public class MusicPlayerPage implements Page {
         });
     }
 
-    void onSelectMedia(EmbyMediaModel media) {
+    void onSelectMedia(EmbyModel.EmbyMediaModel media) {
         if (media == null) return;
         val store = XGET(GlobalStore.class);
         store.getPlayback(media.getId(), playback -> {
             if (playback == null) return;
             val sources = store.getPlaySources(media, playback);
             val video = sources.stream().filter(v -> v.getType() == PlayerSourceModel.PlayerSourceType.Video).findFirst().get();
-            playbackData = EmbyPlaybackData.builder()
+            playbackData = EmbyModel.EmbyPlaybackData.builder()
                     .playSessionId(playback.getSessionId())
                     .isMuted(false)
                     .isPaused(false)
@@ -213,7 +208,7 @@ public class MusicPlayerPage implements Page {
                     .eventName("")
                     .positionTicks(0L)
                     .seekableRanges(List.of(new SeekableRange(0L, 0L)))
-                    .nowPlayingQueue(List.of(new EmbyPlayingQueue("", "playlistItem0")))
+                    .nowPlayingQueue(List.of(new EmbyModel.EmbyPlayingQueue("", "playlistItem0")))
                     .build();
             XGET(GlobalStore.class).trackPlay(MediaPlayState.OPENING, playbackData);
             val url = store.getPlayUrl(playback);

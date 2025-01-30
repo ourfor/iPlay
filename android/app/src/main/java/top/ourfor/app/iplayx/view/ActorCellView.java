@@ -7,13 +7,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.UpdateModelAction;
-import top.ourfor.app.iplayx.model.EmbyActorModel;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.databinding.ActorCellBinding;
 import top.ourfor.app.iplayx.module.GlideApp;
 
@@ -30,10 +29,10 @@ public class ActorCellView extends ConstraintLayout implements UpdateModelAction
 
     @Override
     public <T> void updateModel(T model) {
-        if (!(model instanceof EmbyActorModel)) {
+        if (!(model instanceof EmbyModel.EmbyActorModel)) {
             return;
         }
-        EmbyActorModel actor = (EmbyActorModel) model;
+        EmbyModel.EmbyActorModel actor = (EmbyModel.EmbyActorModel) model;
         binding.actorName.setText(actor.getName());
         GlideApp.with(this)
                 .load(actor.getImage().getPrimary())

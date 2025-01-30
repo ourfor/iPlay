@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.Consumer;
 
@@ -20,7 +19,6 @@ import lombok.val;
 import top.ourfor.app.iplayx.api.file.File;
 import top.ourfor.app.iplayx.api.file.FileProvider;
 import top.ourfor.app.iplayx.api.file.FileProviderFactory;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
 
 @Slf4j

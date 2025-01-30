@@ -15,7 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -30,9 +29,9 @@ import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
 import top.ourfor.app.iplayx.action.SiteListUpdateAction;
 import top.ourfor.app.iplayx.action.SiteUpdateAction;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.databinding.SitePageBinding;
-import top.ourfor.app.iplayx.model.EmbySiteInfo;
 import top.ourfor.app.iplayx.model.SiteModel;
 import top.ourfor.app.iplayx.page.Activity;
 import top.ourfor.app.iplayx.page.Page;
@@ -120,7 +119,7 @@ public class SitePage implements Page, SiteListUpdateAction, SiteUpdateAction {
             val api = store.getApi();
             if (api == null) return;
             api.getSiteInfo((info) -> {
-                if (!(info instanceof EmbySiteInfo embyInfo)) return;
+                if (!(info instanceof EmbyModel.EmbySiteInfo embyInfo)) return;
                 currentSite.setRemark(embyInfo.getServerName());
                 store.save();
                 updateSiteList();

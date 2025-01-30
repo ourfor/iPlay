@@ -12,7 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
 
 @Slf4j
@@ -20,8 +20,8 @@ import top.ourfor.app.iplayx.store.GlobalStore;
 @NoArgsConstructor
 @HiltViewModel
 public class SearchViewModel extends ViewModel {
-    private final MutableLiveData<List<EmbyMediaModel>> suggestionItems = new MutableLiveData<>(new CopyOnWriteArrayList<>());
-    private final MutableLiveData<List<EmbyMediaModel>> searchResult = new MutableLiveData<>(null);
+    private final MutableLiveData<List<EmbyModel.EmbyMediaModel>> suggestionItems = new MutableLiveData<>(new CopyOnWriteArrayList<>());
+    private final MutableLiveData<List<EmbyModel.EmbyMediaModel>> searchResult = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> keyword = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> isSearchTipVisible = new MutableLiveData<>(true);

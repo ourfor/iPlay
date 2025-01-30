@@ -24,21 +24,19 @@ import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.SiteUpdateAction;
 import top.ourfor.app.iplayx.action.ThemeUpdateAction;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.util.AnimationUtil;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.util.LayoutUtil;
-import top.ourfor.app.iplayx.util.NavigationUtil;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
-import top.ourfor.app.iplayx.module.Bean;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.view.ListView;
 
 @ViewController(name = "message_page")
 public class MessagePage extends Fragment implements SiteUpdateAction, ThemeUpdateAction {
     private static ViewGroup contentView = null;
-    private ListView<EmbyMediaModel> listView = null;
+    private ListView<EmbyModel.EmbyMediaModel> listView = null;
     private LottieAnimationView activityIndicator = null;
     private SwipeRefreshLayout swipeRefreshLayout = null;
 

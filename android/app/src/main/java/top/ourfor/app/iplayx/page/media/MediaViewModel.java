@@ -6,21 +6,18 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
-import dagger.hilt.android.lifecycle.HiltViewModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
 
 @NoArgsConstructor
 public class MediaViewModel extends ViewModel {
     @Getter
-    private final MutableLiveData<List<EmbyMediaModel>> seasons = new MutableLiveData<>();
+    private final MutableLiveData<List<EmbyModel.EmbyMediaModel>> seasons = new MutableLiveData<>();
 
     @Getter
-    private final MutableLiveData<List<EmbyMediaModel>> similar = new MutableLiveData<>();
+    private final MutableLiveData<List<EmbyModel.EmbyMediaModel>> similar = new MutableLiveData<>();
 
     GlobalStore store;
 

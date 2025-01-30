@@ -19,15 +19,13 @@ import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.common.model.MediaModel;
 import top.ourfor.app.iplayx.action.UpdateModelAction;
 import top.ourfor.app.iplayx.common.type.MediaType;
-import top.ourfor.app.iplayx.model.EmbyAlbumModel;
 import top.ourfor.app.iplayx.module.FontModule;
 import top.ourfor.app.iplayx.util.DeviceUtil;
-import top.ourfor.app.iplayx.model.EmbyAlbumMediaModel;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
 import top.ourfor.app.iplayx.view.ListItemClickEvent;
 import top.ourfor.app.iplayx.view.ListView;
 import top.ourfor.app.iplayx.view.infra.TextView;
@@ -118,8 +116,8 @@ public class MediaListViewCell extends ConstraintLayout implements UpdateModelAc
 
     @Override
     public <T> void updateModel(T model) {
-        if (model instanceof EmbyAlbumMediaModel<?>) {
-            EmbyAlbumMediaModel<?> data = (EmbyAlbumMediaModel<?>) model;
+        if (model instanceof EmbyModel.EmbyAlbumMediaModel<?>) {
+            EmbyModel.EmbyAlbumMediaModel<?> data = (EmbyModel.EmbyAlbumMediaModel<?>) model;
             if (data.getAlbum() != null) {
                 titleLabel.setText(data.getAlbum().getName());
                 titleLayout.topMargin = 10;
@@ -149,9 +147,9 @@ public class MediaListViewCell extends ConstraintLayout implements UpdateModelAc
                 val m = event.getModel();
                 args.put("id", m.getId());
                 args.put("title", m.getName());
-                boolean isMedia = m instanceof EmbyMediaModel;
-                EmbyMediaModel media = isMedia ? (EmbyMediaModel) m : null;
-                int dstId = m instanceof EmbyMediaModel ? R.id.mediaPage : R.id.albumPage;
+                boolean isMedia = m instanceof EmbyModel.EmbyMediaModel;
+                EmbyModel.EmbyMediaModel media = isMedia ? (EmbyModel.EmbyMediaModel) m : null;
+                int dstId = m instanceof EmbyModel.EmbyMediaModel ? R.id.mediaPage : R.id.albumPage;
                 if (media != null) {
                     if (media.isMusicAlbum()) {
                         dstId = R.id.musicPage;
@@ -159,7 +157,7 @@ public class MediaListViewCell extends ConstraintLayout implements UpdateModelAc
                         dstId = R.id.musicPlayerPage;
                     }
                 }
-                if (m instanceof EmbyAlbumModel album && album.isMusic()) {
+                if (m instanceof EmbyModel.EmbyAlbumModel album && album.isMusic()) {
                     args.put("type", MediaType.MusicAlbum.name());
                 }
                 route.pushPage(dstId, args);

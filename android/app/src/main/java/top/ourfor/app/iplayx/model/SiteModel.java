@@ -26,7 +26,7 @@ public class SiteModel {
     @JsonProperty("endpoints")
     List<SiteLineModel> endpoints;
     @JsonProperty("user")
-    EmbyUserModel user;
+    UserModel user;
 
     @JsonProperty("sync")
     boolean sync;
@@ -49,7 +49,7 @@ public class SiteModel {
     @JsonIgnore
     public String getUserId() {
         try {
-            return user.getUser().getId();
+            return user.getId();
         } catch (Exception e) {
             return null;
         }
@@ -67,11 +67,11 @@ public class SiteModel {
 
     @JsonIgnore
     public String getUserName() {
-        return user.getUser().getName();
+        return user.getUsername();
     }
 
     @JsonIgnore
-    public String getId() { return user.getServerId(); }
+    public String getId() { return user.getSiteId(); }
 
     @JsonIgnore
     public String avatarUrl() {

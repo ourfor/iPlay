@@ -3,7 +3,6 @@ package top.ourfor.app.iplayx.page.star;
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 
@@ -18,10 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.UpdateModelAction;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.common.model.MediaModel;
 import top.ourfor.app.iplayx.common.type.MediaType;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
 import top.ourfor.app.iplayx.page.home.MediaViewCell;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.util.NavigationUtil;
@@ -32,7 +31,7 @@ import top.ourfor.app.iplayx.view.infra.TextView;
 
 @Slf4j
 public class MediaStarListViewCell extends ConstraintLayout implements UpdateModelAction {
-    private ListView<EmbyMediaModel> listView = new ListView<>(getContext());
+    private ListView<EmbyModel.EmbyMediaModel> listView = new ListView<>(getContext());
     private TextView titleLabel = null;
     private TextView viewMoreLabel = null;
     private LayoutParams titleLayout = null;
@@ -140,9 +139,9 @@ public class MediaStarListViewCell extends ConstraintLayout implements UpdateMod
                 args.put("id", m.getId());
                 args.put("title", m.getName());
                 final var options = NavigationUtil.getNavOptions();
-                int dstId = m instanceof EmbyMediaModel ? R.id.mediaPage : R.id.albumPage;
-                if (m instanceof EmbyMediaModel) {
-                    val media = (EmbyMediaModel) m;
+                int dstId = m instanceof EmbyModel.EmbyMediaModel ? R.id.mediaPage : R.id.albumPage;
+                if (m instanceof EmbyModel.EmbyMediaModel) {
+                    val media = (EmbyModel.EmbyMediaModel) m;
                     val isSeason = media.getType().equals("Season");
                     if (isSeason) {
                         dstId = R.id.episodePage;

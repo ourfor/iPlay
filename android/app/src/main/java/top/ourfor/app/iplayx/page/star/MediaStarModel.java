@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.common.type.MediaType;
 
 @With
@@ -18,5 +18,5 @@ import top.ourfor.app.iplayx.common.type.MediaType;
 public class MediaStarModel {
     String name;
     MediaType type;
-    List<EmbyMediaModel> medias;
+    List<EmbyModel.EmbyMediaModel> medias;
 }

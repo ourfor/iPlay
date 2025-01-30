@@ -3,8 +3,8 @@ package top.ourfor.app.iplayx.common.api;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
-import top.ourfor.app.iplayx.model.EmbyPlaybackData;
 import top.ourfor.app.iplayx.model.SiteModel;
 
 public interface EmbyLikeApi {
@@ -37,7 +37,7 @@ public interface EmbyLikeApi {
 
     default void markFavorite(String id, boolean isFavorite, Consumer<Object> completion) { }
 
-    default void trackPlay(MediaPlayState state, EmbyPlaybackData data, Consumer<Object> completion) { }
+    default void trackPlay(MediaPlayState state, EmbyModel.EmbyPlaybackData data, Consumer<Object> completion) { }
 
     default void getRecommendations(Consumer<Object> completion) { }
 }

@@ -34,6 +34,7 @@ import top.ourfor.app.iplayx.action.DriveUpdateAction;
 import top.ourfor.app.iplayx.action.SiteListUpdateAction;
 import top.ourfor.app.iplayx.action.SiteUpdateAction;
 import top.ourfor.app.iplayx.api.emby.EmbyApi;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.api.iplay.iPlayApi;
 import top.ourfor.app.iplayx.api.iplay.iPlayModel;
 import top.ourfor.app.iplayx.api.jellyfin.JellyfinApi;
@@ -44,12 +45,6 @@ import top.ourfor.app.iplayx.common.type.MediaPlayState;
 import top.ourfor.app.iplayx.common.type.MediaType;
 import top.ourfor.app.iplayx.common.type.ServerType;
 import top.ourfor.app.iplayx.config.AppSetting;
-import top.ourfor.app.iplayx.model.EmbyAlbumModel;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
-import top.ourfor.app.iplayx.model.EmbyPageableModel;
-import top.ourfor.app.iplayx.model.EmbyPlaybackData;
-import top.ourfor.app.iplayx.model.EmbyPlaybackModel;
-import top.ourfor.app.iplayx.model.EmbyUserData;
 import top.ourfor.app.iplayx.model.ImageModel;
 import top.ourfor.app.iplayx.model.SiteModel;
 import top.ourfor.app.iplayx.model.drive.Drive;
@@ -217,7 +212,7 @@ public class GlobalStore {
         this.dataSource = createDataSource();
     }
 
-    public void getAlbums(Consumer<List<EmbyAlbumModel>> completion) {
+    public void getAlbums(Consumer<List<EmbyModel.EmbyAlbumModel>> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -227,8 +222,8 @@ public class GlobalStore {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
-                List<EmbyAlbumModel> items = ((EmbyPageableModel<EmbyAlbumModel>) response).getItems();
+            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
+                List<EmbyModel.EmbyAlbumModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel>) response).getItems();
                 if (dataSource.getAlbums() == null) {
                     dataSource.setAlbums(new CopyOnWriteArrayList<>());
                 }
@@ -241,7 +236,7 @@ public class GlobalStore {
                     dataSource.setAlbums(new CopyOnWriteArrayList<>());
                 }
                 dataSource.getAlbums().clear();
-                val embyItems = items.stream().map(item -> EmbyAlbumModel.builder()
+                val embyItems = items.stream().map(item -> EmbyModel.EmbyAlbumModel.builder()
                         .id(item.getId())
                         .name(item.getName())
                         .image(ImageModel.builder()
@@ -257,7 +252,7 @@ public class GlobalStore {
         });
     }
 
-    public void markFavorite(String id, boolean isFavorite, Consumer<EmbyUserData> completion) {
+    public void markFavorite(String id, boolean isFavorite, Consumer<EmbyModel.EmbyUserData> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -267,8 +262,8 @@ public class GlobalStore {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyUserData) {
-                EmbyUserData data = (EmbyUserData) response;
+            if (response instanceof EmbyModel.EmbyUserData) {
+                EmbyModel.EmbyUserData data = (EmbyModel.EmbyUserData) response;
                 completion.accept(data);
             } else {
                 completion.accept(null);
@@ -276,7 +271,7 @@ public class GlobalStore {
         });
     }
 
-    public void getResume(Consumer<List<EmbyMediaModel>> completion) {
+    public void getResume(Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -290,7 +285,7 @@ public class GlobalStore {
                 if (dataSource.getResume() == null) {
                     dataSource.setResume(new CopyOnWriteArrayList<>());
                 }
-                List<EmbyMediaModel> items = (List<EmbyMediaModel>) response;
+                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
                 items.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
                 dataSource.getResume().clear();
                 dataSource.getResume().addAll(items);
@@ -301,7 +296,7 @@ public class GlobalStore {
         });
     }
 
-    public void getAlbumLatestMedias(String id, Consumer<List<EmbyMediaModel>> completion) {
+    public void getAlbumLatestMedias(String id, Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -312,7 +307,7 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyMediaModel> items = (List<EmbyMediaModel>) response;
+                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
@@ -329,7 +324,7 @@ public class GlobalStore {
         });
     }
 
-    public void getAllFavoriteMedias(MediaType type, Consumer<List<EmbyMediaModel>> completion) {
+    public void getAllFavoriteMedias(MediaType type, Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -353,7 +348,7 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyMediaModel> items = (List<EmbyMediaModel>) response;
+                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
@@ -368,7 +363,7 @@ public class GlobalStore {
         });
     }
 
-    public void getFavoriteMedias(MediaType type, Consumer<List<EmbyMediaModel>> completion) {
+    public void getFavoriteMedias(MediaType type, Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -392,7 +387,7 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyMediaModel> items = (List<EmbyMediaModel>) response;
+                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
@@ -407,7 +402,7 @@ public class GlobalStore {
         });
     }
 
-    public void getSeasons(String seriesId, Consumer<List<EmbyMediaModel>> completion) {
+    public void getSeasons(String seriesId, Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -418,7 +413,7 @@ public class GlobalStore {
                 return;
             }
             if (seasons instanceof List<?>) {
-                List<EmbyMediaModel> items = (List<EmbyMediaModel>) seasons;
+                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) seasons;
                 if (dataSource.seriesSeasons == null) {
                     dataSource.seriesSeasons = new ConcurrentHashMap<>();
                 }
@@ -431,7 +426,7 @@ public class GlobalStore {
         });
     }
 
-    public void getEpisodes(String seriesId, String seasonId, Consumer<List<EmbyMediaModel>> completion) {
+    public void getEpisodes(String seriesId, String seasonId, Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -442,7 +437,7 @@ public class GlobalStore {
                 return;
             }
             if (episodes instanceof List<?>) {
-                List<EmbyMediaModel> items = (List<EmbyMediaModel>) episodes;
+                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) episodes;
                 if (dataSource.seasonEpisodes == null) {
                     dataSource.seasonEpisodes = new ConcurrentHashMap<>();
                 }
@@ -455,7 +450,7 @@ public class GlobalStore {
         });
     }
 
-    public void getPlayback(String id, Consumer<EmbyPlaybackModel> completion) {
+    public void getPlayback(String id, Consumer<EmbyModel.EmbyPlaybackModel> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -465,8 +460,8 @@ public class GlobalStore {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPlaybackModel) {
-                EmbyPlaybackModel data = (EmbyPlaybackModel) response;
+            if (response instanceof EmbyModel.EmbyPlaybackModel) {
+                EmbyModel.EmbyPlaybackModel data = (EmbyModel.EmbyPlaybackModel) response;
                 completion.accept(data);
             } else {
                 completion.accept(null);
@@ -474,7 +469,7 @@ public class GlobalStore {
         });
     }
 
-    public List<PlayerSourceModel> getPlaySources(EmbyMediaModel media, EmbyPlaybackModel playback) {
+    public List<PlayerSourceModel> getPlaySources(EmbyModel.EmbyMediaModel media, EmbyModel.EmbyPlaybackModel playback) {
         List<PlayerSourceModel> sources = new ArrayList<>(5);
         sources.add(PlayerSourceModel.builder()
                 .name(media.getName())
@@ -538,7 +533,7 @@ public class GlobalStore {
         return sources;
     }
 
-    public String getPlayUrl(EmbyPlaybackModel playback) {
+    public String getPlayUrl(EmbyModel.EmbyPlaybackModel playback) {
         val mediaSources = playback.getMediaSources();
         for (val source : mediaSources) {
             if (AppSetting.shared.isUseStrmFirst() &&
@@ -553,7 +548,7 @@ public class GlobalStore {
         return null;
     }
 
-    public void getAlbumAllMedias(String id, Consumer<List<EmbyMediaModel>> completion) {
+    public void getAlbumAllMedias(String id, Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -567,7 +562,7 @@ public class GlobalStore {
                 "SortBy", "SortName"
         );
 
-        CopyOnWriteArrayList<EmbyMediaModel> items = new CopyOnWriteArrayList<>();
+        CopyOnWriteArrayList<EmbyModel.EmbyMediaModel> items = new CopyOnWriteArrayList<>();
         api.getMediasCount(query, count -> {
             CountDownLatch latch = new CountDownLatch((int)Math.ceil(count / 100.0));
             for (int i = 0; i < count; i+=100) {
@@ -590,11 +585,11 @@ public class GlobalStore {
         });
     }
 
-    public void getAlbumMedias(String id, Consumer<List<EmbyMediaModel>> completion) {
+    public void getAlbumMedias(String id, Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
         getAlbumMedias(id, 0, completion);
     }
 
-    public void getAlbumMedias(String id, int start, Consumer<List<EmbyMediaModel>> completion) {
+    public void getAlbumMedias(String id, int start, Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -614,7 +609,7 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyMediaModel> items = (List<EmbyMediaModel>) response;
+                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
@@ -630,7 +625,7 @@ public class GlobalStore {
         });
     }
 
-    public void getItems(Map<String, String> query, Consumer<List<EmbyMediaModel>> completion) {
+    public void getItems(Map<String, String> query, Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -642,7 +637,7 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyMediaModel> items = (List<EmbyMediaModel>) response;
+                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
@@ -655,7 +650,7 @@ public class GlobalStore {
     }
 
 
-    public void trackPlay(MediaPlayState state, EmbyPlaybackData data) {
+    public void trackPlay(MediaPlayState state, EmbyModel.EmbyPlaybackData data) {
         if (api == null) {
             return;
         }
@@ -706,7 +701,7 @@ public class GlobalStore {
         action.onSiteUpdate();
     }
 
-    public void search(String keyword, Consumer<List<EmbyMediaModel>> completion) {
+    public void search(String keyword, Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -725,7 +720,7 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyMediaModel> items = (List<EmbyMediaModel>) response;
+                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
@@ -778,7 +773,7 @@ public class GlobalStore {
         return drive != null && drives != null && !drives.isEmpty();
     }
 
-    public void searchSuggestion(Consumer<List<EmbyMediaModel>> prompts) {
+    public void searchSuggestion(Consumer<List<EmbyModel.EmbyMediaModel>> prompts) {
         if (api == null) {
             prompts.accept(null);
             return;
@@ -789,7 +784,7 @@ public class GlobalStore {
                 return;
             }
             if (result instanceof List<?>) {
-                List<EmbyMediaModel> items = (List<EmbyMediaModel>) result;
+                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) result;
                 prompts.accept(items);
             } else {
                 prompts.accept(null);
@@ -804,7 +799,7 @@ public class GlobalStore {
         return null;
     }
 
-    public void getSimilar(String id, Consumer<List<EmbyMediaModel>> completion) {
+    public void getSimilar(String id, Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -815,7 +810,7 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyMediaModel> items = (List<EmbyMediaModel>) response;
+                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
