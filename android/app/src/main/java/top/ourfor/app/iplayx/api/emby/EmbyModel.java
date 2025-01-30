@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,11 +15,14 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.With;
 import lombok.experimental.Accessors;
-import top.ourfor.app.iplayx.common.model.MediaModel;
+import top.ourfor.app.iplayx.common.model.IMediaModel;
 import top.ourfor.app.iplayx.common.model.SeekableRange;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
+import top.ourfor.app.iplayx.model.ActorModel;
+import top.ourfor.app.iplayx.model.AlbumModel;
 import top.ourfor.app.iplayx.model.ImageModel;
 import top.ourfor.app.iplayx.model.ImageType;
+import top.ourfor.app.iplayx.model.MediaUserData;
 
 public class EmbyModel {
     @Data
@@ -53,6 +57,15 @@ public class EmbyModel {
         public void buildImage(String url) {
             buildImage(url, ImageType.Emby);
         }
+
+        public ActorModel toActorModel() {
+            return ActorModel.builder()
+                    .id(id)
+                    .name(name)
+                    .role(role)
+                    .image(image)
+                    .build();
+        }
     }
 
     @Data
@@ -61,13 +74,13 @@ public class EmbyModel {
     @NoArgsConstructor
     @AllArgsConstructor
     @EqualsAndHashCode
-    public static class EmbyAlbumMediaModel<T extends MediaModel> {
+    public static class EmbyAlbumMediaModel<T extends IMediaModel> {
         @JsonProperty("title")
         String title;
         @JsonProperty("layout")
         MediaLayoutType layout;
         @JsonProperty("album")
-        EmbyAlbumModel album;
+        AlbumModel album;
         @JsonProperty("medias")
         List<T> medias;
     }
@@ -77,7 +90,7 @@ public class EmbyModel {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class EmbyAlbumModel implements MediaModel {
+    public static class EmbyAlbumModel implements IMediaModel {
         @JsonProperty("Id")
         String id;
         @JsonProperty("Primary")
@@ -141,7 +154,7 @@ public class EmbyModel {
     @EqualsAndHashCode
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class EmbyMediaModel implements MediaModel {
+    public static class EmbyMediaModel implements IMediaModel {
         @JsonProperty("Id")
         String id;
         @JsonProperty("Name")
@@ -245,6 +258,27 @@ public class EmbyModel {
             if (productionYear == null) return null;
             if (endDate == null) return productionYear;
             return productionYear + " - " + (endDate != null && endDate.length() >= 4 ? endDate.substring(0, 4) : "Now");
+        }
+
+        public top.ourfor.app.iplayx.model.MediaModel toMediaModel() {
+            return top.ourfor.app.iplayx.model.MediaModel.builder()
+                    .id(id)
+                    .title(name)
+                    .image(image)
+                    .type(type)
+                    .dateCreated(dateCreated)
+                    .productionYear(productionYear)
+                    .indexNumber(indexNumber)
+                    .layoutType(layoutType)
+                    .overview(overview)
+                    .seasonId(seasonId)
+                    .seasonName(seasonName)
+                    .seriesId(seriesId)
+                    .seriesName(seriesName)
+                    .genres(genres)
+                    .actors(actors != null ? actors.stream().map(EmbyActorModel::toActorModel).collect(Collectors.toList()) : List.of())
+                    .userData(userData.toUserDataModel())
+                    .build();
         }
     }
 
@@ -493,6 +527,14 @@ public class EmbyModel {
         Boolean isFavorite;
         @JsonProperty("Played")
         Boolean isPlayed;
+
+        public MediaUserData toUserDataModel() {
+            return MediaUserData.builder()
+                    .unplayedItemCount(unplayedItemCount)
+                    .playbackPositionTicks(playbackPositionTicks)
+                    .isFavorite(isFavorite)
+                    .build();
+        }
     }
 
     @Data

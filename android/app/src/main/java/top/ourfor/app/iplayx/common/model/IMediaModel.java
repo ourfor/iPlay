@@ -3,7 +3,7 @@ package top.ourfor.app.iplayx.common.model;
 import top.ourfor.app.iplayx.model.ImageModel;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 
-public interface MediaModel {
+public interface IMediaModel {
     String getId();
     String getName();
     ImageModel getImage();

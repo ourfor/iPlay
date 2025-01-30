@@ -34,6 +34,7 @@ import top.ourfor.app.iplayx.common.model.SeekableRange;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
 import top.ourfor.app.iplayx.config.AppSetting;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.page.home.MediaViewCell;
 import top.ourfor.app.iplayx.store.GlobalStore;
@@ -141,7 +142,7 @@ public class MusicPlayerPage implements Page {
         playerView.setOnPlaylistTap(playerView -> {
             val site = store.getSite();
             val context = getContext();
-            val listView = new ListView<EmbyModel.EmbyMediaModel>(context);
+            val listView = new ListView<MediaModel>(context);
             listView.viewModel.viewCell = MediaViewCell.class;
             listView.viewModel.isSelected = (model) -> model.equals(media);
             listView.listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
@@ -193,7 +194,7 @@ public class MusicPlayerPage implements Page {
         });
     }
 
-    void onSelectMedia(EmbyModel.EmbyMediaModel media) {
+    void onSelectMedia(MediaModel media) {
         if (media == null) return;
         val store = XGET(GlobalStore.class);
         store.getPlayback(media.getId(), playback -> {

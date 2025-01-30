@@ -10,10 +10,11 @@ import javax.inject.Inject;
 
 import lombok.Getter;
 import top.ourfor.app.iplayx.api.emby.EmbyModel;
+import top.ourfor.app.iplayx.model.MediaModel;
 
 @Getter
 public class EpisodeViewModel extends ViewModel {
-    private final MutableLiveData<List<EmbyModel.EmbyMediaModel>> episodes = new MutableLiveData<>(new CopyOnWriteArrayList<>());
+    private final MutableLiveData<List<MediaModel>> episodes = new MutableLiveData<>(new CopyOnWriteArrayList<>());
 
     @Inject
     public EpisodeViewModel() {

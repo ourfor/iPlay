@@ -15,17 +15,19 @@ import com.bumptech.glide.request.RequestOptions;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.UpdateModelAction;
 import top.ourfor.app.iplayx.api.emby.EmbyModel;
-import top.ourfor.app.iplayx.common.model.MediaModel;
+import top.ourfor.app.iplayx.common.model.IMediaModel;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.databinding.MediaCellBinding;
+import top.ourfor.app.iplayx.model.AlbumModel;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.module.GlideApp;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.view.infra.TextView;
 
 public class MediaViewCell extends ConstraintLayout implements UpdateModelAction {
     private static final RequestOptions options = new RequestOptions().transform(new RoundedCorners(DeviceUtil.dpToPx(8)));
-    private MediaModel model;
-    private MediaCellBinding binding;
+    private Object model;
+    MediaCellBinding binding;
     private TextView nameLabel;
     private ImageView coverImage;
     private TextView countLabel;
@@ -41,38 +43,45 @@ public class MediaViewCell extends ConstraintLayout implements UpdateModelAction
 
     @Override
     public <T> void updateModel(T object) {
-        if (!(object instanceof EmbyModel.EmbyAlbumModel) &&
-            !(object instanceof EmbyModel.EmbyMediaModel)) {
-            return;
-        }
-        model = (MediaModel) object;
-        updateLayout();
-        nameLabel.setText(model.getName());
-        boolean isAlbum = object instanceof EmbyModel.EmbyAlbumModel;
-        String imageUrl;
-        if (isAlbum) {
-            imageUrl = model.getImage().getPrimary();
-        } else if (layoutType == MediaLayoutType.Backdrop || layoutType == MediaLayoutType.EpisodeDetail) {
-            if (((EmbyModel.EmbyMediaModel) model).isEpisode()) imageUrl = model.getImage().getPrimary();
-            else imageUrl = model.getImage().getThumb();
-        } else {
-            imageUrl = model.getImage().getPrimary();
-        }
-        GlideApp.with(this)
-                .load(imageUrl)
-                .placeholder(isAlbum ? R.drawable.hand_drawn_3 : R.drawable.abstract_3)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .apply(options)
-                .into(coverImage);
-        if (model instanceof EmbyModel.EmbyMediaModel media) {
+        if (object instanceof AlbumModel album) {
+            model = object;
+            updateLayout();
+            nameLabel.setText(album.getTitle());
+            GlideApp.with(this)
+                    .load(album.getBackdrop())
+                    .placeholder(R.drawable.hand_drawn_3)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .apply(options)
+                    .into(coverImage);
+            countLabel.setVisibility(GONE);
+            airDateLabel.setVisibility(GONE);
+            countLabel.setVisibility(GONE);
+            airDateLabel.setVisibility(GONE);
+        } else if (object instanceof MediaModel media) {
+            model = object;
+            updateLayout();
+            nameLabel.setText(media.getName());
+            String imageUrl;
+            if (layoutType == MediaLayoutType.Backdrop || layoutType == MediaLayoutType.EpisodeDetail) {
+                if (((MediaModel) model).isEpisode()) imageUrl = media.getImage().getPrimary();
+                else imageUrl = media.getImage().getThumb();
+            } else {
+                imageUrl = media.getImage().getPrimary();
+            }
+            GlideApp.with(this)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.abstract_3)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .apply(options)
+                    .into(coverImage);
             if (media.getUserData() != null && media.getUserData().getUnplayedItemCount() != null) {
-                countLabel.setText(media.getUserData().getUnplayedItemCount().toString());
+                countLabel.setText(media.getUserData() != null ? media.getUserData().getUnplayedItemCount().toString() : null);
                 countLabel.setVisibility(VISIBLE);
             } else {
                 countLabel.setVisibility(GONE);
             }
-            if (media.getDateTime() != null) {
-                airDateLabel.setText(media.getDateTime());
+            if (media.getAirDate() != null) {
+                airDateLabel.setText(media.getAirDate());
                 airDateLabel.setVisibility(VISIBLE);
             } else {
                 airDateLabel.setVisibility(GONE);
@@ -80,15 +89,13 @@ public class MediaViewCell extends ConstraintLayout implements UpdateModelAction
 
             if (media.getLayoutType() == MediaLayoutType.EpisodeDetail) {
                 nameLabel.setText(media.getName());
-                airDateLabel.setText(media.episodeShortName());
+                airDateLabel.setText(media.getName());
             } else if (media.isEpisode()) {
                 nameLabel.setText(media.getSeriesName());
-                airDateLabel.setText(media.episodeName());
+                airDateLabel.setText(media.getName());
             }
-        } else {
-            countLabel.setVisibility(GONE);
-            airDateLabel.setVisibility(GONE);
         }
+
     }
 
     void setupUI(Context context) {
@@ -110,11 +117,11 @@ public class MediaViewCell extends ConstraintLayout implements UpdateModelAction
     }
 
     void updateLayout() {
-        boolean isAlbum = model instanceof EmbyModel.EmbyAlbumModel;
-        boolean isMedia = model instanceof EmbyModel.EmbyMediaModel;
-        EmbyModel.EmbyMediaModel media = isMedia ? (EmbyModel.EmbyMediaModel) model : null;
+        boolean isAlbum = model instanceof AlbumModel;
+        boolean isMedia = model instanceof MediaModel;
+        var media = isMedia ? (MediaModel) model : null;
         boolean isMusic = isMedia && (media.isMusicAlbum() || media.isAudio());
-        layoutType = model.getLayoutType();
+        layoutType = isAlbum ? MediaLayoutType.Backdrop : media.getLayoutType();
         int width = DeviceUtil.dpToPx(isAlbum || layoutType == MediaLayoutType.Backdrop || layoutType == MediaLayoutType.EpisodeDetail ? (isAlbum ? 150 : 174) : 111);
         LayoutParams imageLayout = new LayoutParams(width, LayoutParams.MATCH_CONSTRAINT);
         // set height equal to parent width multiple 1.5

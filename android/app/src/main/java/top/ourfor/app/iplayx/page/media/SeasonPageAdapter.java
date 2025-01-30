@@ -21,6 +21,7 @@ import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.page.home.MediaViewCell;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.view.LinearLayoutManager;
@@ -30,8 +31,8 @@ import top.ourfor.app.iplayx.view.ListView;
 
 public class SeasonPageAdapter extends PagerAdapter {
     @Getter
-    private List<EmbyModel.EmbyMediaModel> seasons;
-    private List<ListView<EmbyModel.EmbyMediaModel>> views;
+    private List<MediaModel> seasons;
+    private List<ListView<MediaModel>> views;
 
     @Setter
     private Context context;
@@ -59,15 +60,15 @@ public class SeasonPageAdapter extends PagerAdapter {
         container.removeView(views.get(position));
     }
 
-    public void setSeasons(List<EmbyModel.EmbyMediaModel> seasons) {
+    public void setSeasons(List<MediaModel> seasons) {
         this.seasons = seasons;
         views = new ArrayList<>();
-        ListView<EmbyModel.EmbyMediaModel> seasonList = new ListView<>(context);
+        ListView<MediaModel> seasonList = new ListView<>(context);
         seasonList.viewModel.viewCell = MediaViewCell.class;
         seasonList.setItems(seasons);
         seasonList.listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         views.add(seasonList);
-        Consumer<ListItemClickEvent<EmbyModel.EmbyMediaModel>> onClick = event -> {
+        Consumer<ListItemClickEvent<MediaModel>> onClick = event -> {
             val model = event.getModel();
             val seasonId = model.getId();
             val seriesId = model.getSeriesId();
@@ -85,8 +86,8 @@ public class SeasonPageAdapter extends PagerAdapter {
         };
         seasonList.viewModel.onClick = onClick;
         val store = XGET(GlobalStore.class);
-        for (EmbyModel.EmbyMediaModel season : seasons) {
-            ListView<EmbyModel.EmbyMediaModel> listView = new ListView<>(context);
+        for (var season : seasons) {
+            ListView<MediaModel> listView = new ListView<>(context);
             listView.listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
             listView.viewModel.viewCell = MediaViewCell.class;
             listView.viewModel.onClick = onClick;

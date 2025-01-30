@@ -49,6 +49,7 @@ import top.ourfor.app.iplayx.common.model.WebMediaMessage;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
 import top.ourfor.app.iplayx.config.AppSetting;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.page.home.MediaViewCell;
 import top.ourfor.app.iplayx.page.media.PlayerConfigPanelViewModel;
@@ -78,7 +79,7 @@ public class MoviePlayerPage implements Page {
 
     Map<String, Object> params;
 
-    Queue<EmbyModel.EmbyMediaModel> playlist;
+    Queue<MediaModel> playlist;
 
 
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -253,12 +254,12 @@ public class MoviePlayerPage implements Page {
 
         playerView.setOnPlaylistTap(playerView -> {
             val context = getContext();
-            val listView = new ListView<EmbyModel.EmbyMediaModel>(context);
+            val listView = new ListView<MediaModel>(context);
             listView.viewModel.viewCell = MediaViewCell.class;
             listView.viewModel.isSelected = (model) -> model.getId().equals(this.id);
             listView.listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
             listView.listView.setPadding(DeviceUtil.dpToPx(3), DeviceUtil.dpToPx(3), DeviceUtil.dpToPx(3), DeviceUtil.dpToPx(3));
-            List<EmbyModel.EmbyMediaModel> items = null;
+            List<MediaModel> items = null;
             if (media.isEpisode()) {
                 items = store.getDataSource().getSeasonEpisodes().get(media.getSeasonId());
             } else {
@@ -336,10 +337,10 @@ public class MoviePlayerPage implements Page {
         }
     }
 
-    private void setupPlaylist(EmbyModel.EmbyMediaModel media) {
+    private void setupPlaylist(MediaModel media) {
         var store = XGET(GlobalStore.class);
         assert store != null;
-        List<EmbyModel.EmbyMediaModel> items = null;
+        List<MediaModel> items = null;
         if (media.isEpisode()) {
             items = store.getDataSource().getSeasonEpisodes().get(media.getSeasonId());
         } else {
@@ -364,7 +365,7 @@ public class MoviePlayerPage implements Page {
         }
     }
 
-    void onSelectMedia(EmbyModel.EmbyMediaModel media) {
+    void onSelectMedia(MediaModel media) {
         if (media == null) return;
         id = media.getId();
         val store = XGET(GlobalStore.class);

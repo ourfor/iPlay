@@ -24,6 +24,7 @@ import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
+import top.ourfor.app.iplayx.model.AlbumModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
 
 @Slf4j
@@ -31,7 +32,7 @@ import top.ourfor.app.iplayx.store.GlobalStore;
 @NoArgsConstructor
 @HiltViewModel
 public class HomeViewModel extends ViewModel {
-    private final MutableLiveData<List<EmbyModel.EmbyAlbumModel>> albums = new MutableLiveData<>(null);
+    private final MutableLiveData<List<AlbumModel>> albums = new MutableLiveData<>(null);
     private final MutableLiveData<List<Object>> albumCollection = new MutableLiveData<>(new CopyOnWriteArrayList<>());
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> hasValidSite = new MutableLiveData<>(false);
@@ -70,7 +71,7 @@ public class HomeViewModel extends ViewModel {
 
         albums.forEach(album -> {
             val medias = albumMedias.get(album.getId());
-            if (album == null || medias == null || medias.size() == 0) return;
+            if (album == null || medias == null || medias.isEmpty()) return;
             val item = EmbyModel.EmbyAlbumMediaModel.builder()
                     .album(album)
                     .medias(new CopyOnWriteArrayList<>(medias))
@@ -80,7 +81,7 @@ public class HomeViewModel extends ViewModel {
         this.albumCollection.postValue(newItems);
     }
 
-    private void fetchEmbyAlbumModels(List<EmbyModel.EmbyAlbumModel> albums) {
+    private void fetchEmbyAlbumModels(List<AlbumModel> albums) {
         val datasource = store.getDataSource();
         val albumMedias = datasource.getAlbumMedias();
         albumMedias.clear();

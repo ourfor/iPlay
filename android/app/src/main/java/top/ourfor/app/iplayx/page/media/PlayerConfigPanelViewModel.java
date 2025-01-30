@@ -17,6 +17,7 @@ import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.api.emby.EmbyModel;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.view.video.PlayerSourceModel;
 
@@ -25,7 +26,7 @@ import top.ourfor.app.iplayx.view.video.PlayerSourceModel;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerConfigPanelViewModel {
-    private final MutableLiveData<EmbyModel.EmbyMediaModel> media = new MutableLiveData<>(null);
+    private final MutableLiveData<MediaModel> media = new MutableLiveData<>(null);
     private final MutableLiveData<MediaSourceConfigModel> mediaSource = new MutableLiveData<>(null);
 
     String value;
@@ -69,7 +70,7 @@ public class PlayerConfigPanelViewModel {
     @With
     @Builder
     public static class MediaSourceModel {
-        EmbyModel.EmbyMediaModel media;
+        MediaModel media;
 
         PlayerSourceModel video;
         PlayerSourceModel audio;

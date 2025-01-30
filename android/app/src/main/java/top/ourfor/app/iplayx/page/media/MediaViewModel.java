@@ -9,15 +9,16 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import top.ourfor.app.iplayx.api.emby.EmbyModel;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
 
 @NoArgsConstructor
 public class MediaViewModel extends ViewModel {
     @Getter
-    private final MutableLiveData<List<EmbyModel.EmbyMediaModel>> seasons = new MutableLiveData<>();
+    private final MutableLiveData<List<MediaModel>> seasons = new MutableLiveData<>();
 
     @Getter
-    private final MutableLiveData<List<EmbyModel.EmbyMediaModel>> similar = new MutableLiveData<>();
+    private final MutableLiveData<List<MediaModel>> similar = new MutableLiveData<>();
 
     GlobalStore store;
 

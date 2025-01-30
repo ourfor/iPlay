@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import top.ourfor.app.iplayx.api.emby.EmbyModel;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
 
 @Slf4j
@@ -20,8 +21,8 @@ import top.ourfor.app.iplayx.store.GlobalStore;
 @NoArgsConstructor
 @HiltViewModel
 public class SearchViewModel extends ViewModel {
-    private final MutableLiveData<List<EmbyModel.EmbyMediaModel>> suggestionItems = new MutableLiveData<>(new CopyOnWriteArrayList<>());
-    private final MutableLiveData<List<EmbyModel.EmbyMediaModel>> searchResult = new MutableLiveData<>(null);
+    private final MutableLiveData<List<MediaModel>> suggestionItems = new MutableLiveData<>(new CopyOnWriteArrayList<>());
+    private final MutableLiveData<List<MediaModel>> searchResult = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> keyword = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> isSearchTipVisible = new MutableLiveData<>(true);

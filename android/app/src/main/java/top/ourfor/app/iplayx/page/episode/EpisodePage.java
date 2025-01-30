@@ -21,6 +21,7 @@ import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.databinding.EpisodePageBinding;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.util.AnimationUtil;
 import top.ourfor.app.iplayx.util.DeviceUtil;
@@ -34,9 +35,9 @@ import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 @ViewController(name = "episode_page")
 public class EpisodePage implements Page {
     private EpisodePageBinding binding = null;
-    private ListView<EmbyModel.EmbyMediaModel> episodeList = null;
+    private ListView<MediaModel> episodeList = null;
     private LottieAnimationView activityIndicator = null;
-    private EmbyModel.EmbyMediaModel model = null;
+    private MediaModel model = null;
     private String title = null;
     private String seriesId = null;
     private String seasonId = null;
@@ -99,13 +100,13 @@ public class EpisodePage implements Page {
             val itemId = item.getItemId();
             if (itemId == R.id.toggle_favorite) {
                 val media = model;
-                val favorite = media.getUserData().getIsFavorite();
+                val favorite = media.getUserData().isFavorite();
                 store.markFavorite(media.getId(), !favorite, obj -> {
                     if (!(obj instanceof EmbyModel.EmbyUserData)) {
                         return;
                     }
                     val userData = (EmbyModel.EmbyUserData) obj;
-                    media.setUserData(userData);
+                    media.setUserData(userData.toUserDataModel());
                     updateFavoriteState();
                 });
                 updateFavoriteState();
@@ -126,7 +127,7 @@ public class EpisodePage implements Page {
     private void updateFavoriteState() {
         val media = model;
         if (media != null && media.getUserData() != null) {
-            val isFavorite = media.getUserData().getIsFavorite();
+            val isFavorite = media.getUserData().isFavorite();
             int resId = isFavorite ? R.drawable.favorite_off : R.drawable.favorite_on;
             if (DeviceUtil.isTV) {
                 return;

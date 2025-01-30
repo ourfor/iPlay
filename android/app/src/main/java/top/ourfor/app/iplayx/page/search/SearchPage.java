@@ -34,6 +34,7 @@ import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.common.model.ColorScheme;
 import top.ourfor.app.iplayx.databinding.SearchPageBinding;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
@@ -54,7 +55,7 @@ public class SearchPage implements SiteUpdateAction, ThemeUpdateAction, Page {
     SearchViewModel viewModel;
     SearchPageBinding binding = null;
     AnimationAction activityIndicator;
-    ListView<EmbyModel.EmbyMediaModel> listView = null;
+    ListView<MediaModel> listView = null;
 
     public void init() {
         binding = SearchPageBinding.inflate(LayoutInflater.from(context));

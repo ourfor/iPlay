@@ -10,16 +10,18 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
+import lombok.extern.slf4j.Slf4j;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.UpdateModelAction;
-import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.databinding.ActorCellBinding;
+import top.ourfor.app.iplayx.model.ActorModel;
 import top.ourfor.app.iplayx.module.GlideApp;
 
+@Slf4j
 public class ActorCellView extends ConstraintLayout implements UpdateModelAction {
-    private static RequestOptions options = new RequestOptions().transform(new RoundedCorners(20));
+    private static final RequestOptions options = new RequestOptions().transform(new RoundedCorners(20));
 
-    ActorCellBinding binding = null;
+    ActorCellBinding binding;
 
     public ActorCellView(@NonNull Context context) {
         super(context);
@@ -29,10 +31,9 @@ public class ActorCellView extends ConstraintLayout implements UpdateModelAction
 
     @Override
     public <T> void updateModel(T model) {
-        if (!(model instanceof EmbyModel.EmbyActorModel)) {
+        if (!(model instanceof ActorModel actor)) {
             return;
         }
-        EmbyModel.EmbyActorModel actor = (EmbyModel.EmbyActorModel) model;
         binding.actorName.setText(actor.getName());
         GlideApp.with(this)
                 .load(actor.getImage().getPrimary())
