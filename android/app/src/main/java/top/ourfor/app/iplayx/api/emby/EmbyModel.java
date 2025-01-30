@@ -269,6 +269,7 @@ public class EmbyModel {
                     .dateCreated(dateCreated)
                     .productionYear(productionYear)
                     .indexNumber(indexNumber)
+                    .airDate(getDateTime())
                     .layoutType(layoutType)
                     .overview(overview)
                     .seasonId(seasonId)
