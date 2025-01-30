@@ -584,7 +584,8 @@ public class JellyfinApi implements EmbyLikeApi {
                 String baseUrl = site.getEndpoint().getBaseUrl();
                 List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
-                completion.accept(items);
+                var mediaItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
+                completion.accept(mediaItems);
                 return;
             }
             completion.accept(null);

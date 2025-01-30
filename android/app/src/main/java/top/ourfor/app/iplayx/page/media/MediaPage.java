@@ -250,7 +250,7 @@ public class MediaPage implements Page {
                 binding.similarList.setVisibility(View.GONE);
             }
         }
-        if (model instanceof MediaModel media && media.getActors() != null && media.getActors().size() > 0) {
+        if (model instanceof MediaModel media && media.getActors() != null && !media.getActors().isEmpty()) {
             val layout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
             actorList = new ListView<>(getContext());
             actorList.viewModel.viewCell = ActorCellView.class;

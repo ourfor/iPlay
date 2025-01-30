@@ -41,6 +41,7 @@ import top.ourfor.app.iplayx.api.jellyfin.JellyfinApi;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
 import top.ourfor.app.iplayx.bean.KVStorage;
 import top.ourfor.app.iplayx.common.api.EmbyLikeApi;
+import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
 import top.ourfor.app.iplayx.common.type.MediaType;
 import top.ourfor.app.iplayx.common.type.ServerType;
@@ -789,13 +790,12 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
+                var items = (List<MediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
-                val mediaItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
-                dataSource.seasonEpisodes.put(id, new CopyOnWriteArrayList<>(mediaItems));
-                completion.accept(mediaItems);
+                dataSource.seasonEpisodes.put(id, new CopyOnWriteArrayList<>(items));
+                completion.accept(items);
             } else {
                 completion.accept(null);
             }
