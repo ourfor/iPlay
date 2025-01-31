@@ -22,6 +22,7 @@ public class MediaModel implements IMediaModel {
     String title;
     String type;
     String overview;
+    String duration;
 
     String seriesId;
     String seriesName;

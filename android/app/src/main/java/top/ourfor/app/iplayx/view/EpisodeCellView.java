@@ -1,5 +1,6 @@
 package top.ourfor.app.iplayx.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 
@@ -12,8 +13,8 @@ import com.bumptech.glide.request.RequestOptions;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.UpdateModelAction;
-import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.databinding.EpisodeCellBinding;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.module.GlideApp;
 import top.ourfor.app.iplayx.util.DeviceUtil;
 
@@ -37,13 +38,13 @@ public class EpisodeCellView extends ConstraintLayout implements UpdateModelActi
         });
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public <T> void updateModel(T model) {
-        if (!(model instanceof EmbyModel.EmbyMediaModel)) {
+        if (!(model instanceof MediaModel episode)) {
             return;
         }
 
-        val episode = (EmbyModel.EmbyMediaModel) model;
         binding.titleLabel.setText(episode.getIndexNumber() + ": " + episode.getName());
         binding.overviewLabel.setText(episode.getOverview());
         GlideApp.with(this)

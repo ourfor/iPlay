@@ -247,7 +247,13 @@ public class AlbumPage implements Page {
                     stopRefresh();
                     return;
                 }
-                medias.forEach(media -> media.setLayoutType(MediaLayoutType.Poster));
+                medias.forEach(media -> media.setLayoutType(media.getLayoutType() == MediaLayoutType.None ? MediaLayoutType.Poster : media.getLayoutType()));
+                listView.post(() -> {
+                    val media = medias.get(0);
+                    if (media == null) return;
+                    int spanCount = DeviceUtil.screenSize(getContext()).getWidth() / DeviceUtil.dpToPx(media.getLayoutType() == MediaLayoutType.Poster ? 120 : 160);
+                    listView.listView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
+                });
                 viewModel.getMedias().postValue(medias);
                 store.getDataSource().getAlbumMedias().put("Actor-" + id, new CopyOnWriteArrayList<>(medias));
                 stopRefresh();

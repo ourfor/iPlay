@@ -41,6 +41,7 @@ import top.ourfor.app.iplayx.api.jellyfin.JellyfinApi;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
 import top.ourfor.app.iplayx.bean.KVStorage;
 import top.ourfor.app.iplayx.common.api.EmbyLikeApi;
+import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
 import top.ourfor.app.iplayx.common.type.MediaType;
 import top.ourfor.app.iplayx.common.type.ServerType;
@@ -94,23 +95,7 @@ public class GlobalStore {
             kv.setObject(storeKey, instance);
         } else {
             val serverType = instance.site != null ? instance.site.getServerType() : ServerType.None;
-            if (serverType == ServerType.Emby) {
-                instance.api = EmbyApi.builder()
-                        .site(instance.site)
-                        .build();
-            } else if (serverType == ServerType.Jellyfin) {
-                instance.api = JellyfinApi.builder()
-                        .site(instance.site)
-                        .build();
-            } else if (serverType == ServerType.iPlay) {
-                instance.api = iPlayApi.builder()
-                        .site(instance.site)
-                        .build();
-            } else {
-                instance.api = EmbyApi.builder()
-                        .site(instance.site)
-                        .build();
-            }
+            instance.setupApi(serverType, instance.site);
             if (instance.dataSource == null) {
                 instance.dataSource = createDataSource();
             }
@@ -224,37 +209,13 @@ public class GlobalStore {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
-                List<EmbyModel.EmbyAlbumModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel>) response).getItems();
-                if (dataSource.getAlbums() == null) {
-                    dataSource.setAlbums(new CopyOnWriteArrayList<>());
-                }
-                dataSource.getAlbums().clear();
-                val albumItems = items.stream().map(item -> AlbumModel.builder()
-                        .id(item.getId())
-                        .title(item.getName())
-                        .type(item.getCollectionType())
-                        .backdrop(item.getImage().getPrimary())
-                        .build()).collect(Collectors.toList());
-                dataSource.getAlbums().addAll(albumItems);
-                completion.accept(albumItems);
-            } else if (response instanceof List<?>){
-                val items = (List<iPlayModel.AlbumModel>) response;
-                if (dataSource.getAlbums() == null) {
-                    dataSource.setAlbums(new CopyOnWriteArrayList<>());
-                }
-                dataSource.getAlbums().clear();
-                val albumItems = items.stream().map(item -> AlbumModel.builder()
-                        .id(item.getId())
-                        .title(item.getName())
-                        .type("movies")
-                        .backdrop(item.image.getBackdrop())
-                        .build()).collect(Collectors.toList());
-                dataSource.getAlbums().addAll(albumItems);
-                completion.accept(albumItems);
-            } else {
-                completion.accept(null);
+            val items = (List<AlbumModel>) response;
+            if (dataSource.getAlbums() == null) {
+                dataSource.setAlbums(new CopyOnWriteArrayList<>());
             }
+            dataSource.getAlbums().clear();
+            dataSource.getAlbums().addAll(items);
+            completion.accept(items);
         });
     }
 
@@ -314,18 +275,17 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
+                var items = (List<MediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
                 if (dataSource.albumMedias == null) {
                     dataSource.albumMedias = new ConcurrentHashMap<>();
                 }
-                val mediaItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
-                mediaItems.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
-                dataSource.getAlbumMedias().put(id, new CopyOnWriteArrayList<>(mediaItems));
+                items.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
+                dataSource.getAlbumMedias().put(id, new CopyOnWriteArrayList<>(items));
                 save();
-                completion.accept(mediaItems);
+                completion.accept(items);
             } else {
                 completion.accept(null);
             }
@@ -396,16 +356,15 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
+                var items = (List<MediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
                 if (dataSource.albumMedias == null) {
                     dataSource.albumMedias = new ConcurrentHashMap<>();
                 }
-                val mediaItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
-                mediaItems.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
-                completion.accept(mediaItems);
+                items.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
+                completion.accept(items);
             } else {
                 completion.accept(null);
             }
@@ -574,7 +533,7 @@ public class GlobalStore {
                 "SortBy", "SortName"
         );
 
-        CopyOnWriteArrayList<EmbyModel.EmbyMediaModel> items = new CopyOnWriteArrayList<>();
+        CopyOnWriteArrayList<MediaModel> items = new CopyOnWriteArrayList<>();
         api.getMediasCount(query, count -> {
             CountDownLatch latch = new CountDownLatch((int)Math.ceil(count / 100.0));
             for (int i = 0; i < count; i+=100) {
@@ -588,8 +547,7 @@ public class GlobalStore {
             }
             try {
                 latch.await();
-                val mediaItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
-                completion.accept(mediaItems);
+                completion.accept(items);
                 return;
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -598,11 +556,11 @@ public class GlobalStore {
         });
     }
 
-    public void getAlbumMedias(String id, Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
+    public void getAlbumMedias(String id, Consumer<List<MediaModel>> completion) {
         getAlbumMedias(id, 0, completion);
     }
 
-    public void getAlbumMedias(String id, int start, Consumer<List<EmbyModel.EmbyMediaModel>> completion) {
+    public void getAlbumMedias(String id, int start, Consumer<List<MediaModel>> completion) {
         if (api == null) {
             completion.accept(null);
             return;
@@ -622,16 +580,15 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
+                var items = (List<MediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
                 if (dataSource.albumMedias == null) {
                     dataSource.albumMedias = new ConcurrentHashMap<>();
                 }
-                val mediaItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
-                dataSource.albumMedias.put(id, new CopyOnWriteArrayList<>(mediaItems));
-                mediaItems.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
+                dataSource.albumMedias.put(id, new CopyOnWriteArrayList<>(items));
+                items.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
                 completion.accept(items);
             } else {
                 completion.accept(null);
@@ -651,13 +608,12 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
+                var items = (List<MediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
-                val mediaItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
-                mediaItems.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
-                completion.accept(mediaItems);
+                items.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
+                completion.accept(items);
             } else {
                 completion.accept(null);
             }
@@ -696,6 +652,15 @@ public class GlobalStore {
     public void switchSite(SiteModel site) {
         this.site = site;
         val serverType = site.getServerType();
+        setupApi(serverType, site);
+        dataSource = createDataSource();
+        save();
+        val action = XGET(SiteUpdateAction.class);
+        if (action == null) return;
+        action.onSiteUpdate();
+    }
+
+    void setupApi(ServerType serverType, SiteModel site) {
         if (serverType == ServerType.Emby) {
             api = EmbyApi.builder()
                     .site(site)
@@ -704,16 +669,15 @@ public class GlobalStore {
             api = JellyfinApi.builder()
                     .site(site)
                     .build();
+        } else if (serverType == ServerType.iPlay) {
+            api = iPlayApi.builder()
+                    .site(site)
+                    .build();
         } else {
             api = EmbyApi.builder()
                     .site(site)
                     .build();
         }
-        dataSource = createDataSource();
-        save();
-        val action = XGET(SiteUpdateAction.class);
-        if (action == null) return;
-        action.onSiteUpdate();
     }
 
     public void search(String keyword, Consumer<List<MediaModel>> completion) {
@@ -735,16 +699,15 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
+                var items = (List<MediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
                 if (dataSource.albumMedias == null) {
                     dataSource.albumMedias = new ConcurrentHashMap<>();
                 }
-                val mediaItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
-                mediaItems.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
-                completion.accept(mediaItems);
+                items.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
+                completion.accept(items);
             } else {
                 completion.accept(null);
             }
@@ -827,16 +790,33 @@ public class GlobalStore {
                 return;
             }
             if (response instanceof List<?>) {
-                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
+                var items = (List<MediaModel>) response;
                 if (dataSource.mediaMap == null) {
                     dataSource.mediaMap = new ConcurrentHashMap<>();
                 }
-                val mediaItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
-                dataSource.seasonEpisodes.put(id, new CopyOnWriteArrayList<>(mediaItems));
-                completion.accept(mediaItems);
+                dataSource.seasonEpisodes.put(id, new CopyOnWriteArrayList<>(items));
+                completion.accept(items);
             } else {
                 completion.accept(null);
             }
+        });
+    }
+
+    public void getDetail(String id, Consumer<MediaModel> completion) {
+        if (api == null) {
+            completion.accept(null);
+            return;
+        }
+        api.getDetail(id, media -> {
+            if (media == null) {
+                completion.accept(null);
+                return;
+            }
+            if (dataSource.mediaMap == null) {
+                dataSource.mediaMap = new ConcurrentHashMap<>();
+            }
+            dataSource.mediaMap.put(id, media);
+            completion.accept(media);
         });
     }
 }
