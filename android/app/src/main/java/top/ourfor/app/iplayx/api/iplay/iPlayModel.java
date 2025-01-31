@@ -6,12 +6,11 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import lombok.val;
-import top.ourfor.app.iplayx.model.ActorModel;
 import top.ourfor.app.iplayx.model.ImageModel;
-import top.ourfor.app.iplayx.model.MediaModel;
 
 public class iPlayModel {
 
@@ -44,6 +43,7 @@ public class iPlayModel {
     @AllArgsConstructor
     public static class AlbumModel {
         public String id;
+        public String siteId;
         public String parentId;
         public String name;
         public Image image;
@@ -62,6 +62,19 @@ public class iPlayModel {
         String avatar;
     }
 
+    @Data
+    @With
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    static public class TagModel {
+        String id;
+        String name;
+        String url;
+    }
+
+
 
     @Data
     @With
@@ -74,6 +87,8 @@ public class iPlayModel {
         String parentId;
         String title;
         String description;
+        String duration;
+        List<TagModel> tags;
         Image image;
 
         List<ActorModel> actors;
@@ -91,12 +106,18 @@ public class iPlayModel {
                         .description(actor.description)
                         .build()).collect(Collectors.toList()));
             }
+
+            if (tags != null) {
+                builder.genres(tags.stream().map(tag -> tag.name).collect(Collectors.toList()));
+            }
+
             return builder
                     .title(title)
                     .overview(description)
                     .seriesId(parentId)
                     .id(id)
                     .type("Movie")
+                    .duration(duration)
                     .image(ImageModel.builder()
                             .thumb(image.backdrop)
                             .primary(image.primary)

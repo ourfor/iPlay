@@ -801,4 +801,22 @@ public class GlobalStore {
             }
         });
     }
+
+    public void getDetail(String id, Consumer<MediaModel> completion) {
+        if (api == null) {
+            completion.accept(null);
+            return;
+        }
+        api.getDetail(id, media -> {
+            if (media == null) {
+                completion.accept(null);
+                return;
+            }
+            if (dataSource.mediaMap == null) {
+                dataSource.mediaMap = new ConcurrentHashMap<>();
+            }
+            dataSource.mediaMap.put(id, media);
+            completion.accept(media);
+        });
+    }
 }

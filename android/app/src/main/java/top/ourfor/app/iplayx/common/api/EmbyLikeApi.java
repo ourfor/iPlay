@@ -38,6 +38,8 @@ public interface EmbyLikeApi {
 
     default void getSimilar(String id, Consumer<Object> completion) { }
 
+    default void getDetail(String id, Consumer<MediaModel> completion) { }
+
     default void markFavorite(String id, boolean isFavorite, Consumer<Object> completion) { }
 
     default void trackPlay(MediaPlayState state, EmbyModel.EmbyPlaybackData data, Consumer<Object> completion) { }

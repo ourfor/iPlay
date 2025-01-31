@@ -15,15 +15,21 @@ import top.ourfor.app.iplayx.store.GlobalStore;
 @NoArgsConstructor
 public class MediaViewModel extends ViewModel {
     @Getter
+    private final MutableLiveData<MediaModel> media = new MutableLiveData<>();
+    @Getter
     private final MutableLiveData<List<MediaModel>> seasons = new MutableLiveData<>();
-
     @Getter
     private final MutableLiveData<List<MediaModel>> similar = new MutableLiveData<>();
+
 
     GlobalStore store;
 
     MediaViewModel(GlobalStore store) {
         this.store = store;
+    }
+
+    public void fetchDetail(String id) {
+        store.getDetail(id, media::postValue);
     }
 
     public void fetchSimilar(String id) {
