@@ -15,6 +15,7 @@ import com.airbnb.lottie.LottieAnimationView;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -69,6 +70,7 @@ public class AlbumPage implements Page {
         viewModel = new AlbumViewModel();
         viewModel.getMedias().observe(view, medias -> {
             if (listView == null) return;
+            setupListLayout(medias);
             listView.setItems(medias);
         });
     }
@@ -123,7 +125,7 @@ public class AlbumPage implements Page {
     }
 
     public void setup() {
-        setupUI(getContext());
+        setupUI(context);
         bind();
     }
 
@@ -131,12 +133,12 @@ public class AlbumPage implements Page {
         binding = null;
     }
 
+    @SuppressWarnings("unchecked")
     void setupUI(Context context) {
         listView = binding.mediaList;
         swipeRefreshLayout = binding.swipeRefresh;
         listView.viewModel.viewCell = MediaGridCell.class;
-        if (DeviceUtil.isTV) {
-        } else {
+        if (!DeviceUtil.isTV) {
             swipeRefreshLayout.setOnRefreshListener(() -> {
                 XGET(ThreadPoolExecutor.class).submit(this::onRefresh);
             });
@@ -170,8 +172,6 @@ public class AlbumPage implements Page {
         XGET(NavigationTitleBar.class).setNavTitle(title);
         listView.setHasFixedSize(true);
         listView.setCacheSize(15);
-        int spanCount = DeviceUtil.screenSize(getContext()).getWidth() / DeviceUtil.dpToPx(120);
-        listView.listView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
         listView.viewModel.onClick = e -> {
             val model = e.getModel();
             val bundle = new HashMap<String, Object>();
@@ -248,12 +248,6 @@ public class AlbumPage implements Page {
                     return;
                 }
                 medias.forEach(media -> media.setLayoutType(media.getLayoutType() == MediaLayoutType.None ? MediaLayoutType.Poster : media.getLayoutType()));
-                listView.post(() -> {
-                    val media = medias.get(0);
-                    if (media == null) return;
-                    int spanCount = DeviceUtil.screenSize(getContext()).getWidth() / DeviceUtil.dpToPx(media.getLayoutType() == MediaLayoutType.Poster ? 120 : 160);
-                    listView.listView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
-                });
                 viewModel.getMedias().postValue(medias);
                 store.getDataSource().getAlbumMedias().put("Actor-" + id, new CopyOnWriteArrayList<>(medias));
                 stopRefresh();
@@ -270,6 +264,16 @@ public class AlbumPage implements Page {
             });
         }
 
+    }
+
+    void setupListLayout(List<MediaModel> medias) {
+        if (medias == null || medias.isEmpty()) return;
+        listView.post(() -> {
+            val media = medias.get(0);
+            if (media == null) return;
+            int spanCount = DeviceUtil.screenSize(getContext()).getWidth() / DeviceUtil.dpToPx(media.getLayoutType() == MediaLayoutType.Backdrop ? 160 : 120);
+            listView.listView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
+        });
     }
 
     private void stopRefresh() {
