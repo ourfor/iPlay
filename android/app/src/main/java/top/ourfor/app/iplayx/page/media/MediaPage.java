@@ -70,7 +70,7 @@ public class MediaPage implements Page {
         viewModel = new MediaViewModel(store);
         val view = binding.getRoot();
         viewModel.getMedia().observe(view, detail -> {
-            if (binding == null) return;
+            if (binding == null || detail == null) return;
             model = detail;
             binding.overviewLabel.setText(detail.getOverview());
             view.post(this::showTagList);
