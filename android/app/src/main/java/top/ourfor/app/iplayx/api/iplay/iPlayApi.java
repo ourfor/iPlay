@@ -50,14 +50,13 @@ public class iPlayApi implements EmbyLikeApi {
         val token = "Basic " + Base64Util.encode(username + ":" + password);
         log.info("Login to server: {}", server);
         HTTPModel model = HTTPModel.builder()
-                .url(server + "/sites")
-                .method("POST")
+                .url(server + "/public")
+                .method("GET")
                 .headers(Map.of(
                         "Content-Type", "application/json",
                         "Authorization", token
                 ))
-                .body("{}")
-                .typeReference(new TypeReference<iPlayModel.Response<String>>() {})
+                .typeReference(new TypeReference<iPlayModel.Response<iPlayModel.PublicInfoModel>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -74,9 +73,11 @@ public class iPlayApi implements EmbyLikeApi {
                         .protocol(url.getProtocol())
                         .path(url.getPath() == null ? url.getPath() : "/")
                         .build();
+                val info = (iPlayModel.Response<iPlayModel.PublicInfoModel>)response;
                 var siteModel = SiteModel.builder()
                         .user(UserModel.builder()
                                 .id("")
+                                .siteId(info.data.id)
                                 .username(username)
                                 .password(password)
                                 .accessToken(token)

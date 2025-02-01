@@ -179,6 +179,7 @@ public class AlbumPage implements Page {
             bundle.put("title", model.getName());
             val isSeason = model.getType().equals("Season");
             val isMusic = model.getType().equals("MusicAlbum");
+            val isAlbum = model.isAlbum();
             var dstId = R.id.mediaPage;
             if (isSeason) {
                 bundle.put("seriesId", model.getSeriesId());
@@ -186,6 +187,8 @@ public class AlbumPage implements Page {
                 dstId = R.id.episodePage;
             } else if (isMusic) {
                 dstId = R.id.musicPage;
+            } else if (isAlbum) {
+                dstId = R.id.albumPage;
             }
             XGET(Navigator.class).pushPage(dstId, bundle);
         };
