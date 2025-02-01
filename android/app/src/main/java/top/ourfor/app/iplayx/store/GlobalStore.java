@@ -269,26 +269,21 @@ public class GlobalStore {
             completion.accept(null);
             return;
         }
-        api.getAlbumLatestMedias(id, response -> {
-            if (response == null) {
+        api.getAlbumLatestMedias(id, items -> {
+            if (items == null) {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof List<?>) {
-                var items = (List<MediaModel>) response;
-                if (dataSource.mediaMap == null) {
-                    dataSource.mediaMap = new ConcurrentHashMap<>();
-                }
-                if (dataSource.albumMedias == null) {
-                    dataSource.albumMedias = new ConcurrentHashMap<>();
-                }
-                items.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
-                dataSource.getAlbumMedias().put(id, new CopyOnWriteArrayList<>(items));
-                save();
-                completion.accept(items);
-            } else {
-                completion.accept(null);
+            if (dataSource.mediaMap == null) {
+                dataSource.mediaMap = new ConcurrentHashMap<>();
             }
+            if (dataSource.albumMedias == null) {
+                dataSource.albumMedias = new ConcurrentHashMap<>();
+            }
+            items.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
+            dataSource.getAlbumMedias().put(id, new CopyOnWriteArrayList<>(items));
+            save();
+            completion.accept(items);
         });
     }
 
@@ -534,9 +529,10 @@ public class GlobalStore {
         );
 
         CopyOnWriteArrayList<MediaModel> items = new CopyOnWriteArrayList<>();
+        val pageSize = api.preferedPageSize();
         api.getMediasCount(query, count -> {
-            CountDownLatch latch = new CountDownLatch((int)Math.ceil(count / 100.0));
-            for (int i = 0; i < count; i+=100) {
+            CountDownLatch latch = new CountDownLatch((int)Math.ceil(count / (double)pageSize));
+            for (int i = 0; i < count; i+=pageSize) {
                 int start = i;
                 XGET(ThreadPoolExecutor.class).submit(() -> {
                     getAlbumMedias(id, start, medias -> {
@@ -566,7 +562,7 @@ public class GlobalStore {
             return;
         }
         val query = Map.of(
-                "Limit", "100",
+                "Limit", String.valueOf(api.preferedPageSize()),
                 "ParentId", id,
                 "Recursive", "true",
                 "IncludeItemTypes", "Series,Movie",
@@ -574,25 +570,20 @@ public class GlobalStore {
                 "SortBy", "DateCreated,SortName",
                 "SortOrder", "Descending"
         );
-        api.getMedias(query, response -> {
-            if (response == null) {
+        api.getMedias(query, items -> {
+            if (items == null) {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof List<?>) {
-                var items = (List<MediaModel>) response;
-                if (dataSource.mediaMap == null) {
-                    dataSource.mediaMap = new ConcurrentHashMap<>();
-                }
-                if (dataSource.albumMedias == null) {
-                    dataSource.albumMedias = new ConcurrentHashMap<>();
-                }
-                dataSource.albumMedias.put(id, new CopyOnWriteArrayList<>(items));
-                items.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
-                completion.accept(items);
-            } else {
-                completion.accept(null);
+            if (dataSource.mediaMap == null) {
+                dataSource.mediaMap = new ConcurrentHashMap<>();
             }
+            if (dataSource.albumMedias == null) {
+                dataSource.albumMedias = new ConcurrentHashMap<>();
+            }
+            dataSource.albumMedias.put(id, new CopyOnWriteArrayList<>(items));
+            items.forEach(item -> dataSource.getMediaMap().put(item.getId(), item));
+            completion.accept(items);
         });
     }
 

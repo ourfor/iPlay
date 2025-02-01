@@ -160,8 +160,26 @@ public class iPlayApi implements EmbyLikeApi {
         if (site == null ||
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
+        var id = query.getOrDefault("ParentId", "0");
+        HTTPModel model = HTTPModel.builder()
+                .url(site.getEndpoint().getBaseUrl() + "media/album/" + id + "/count")
+                .method("GET")
+                .headers(Map.of("Authorization", site.getAccessToken()))
+                .typeReference(new TypeReference<iPlayModel.Response<Integer>>() {})
+                .build();
 
-        completion.accept(0);
+        HTTPUtil.request(model, response -> {
+            if (Objects.isNull(response)) {
+                completion.accept(null);
+                return;
+            }
+            if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
+                val count = (Integer) responseModel.data;
+                completion.accept(count);
+                return;
+            }
+            completion.accept(null);
+        });
     }
 
     @Override
@@ -183,6 +201,11 @@ public class iPlayApi implements EmbyLikeApi {
         if (query.get("PersonIds") != null) {
             params.put("actorId", query.get("PersonIds"));
         }
+        if (query.get("ParentId") != null) {
+            params.put("albumId", query.get("ParentId"));
+            val startIndex = query.getOrDefault("StartIndex", "0");
+            params.put("page", String.valueOf(Integer.parseInt(startIndex) / 26));
+        }
         HTTPModel model = HTTPModel.builder()
                 .url(site.getEndpoint().getBaseUrl() + "media/search")
                 .headers(Map.of(
@@ -201,7 +224,7 @@ public class iPlayApi implements EmbyLikeApi {
             if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
                 val data = (List<iPlayModel.MediaModel>)responseModel.data;
                 val items = data.stream().map(iPlayModel.MediaModel::toMediaModel).collect(Collectors.toList());
-                if (query.get("PersonIds") != null) {
+                if (query.get("PersonIds") != null || query.get("ParentId") != null) {
                     items.forEach(item -> item.setLayoutType(MediaLayoutType.Backdrop));
                 }
                 completion.accept(items);
@@ -381,5 +404,10 @@ public class iPlayApi implements EmbyLikeApi {
         if (site == null ||
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
+    }
+
+    @Override
+    public int preferedPageSize() {
+        return 26;
     }
 }

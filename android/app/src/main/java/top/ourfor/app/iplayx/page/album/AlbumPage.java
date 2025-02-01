@@ -215,7 +215,7 @@ public class AlbumPage implements Page {
                     stopRefresh();
                     return;
                 }
-                medias.forEach(media -> media.setLayoutType(MediaLayoutType.Poster));
+                medias.forEach(media -> media.setLayoutType(media.getLayoutType() == MediaLayoutType.None ? MediaLayoutType.Poster : media.getLayoutType()));
                 viewModel.getMedias().postValue(medias);
                 stopRefresh();
             });
