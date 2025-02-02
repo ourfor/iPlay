@@ -44,12 +44,12 @@ public class EmbyApi implements EmbyLikeApi {
     SiteModel site;
 
     public static void login(String server, String username, String password, Consumer<Object> completion) {
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyUserModel>builder()
                 .url(server + "/emby/Users/authenticatebyname")
                 .method("POST")
                 .headers(Map.of("Content-Type", "application/x-www-form-urlencoded"))
                 .body(String.format("Username=%s&Pw=%s", username, password))
-                .modelClass(EmbyModel.EmbyUserModel.class)
+                .typeReference(new TypeReference<EmbyModel.EmbyUserModel>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -66,17 +66,17 @@ public class EmbyApi implements EmbyLikeApi {
                         .protocol(url.getProtocol())
                         .path(url.getPath() == null ? url.getPath() : "/")
                         .build();
-                if (response instanceof EmbyModel.EmbyUserModel user) {
-                    if (user.getAccessToken() == null || user.getUser() == null || user.getServerId() == null) {
+                if (response != null) {
+                    if (response.getAccessToken() == null || response.getUser() == null || response.getServerId() == null) {
                         throw new NullPointerException("Access token is null");
                     }
                     var siteModel = SiteModel.builder()
                             .user(UserModel.builder()
-                                    .siteId(user.getServerId())
-                                    .id(user.getUser().getId())
+                                    .siteId(response.getServerId())
+                                    .id(response.getUser().getId())
                                     .username(username)
                                     .password(password)
-                                    .accessToken(user.getAccessToken())
+                                    .accessToken(response.getAccessToken())
                                     .build())
                             .endpoint(endpoint)
                             .build();
@@ -97,11 +97,11 @@ public class EmbyApi implements EmbyLikeApi {
             site.getAccessToken() == null ||
             site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/Users/" + site.getUserId() + "/Views")
                 .method("GET")
                 .query(Map.of("X-Emby-Token", site.getAccessToken()))
-                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel>>() { })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -109,11 +109,10 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
-                EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel> pageableModel = (EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel>) response;
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                pageableModel.getItems().forEach(item -> item.buildImage(baseUrl));
-                val albumItems = pageableModel.items.stream().map(item -> AlbumModel.builder()
+                response.getItems().forEach(item -> item.buildImage(baseUrl));
+                val albumItems = response.items.stream().map(item -> AlbumModel.builder()
                         .id(item.getId())
                         .title(item.getName())
                         .type(item.getCollectionType())
@@ -131,7 +130,7 @@ public class EmbyApi implements EmbyLikeApi {
             site.getEndpoint() == null ||
             site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<List<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/Users/" + site.getUserId() + "/Items/Latest")
                 .method("GET")
                 .query(Map.of(
@@ -149,11 +148,10 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof List<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyModel.EmbyMediaModel> items = (List<EmbyModel.EmbyMediaModel>) response;
-                items.forEach(item -> item.buildImage(baseUrl));
-                val finalItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
+                response.forEach(item -> item.buildImage(baseUrl));
+                val finalItems = response.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
                 completion.accept(finalItems);
                 return;
             }
@@ -177,11 +175,11 @@ public class EmbyApi implements EmbyLikeApi {
         val params = new HashMap<String, String>();
         params.putAll(fields);
         params.putAll(query);
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/Users/" + site.getUserId() + "/Items")
                 .method("GET")
                 .query(params)
-                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() { })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -189,9 +187,8 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(0);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
-                String baseUrl = site.getEndpoint().getBaseUrl();
-                int count = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getTotalRecordCount();
+            if (response != null) {
+                int count = response.getTotalRecordCount();
                 completion.accept(count);
                 return;
             }
@@ -216,7 +213,7 @@ public class EmbyApi implements EmbyLikeApi {
         val params = new HashMap<String, String>();
         params.putAll(fields);
         params.putAll(query);
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/Users/" + site.getUserId() + "/Items")
                 .method("GET")
                 .query(params)
@@ -228,19 +225,19 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPageableModel<?> pageableModel) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                val totalRecordCount = pageableModel.getTotalRecordCount();
+                val totalRecordCount = response.getTotalRecordCount();
                 val items = new ArrayList<EmbyModel.EmbyMediaModel>();
-                items.addAll((List<EmbyModel.EmbyMediaModel>)pageableModel.getItems());
+                items.addAll((List<EmbyModel.EmbyMediaModel>)response.getItems());
                 val part_size = Integer.valueOf(params.getOrDefault("Limit", "50"));
                 val latch = new CountDownLatch((int)Math.ceil(totalRecordCount * 1.0f / part_size) - 1);
                 for (int i = items.size(); i < totalRecordCount; i+=part_size) {
                     params.put("StartIndex", String.valueOf(i));
                     model.setQuery(params);
-                    HTTPUtil.request(model, res -> {
-                        if (res instanceof EmbyModel.EmbyPageableModel<?> pageable) {
-                            items.addAll((List<EmbyModel.EmbyMediaModel>)pageable.getItems());
+                    HTTPUtil.request(model, pageable -> {
+                        if (pageable != null) {
+                            items.addAll(pageable.getItems());
                         }
                         latch.countDown();
                     });
@@ -275,7 +272,7 @@ public class EmbyApi implements EmbyLikeApi {
         val params = new HashMap<String, String>();
         params.putAll(fields);
         params.putAll(query);
-        HTTPModel model = HTTPModel.builder()
+        val model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/Users/" + site.getUserId() + "/Items")
                 .method("GET")
                 .query(params)
@@ -287,7 +284,7 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
                 List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
@@ -304,7 +301,7 @@ public class EmbyApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/Shows/" + seriesId + "/Seasons")
                 .method("GET")
                 .query(Map.of(
@@ -312,7 +309,7 @@ public class EmbyApi implements EmbyLikeApi {
                         "UserId", site.getUserId(),
                         "Fields", "BasicSyncInfo,People,Genres,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated,ProductionYear,Status,EndDate"
                 ))
-                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() { })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -320,7 +317,7 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
                 List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
@@ -336,7 +333,7 @@ public class EmbyApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/Shows/" + seriesId + "/Episodes")
                 .method("GET")
                 .query(Map.of(
@@ -353,7 +350,7 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
                 List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
@@ -372,7 +369,7 @@ public class EmbyApi implements EmbyLikeApi {
         val store = XGET(GlobalStore.class);
         val media = store.getDataSource().getMediaMap().get(id);
         val startTimeTicks = media != null && media.getUserData() != null ? media.getUserData().getPlaybackPositionTicks() : 0;
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPlaybackModel>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/Items/" + id + "/PlaybackInfo")
                 .method("POST")
                 .query(Map.of(
@@ -394,11 +391,10 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPlaybackModel) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                EmbyModel.EmbyPlaybackModel source = (EmbyModel.EmbyPlaybackModel) response;
-                source.buildUrl(baseUrl);
-                completion.accept(source);
+                response.buildUrl(baseUrl);
+                completion.accept(response);
                 return;
             }
             completion.accept(null);
@@ -412,7 +408,7 @@ public class EmbyApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Items/" + id + "/Similar")
                 .method("GET")
                 .query(Map.of(
@@ -424,7 +420,7 @@ public class EmbyApi implements EmbyLikeApi {
                         "MediaTypes", "Video",
                         "Limit", "16"
                 ))
-                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() { })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -432,7 +428,7 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
                 List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
@@ -449,7 +445,7 @@ public class EmbyApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/Users/" + site.getUserId() + "/Items/Resume")
                 .method("GET")
                 .query(Map.of(
@@ -469,7 +465,7 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
                 List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
@@ -485,14 +481,14 @@ public class EmbyApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyUserData>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/Users/" + site.getUserId() + "/FavoriteItems/" + id + (isFavorite ? "/" : "/Delete"))
                 .method("POST")
                 .body("")
                 .query(Map.of(
                         "X-Emby-Token", site.getAccessToken()
                 ))
-                .modelClass(EmbyModel.EmbyUserData.class)
+                .typeReference(new TypeReference<EmbyModel.EmbyUserData>() { })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -500,7 +496,7 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyUserData) {
+            if (response != null) {
                 completion.accept(response);
                 return;
             }
@@ -514,7 +510,7 @@ public class EmbyApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/Items")
                 .method("GET")
                 .query(Map.of(
@@ -535,9 +531,9 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyPageableModel<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
+                List<EmbyModel.EmbyMediaModel> items = response.getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
                 completion.accept(items);
                 return;
@@ -557,7 +553,7 @@ public class EmbyApi implements EmbyLikeApi {
             default -> "";
         };
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyUserData>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/Sessions/Playing/" + playState)
                 .method("POST")
                 .body(XGET(JSONAdapter.class).toJSON(data))
@@ -566,7 +562,7 @@ public class EmbyApi implements EmbyLikeApi {
                         "Content-Type", "application/json",
                         "reqformat", "json"
                 ))
-                .modelClass(EmbyModel.EmbyUserData.class)
+                .typeReference(new TypeReference<EmbyModel.EmbyUserData>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -574,7 +570,7 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbyUserData) {
+            if (response != null) {
                 completion.accept(response);
                 return;
             }
@@ -590,10 +586,10 @@ public class EmbyApi implements EmbyLikeApi {
                 site.getUser() == null) return;
 
         // /emby/system/info/public
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbySiteInfo>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/system/info/public")
                 .method("GET")
-                .modelClass(EmbyModel.EmbySiteInfo.class)
+                .typeReference(new TypeReference<EmbyModel.EmbySiteInfo>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -601,7 +597,7 @@ public class EmbyApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyModel.EmbySiteInfo) {
+            if (response != null) {
                 completion.accept(response);
                 return;
             }

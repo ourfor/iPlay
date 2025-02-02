@@ -50,6 +50,14 @@ public class MediaModel implements IMediaModel {
         return title;
     }
 
+    public boolean isAlbum() {
+        return (
+            type.equals("BoxSet") ||
+            type.equals("Album") ||
+            type.equals("Playlist")
+        );
+    }
+
     public boolean isSeries() {
         return type.equals("Series");
     }

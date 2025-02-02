@@ -2,6 +2,8 @@ package top.ourfor.app.iplayx.bean;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import java.lang.reflect.Type;
+
 public interface JSONAdapter {
 
     default String toJSON(Object obj) {
@@ -13,6 +15,10 @@ public interface JSONAdapter {
     }
 
     default <T> T fromJSON(String json, TypeReference<T> typeReference) {
+        return null;
+    }
+
+    default <T> T fromJSON(String json, Type type) {
         return null;
     }
 }

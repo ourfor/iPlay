@@ -71,7 +71,7 @@ public class HTTPUtil {
     }
 
 
-    public static void request(HTTPModel model, Consumer<Object> completion) {
+    public static <T> void request(HTTPModel<T> model, Consumer<T> completion) {
         Request.Builder builder = new Request.Builder();
 //        builder.removeHeader("User-Agent");
         builder.addHeader("User-Agent", "iPlay");
@@ -139,26 +139,27 @@ public class HTTPUtil {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public void onResponse(Call call, Response response) throws IOException {
-                if (model.getTypeReference() != null) {
+                if (model.typeReference != null) {
                     String body = response.body().string();
                     val adapter = XGET(JSONAdapter.class);
-                    Object obj = adapter.fromJSON(body, model.getTypeReference());
-                    completion.accept(obj == null ? body : obj);
+                    T obj = adapter.fromJSON(body, model.typeReference);
+                    completion.accept(obj);
                     return;
                 } else if (model.getModelClass() != null) {
                     String body = response.body().string();
                     val adapter = XGET(JSONAdapter.class);
                     val clazz = model.getModelClass();
                     if (clazz == String.class) {
-                        completion.accept(body);
+                        completion.accept((T) body);
                         return;
                     }
                     Object obj = adapter.fromJSON(body, clazz);
-                    completion.accept(obj == null ? body : obj);
+                    completion.accept(obj == null ? null : (T) obj);
                     return;
                 }
-                completion.accept(response);
+                completion.accept((T) response);
             }
         });
     }

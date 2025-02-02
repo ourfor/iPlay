@@ -29,7 +29,7 @@ public class AlistApi {
     AlistDriveModel drive;
 
     public static String login(String server, String username, String password, Consumer<String> completion) {
-        var request = HTTPModel.builder()
+        var request = HTTPModel.<AlistModel.AlistResponse<AlistModel.AlistAuth>>builder()
                 .url(server + (server.endsWith("/") ? "" : "/") + "api/auth/login/hash")
                 .method("POST")
                 .headers(Map.of("Content-Type", "application/json"))
@@ -37,12 +37,12 @@ public class AlistApi {
                 .typeReference(new TypeReference<AlistModel.AlistResponse<AlistModel.AlistAuth>>() {})
                 .build();
         HTTPUtil.request(request, response -> {
-            if (response instanceof AlistModel.AlistResponse<?> res) {
-                if (res.getCode() == 200) {
-                    var auth = (AlistModel.AlistAuth) res.getData();
+            if (response != null) {
+                if (response.getCode() == 200) {
+                    var auth = (AlistModel.AlistAuth) response.getData();
                     completion.accept(auth.getToken());
                 } else {
-                    log.error("login failed: {}", res.getMsg());
+                    log.error("login failed: {}", response.getMsg());
                     completion.accept(null);
                 }
             } else {
@@ -72,7 +72,7 @@ public class AlistApi {
 
     public void listFiles(String path, Consumer<List<File>> completion) {
         var server = drive.getServer();
-        var request = HTTPModel.builder()
+        var request = HTTPModel.<AlistModel.AlistResponse<AlistModel.AlistFileList>>builder()
                 .url(server + (server.endsWith("/") ? "" : "/") + "api/fs/list")
                 .method("POST")
                 .headers(Map.of("Content-Type", "application/json", "Authorization", drive.getToken()))
@@ -80,9 +80,9 @@ public class AlistApi {
                 .typeReference(new TypeReference<AlistModel.AlistResponse<AlistModel.AlistFileList>>() {})
                 .build();
         HTTPUtil.request(request, response -> {
-            if (response instanceof AlistModel.AlistResponse<?> res) {
-                if (res.getCode() == 200) {
-                    var children = (AlistModel.AlistFileList) res.getData();
+            if (response != null) {
+                if (response.getCode() == 200) {
+                    var children = (AlistModel.AlistFileList) response.getData();
                     var parentPath = path + (path.endsWith("/") ? "" : "/");
                     List<File> files = children.content.stream().map(file -> File.builder()
                             .name(file.getName())
@@ -92,7 +92,7 @@ public class AlistApi {
                             .build()).collect(Collectors.toList());
                     completion.accept(files);
                 } else {
-                    log.error("login failed: {}", res.getMsg());
+                    log.error("login failed: {}", response.getMsg());
                     completion.accept(null);
                 }
             } else {

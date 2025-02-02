@@ -74,7 +74,16 @@ public class iPlayModel {
         String url;
     }
 
-
+    @Data
+    @With
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PublicInfoModel {
+        String id;
+        String name;
+        String version;
+    }
 
     @Data
     @With

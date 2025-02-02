@@ -4,6 +4,8 @@ import static top.ourfor.app.iplayx.module.Bean.XGET;
 
 import android.app.Application;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -13,10 +15,10 @@ import top.ourfor.app.iplayx.common.model.GitHubReleaseModel;
 
 public class PackageUtil {
     public static void checkUpdate(Consumer<Map<String, String>> completion) {
-        val req = new HTTPModel.HTTPModelBuilder()
+        val req = HTTPModel.<GitHubReleaseModel>builder()
                 .url("https://api.github.com/repos/ourfor/iPlay/releases/latest")
                 .method("GET")
-                .modelClass(GitHubReleaseModel.class)
+                .typeReference(new TypeReference<GitHubReleaseModel>() {})
                 .build();
         HTTPUtil.request(req, (res) -> {
             val model = (GitHubReleaseModel) res;

@@ -45,4 +45,6 @@ public interface EmbyLikeApi {
     default void trackPlay(MediaPlayState state, EmbyModel.EmbyPlaybackData data, Consumer<Object> completion) { }
 
     default void getRecommendations(Consumer<Object> completion) { }
+
+    default int preferedPageSize() { return 100; }
 }

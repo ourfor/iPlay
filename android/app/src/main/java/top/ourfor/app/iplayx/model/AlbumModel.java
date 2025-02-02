@@ -15,6 +15,7 @@ import lombok.With;
 @EqualsAndHashCode
 public class AlbumModel {
     String id;
+    String url;
     String title;
     String type;
     String backdrop;
