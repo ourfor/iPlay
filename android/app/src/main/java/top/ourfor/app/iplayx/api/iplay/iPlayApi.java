@@ -2,6 +2,8 @@ package top.ourfor.app.iplayx.api.iplay;
 
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
@@ -43,13 +45,15 @@ public class iPlayApi implements EmbyLikeApi {
     public static void login(String server, String username, String password, Consumer<Object> completion) {
         val token = "Basic " + Base64Util.encode(username + ":" + password);
         log.info("Login to server: {}", server);
-        HTTPModel model = HTTPModel.<iPlayModel.Response<iPlayModel.PublicInfoModel>>builder()
+        var model = HTTPModel.<iPlayModel.Response<iPlayModel.PublicInfoModel>>builder()
                 .url(server + "/public")
                 .method("GET")
                 .headers(Map.of(
                         "Content-Type", "application/json",
                         "Authorization", token
                 ))
+                .typeReference(new TypeReference<iPlayModel.Response<iPlayModel.PublicInfoModel>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -97,6 +101,8 @@ public class iPlayApi implements EmbyLikeApi {
                 .url(site.getEndpoint().getBaseUrl() + "media/albums")
                 .method("GET")
                 .headers(Map.of("Authorization", site.getAccessToken()))
+                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.AlbumModel>>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, (response) -> {
@@ -130,6 +136,8 @@ public class iPlayApi implements EmbyLikeApi {
                 .url(site.getEndpoint().getBaseUrl() + "media/album/" + id)
                 .method("GET")
                 .headers(Map.of("Authorization", site.getAccessToken()))
+                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.MediaModel>>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -157,6 +165,8 @@ public class iPlayApi implements EmbyLikeApi {
                 .url(site.getEndpoint().getBaseUrl() + "media/album/" + id + "/count")
                 .method("GET")
                 .headers(Map.of("Authorization", site.getAccessToken()))
+                .typeReference(new TypeReference<iPlayModel.Response<Integer>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -205,6 +215,8 @@ public class iPlayApi implements EmbyLikeApi {
                 ))
                 .method("GET")
                 .query(params)
+                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.MediaModel>>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -256,6 +268,8 @@ public class iPlayApi implements EmbyLikeApi {
                 .headers(Map.of(
                         "Authorization", site.getAccessToken()
                 ))
+                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.SourceModel>>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -311,6 +325,8 @@ public class iPlayApi implements EmbyLikeApi {
                 .query(Map.of(
                         "id", id
                 ))
+                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.MediaModel>>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -345,6 +361,8 @@ public class iPlayApi implements EmbyLikeApi {
                 .query(Map.of(
                         "id", id
                 ))
+                .typeReference(new TypeReference<iPlayModel.Response<iPlayModel.MediaModel>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
