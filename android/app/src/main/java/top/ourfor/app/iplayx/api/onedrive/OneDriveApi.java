@@ -91,19 +91,20 @@ public class OneDriveApi {
             params.append(key).append("=").append(value).append("&");
         });
         params.append("code").append("=").append(code);
-        val reqModel = HTTPModel.builder()
+        var reqModel = HTTPModel.<OneDriveAuth>builder()
                 .url(API_TOKEN_URL)
                 .headers(Map.of("Content-Type", "application/x-www-form-urlencoded"))
                 .method("POST")
                 .body(params.toString())
-                .typeReference(new TypeReference<OneDriveAuth>() { })
+                .typeReference(new TypeReference<OneDriveAuth>() {
+                })
                 .build();
         HTTPUtil.request(reqModel, result -> {
             log.info("redeem {}", result);
-            if (result instanceof OneDriveAuth auth) {
-                auth.expires_at = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) + auth.expires_in;
+            if (result != null) {
+                result.expires_at = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) + result.expires_in;
                 val action = XGET(OneDriveAction.class);
-                if (action != null) action.onedriveReadyUpdate(auth);
+                if (action != null) action.onedriveReadyUpdate(result);
             }
         });
     }
@@ -120,20 +121,21 @@ public class OneDriveApi {
             params.append(key).append("=").append(value).append("&");
         });
         params.append("refresh_token").append("=").append(auth.refresh_token);
-        val reqModel = HTTPModel.builder()
+        var reqModel = HTTPModel.<OneDriveAuth>builder()
                 .url(API_TOKEN_URL)
                 .headers(Map.of("Content-Type", "application/x-www-form-urlencoded"))
                 .method("POST")
                 .body(params.toString())
-                .typeReference(new TypeReference<OneDriveAuth>() { })
+                .typeReference(new TypeReference<OneDriveAuth>() {
+                })
                 .build();
         CountDownLatch latch = new CountDownLatch(1);
         HTTPUtil.request(reqModel, result -> {
             log.info("refresh {}", result);
-            if (result instanceof OneDriveAuth newAuth) {
-                newAuth.expires_at = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) + newAuth.expires_in;
-                auth = newAuth;
-                drive.setAuth(newAuth);
+            if (result != null) {
+                result.expires_at = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) + result.expires_in;
+                auth = result;
+                drive.setAuth(result);
                 XGET(ThreadPoolExecutor.class).submit(() -> {
                     XGET(GlobalStore.class).save();
                 });
@@ -178,23 +180,17 @@ public class OneDriveApi {
 
         try {
             latch.await();
-            val download = HTTPModel.builder()
+            val download = HTTPModel.<String>builder()
                     .url(downloadUrl.get())
                     .headers(Map.of("Authorization", token))
                     .method("GET")
-                    .modelClass(String.class)
+                    .typeReference(new TypeReference<String>() {})
                     .build();
             if (downloadUrl.get() == null) {
                 completion.accept(null);
                 return;
             }
-            HTTPUtil.request(download, result -> {
-                if (result instanceof String content) {
-                    completion.accept(content);
-                } else {
-                    completion.accept(null);
-                }
-            });
+            HTTPUtil.request(download, completion::accept);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -203,18 +199,18 @@ public class OneDriveApi {
     public void write(String path, String content, Consumer<Boolean> completion) {
         val token = token();
         val url = API_URL + "/me/drive/root:" + path + ":/createUploadSession";
-        val request = HTTPModel.builder()
+        val request = HTTPModel.<OneDriveUploadResponse>builder()
                 .url(url)
                 .headers(Map.of("Authorization", token))
                 .body("")
                 .method("POST")
-                .modelClass(OneDriveUploadResponse.class)
+                .typeReference(new TypeReference<OneDriveUploadResponse>() {})
                 .build();
         CountDownLatch latch = new CountDownLatch(1);
         AtomicReference<String> uploadUrl = new AtomicReference<>(null);
         HTTPUtil.request(request, result -> {
-            if (result instanceof OneDriveUploadResponse file) {
-                uploadUrl.set(file.uploadUrl);
+            if (result != null) {
+                uploadUrl.set(result.uploadUrl);
             }
             latch.countDown();
         });
@@ -225,7 +221,7 @@ public class OneDriveApi {
                 return;
             }
             val bytes = content.getBytes(StandardCharsets.UTF_8);
-            val upload = HTTPModel.builder()
+            val upload = HTTPModel.<String>builder()
                     .url(uploadUrl.get())
                     .headers(Map.of(
                             "Content-Length", String.valueOf(bytes.length),
@@ -233,7 +229,8 @@ public class OneDriveApi {
                     ))
                     .method("PUT")
                     .body(content)
-                    .modelClass(String.class)
+                    .typeReference(new TypeReference<String>() {
+                    })
                     .build();
             HTTPUtil.request(upload, result -> {
                 if (result != null) {
@@ -251,18 +248,19 @@ public class OneDriveApi {
     public void listFiles(String path, Consumer<OneDriveListChildrenResponse> completion) {
         val token = token();
         val url = path == "/" ? API_URL + "/me/drive/root/children" : API_URL + "/me/drive/root:" + path + ":/children";
-        val request = HTTPModel.builder()
+        var request = HTTPModel.<OneDriveListChildrenResponse>builder()
                 .url(url)
                 .headers(Map.of("Authorization", token))
                 .method("GET")
-                .typeReference(new TypeReference<OneDriveListChildrenResponse>() { })
+                .typeReference(new TypeReference<OneDriveListChildrenResponse>() {
+                })
                 .build();
         HTTPUtil.request(request, result -> {
-            if (result instanceof OneDriveListChildrenResponse content && content.value != null) {
-                content.value.forEach(item -> {
+            if (result != null && result.value != null) {
+                result.value.forEach(item -> {
                     item.path = PathUtil.of(path, item.name);
                 });
-                completion.accept(content);
+                completion.accept(result);
             } else {
                 completion.accept(null);
             }

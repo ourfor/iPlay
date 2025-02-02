@@ -2,17 +2,13 @@ package top.ourfor.app.iplayx.api.iplay;
 
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -23,13 +19,11 @@ import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.api.emby.EmbyModel;
-import top.ourfor.app.iplayx.bean.JSONAdapter;
 import top.ourfor.app.iplayx.common.api.EmbyLikeApi;
 import top.ourfor.app.iplayx.common.model.SiteEndpointModel;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
 import top.ourfor.app.iplayx.model.AlbumModel;
-import top.ourfor.app.iplayx.model.ImageModel;
 import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.model.SiteModel;
 import top.ourfor.app.iplayx.model.UserModel;
@@ -49,14 +43,13 @@ public class iPlayApi implements EmbyLikeApi {
     public static void login(String server, String username, String password, Consumer<Object> completion) {
         val token = "Basic " + Base64Util.encode(username + ":" + password);
         log.info("Login to server: {}", server);
-        HTTPModel model = HTTPModel.builder()
+        HTTPModel model = HTTPModel.<iPlayModel.Response<iPlayModel.PublicInfoModel>>builder()
                 .url(server + "/public")
                 .method("GET")
                 .headers(Map.of(
                         "Content-Type", "application/json",
                         "Authorization", token
                 ))
-                .typeReference(new TypeReference<iPlayModel.Response<iPlayModel.PublicInfoModel>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -100,21 +93,20 @@ public class iPlayApi implements EmbyLikeApi {
             site.getAccessToken() == null ||
             site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        val model = HTTPModel.<iPlayModel.Response<List<iPlayModel.AlbumModel>>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "media/albums")
                 .method("GET")
                 .headers(Map.of("Authorization", site.getAccessToken()))
-                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.AlbumModel>>>() {})
                 .build();
 
-        HTTPUtil.request(model, response -> {
+        HTTPUtil.request(model, (response) -> {
             if (Objects.isNull(response)) {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
-                log.info("Albums: {}", responseModel.data);
-                val items = (List<iPlayModel.AlbumModel>) responseModel.data;
+            if (response.code == 200) {
+                log.info("Albums: {}", response.data);
+                val items = (List<iPlayModel.AlbumModel>) response.data;
                 val albumItems = items.stream().map(item -> AlbumModel.builder()
                         .id(item.getId())
                         .title(item.getName())
@@ -134,11 +126,10 @@ public class iPlayApi implements EmbyLikeApi {
             site.getEndpoint() == null ||
             site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        val model = HTTPModel.<iPlayModel.Response<List<iPlayModel.MediaModel>>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "media/album/" + id)
                 .method("GET")
                 .headers(Map.of("Authorization", site.getAccessToken()))
-                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.MediaModel>>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -146,8 +137,8 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
-                val items = (List<iPlayModel.MediaModel>) responseModel.data;
+            if (response.code == 200) {
+                val items = (List<iPlayModel.MediaModel>) response.data;
                 val finalItems = items.stream().map(iPlayModel.MediaModel::toMediaModel).collect(Collectors.toList());
                 finalItems.forEach(item -> item.setLayoutType(MediaLayoutType.Backdrop));
                 completion.accept(finalItems);
@@ -162,11 +153,10 @@ public class iPlayApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
         var id = query.getOrDefault("ParentId", "0");
-        HTTPModel model = HTTPModel.builder()
+        val model = HTTPModel.<iPlayModel.Response<Integer>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "media/album/" + id + "/count")
                 .method("GET")
                 .headers(Map.of("Authorization", site.getAccessToken()))
-                .typeReference(new TypeReference<iPlayModel.Response<Integer>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -174,8 +164,8 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
-                val count = (Integer) responseModel.data;
+            if (response.code == 200) {
+                val count = (Integer) response.data;
                 completion.accept(count);
                 return;
             }
@@ -207,14 +197,14 @@ public class iPlayApi implements EmbyLikeApi {
             val startIndex = query.getOrDefault("StartIndex", "0");
             params.put("page", String.valueOf(Integer.parseInt(startIndex) / 26));
         }
-        HTTPModel model = HTTPModel.builder()
+
+        val model = HTTPModel.<iPlayModel.Response<List<iPlayModel.MediaModel>>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "media/search")
                 .headers(Map.of(
                         "Authorization", site.getAccessToken()
                 ))
                 .method("GET")
                 .query(params)
-                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.MediaModel>>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -222,8 +212,8 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
-                val data = (List<iPlayModel.MediaModel>)responseModel.data;
+            if (response.code == 200) {
+                val data = response.data;
                 val items = data.stream().map(iPlayModel.MediaModel::toMediaModel).collect(Collectors.toList());
                 if (query.get("PersonIds") != null || query.get("ParentId") != null) {
                     items.forEach(item -> item.setLayoutType(MediaLayoutType.Backdrop));
@@ -257,7 +247,7 @@ public class iPlayApi implements EmbyLikeApi {
 
         val store = XGET(GlobalStore.class);
         val media = store.getDataSource().getMediaMap().get(id);
-        HTTPModel model = HTTPModel.builder()
+        val model = HTTPModel.<iPlayModel.Response<List<iPlayModel.SourceModel>>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "media/source")
                 .method("GET")
                 .query(Map.of(
@@ -266,7 +256,6 @@ public class iPlayApi implements EmbyLikeApi {
                 .headers(Map.of(
                         "Authorization", site.getAccessToken()
                 ))
-                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.SourceModel>>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -274,11 +263,11 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
+            if (response.code == 200) {
                 String siteBaseUrl = site.getEndpoint().getBaseUrl();
                 if (siteBaseUrl.endsWith("/")) siteBaseUrl = siteBaseUrl.substring(0, siteBaseUrl.length()-1);
                 String baseUrl = siteBaseUrl;
-                val sources = (List<iPlayModel.SourceModel>)responseModel.data;
+                val sources = (List<iPlayModel.SourceModel>)response.data;
                 val embySource = EmbyModel.EmbyPlaybackModel.builder()
                         .sessionId("0")
                         .mediaSources(sources.stream().map(source -> EmbyModel.EmbyMediaSource.builder()
@@ -313,7 +302,7 @@ public class iPlayApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        val model = HTTPModel.<iPlayModel.Response<List<iPlayModel.MediaModel>>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "media/similar")
                 .method("GET")
                 .headers(Map.of(
@@ -322,7 +311,6 @@ public class iPlayApi implements EmbyLikeApi {
                 .query(Map.of(
                         "id", id
                 ))
-                .typeReference(new TypeReference<iPlayModel.Response<List<iPlayModel.MediaModel>>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -330,8 +318,8 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
-                var items = (List<iPlayModel.MediaModel>)responseModel.data;
+            if (response.code == 200) {
+                var items = (List<iPlayModel.MediaModel>)response.data;
                 var mediaItems = items.stream().map(iPlayModel.MediaModel::toMediaModel).collect(Collectors.toList());
                 mediaItems.forEach(item -> item.setLayoutType(MediaLayoutType.Backdrop));
                 completion.accept(mediaItems);
@@ -348,7 +336,7 @@ public class iPlayApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        val model = HTTPModel.<iPlayModel.Response<iPlayModel.MediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "media/detail")
                 .method("GET")
                 .headers(Map.of(
@@ -357,7 +345,6 @@ public class iPlayApi implements EmbyLikeApi {
                 .query(Map.of(
                         "id", id
                 ))
-                .typeReference(new TypeReference<iPlayModel.Response<iPlayModel.MediaModel>>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -365,8 +352,8 @@ public class iPlayApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof iPlayModel.Response<?> responseModel && responseModel.code == 200) {
-                var item = (iPlayModel.MediaModel)responseModel.data;
+            if (response.code == 200) {
+                var item = (iPlayModel.MediaModel)response.data;
                 completion.accept(item.toMediaModel());
                 return;
             }
