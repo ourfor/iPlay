@@ -169,7 +169,8 @@ public class Cloud189Api {
                 .headers(headers)
                 .method("POST")
                 .params(params)
-                .typeReference(new TypeReference<DriveResponse<AppConfig>>() { })
+                .typeReference(new TypeReference<DriveResponse<AppConfig>>() {
+                })
                 .build();
         var appConfLatch = new CountDownLatch(1);
         AtomicReference<DriveResponse<AppConfig>> appConfResult = new AtomicReference<>();
@@ -194,7 +195,7 @@ public class Cloud189Api {
                 .headers(headers)
                 .method("POST")
                 .params(params)
-                .typeReference(new TypeReference<DriveResponse<EncryptConfig>>() { })
+                .typeReference(new TypeReference<DriveResponse<EncryptConfig>>() {})
                 .build();
         var encryptConfLatch = new CountDownLatch(1);
         AtomicReference<DriveResponse<EncryptConfig>> encryptConfResult = new AtomicReference<>();
@@ -307,23 +308,24 @@ public class Cloud189Api {
 
         val id = ids.getOrDefault(path, -11L);
         val url = "https://cloud.189.cn/api/open/file/listFiles.action?noCache=0.9764056784249009&pageSize=60&pageNum=1&mediaType=0&folderId=" + id + "&iconOption=5&orderBy=lastOpTime&descending=true";
-        val request = HTTPModel.builder()
+        val request = HTTPModel.<ListChildrenResponse>builder()
                 .url(url)
                 .headers(Map.of("Cookie", cookie, "Accept", "application/json;charset=UTF-8"))
                 .method("GET")
-                .typeReference(new TypeReference<ListChildrenResponse>() { })
+                .typeReference(new TypeReference<ListChildrenResponse>() {
+                })
                 .build();
         HTTPUtil.request(request, result -> {
-            if (result instanceof ListChildrenResponse content && content.fileListAO != null) {
-                content.fileListAO.fileList.forEach(item -> {
+            if (result != null && result.fileListAO != null) {
+                result.fileListAO.fileList.forEach(item -> {
                     item.path = PathUtil.of(path, item.name);
                     ids.put(item.path, item.id);
                 });
-                content.fileListAO.folderList.forEach(item -> {
+                result.fileListAO.folderList.forEach(item -> {
                     item.path = PathUtil.of(path, item.name);
                     ids.put(item.path, item.id);
                 });
-                completion.accept(content);
+                completion.accept(result);
             } else {
                 completion.accept(null);
             }
@@ -340,15 +342,16 @@ public class Cloud189Api {
             login(username, password);
         }
         val url = "https://cloud.189.cn/api/portal/getNewVlcVideoPlayUrl.action?fileId=" + id + "&type=2";
-        val request = HTTPModel.builder()
+        var request = HTTPModel.<VideoPlaybackInfo>builder()
                 .url(url)
                 .headers(Map.of("Cookie", cookie, "Accept", "application/json;charset=UTF-8"))
                 .method("GET")
-                .typeReference(new TypeReference<VideoPlaybackInfo>() { })
+                .typeReference(new TypeReference<VideoPlaybackInfo>() {
+                })
                 .build();
         HTTPUtil.request(request, result -> {
-            if (result instanceof VideoPlaybackInfo content && content.normal != null) {
-                completion.accept(content.normal.url);
+            if (result != null && result.normal != null) {
+                completion.accept(result.normal.url);
             } else {
                 completion.accept(null);
             }

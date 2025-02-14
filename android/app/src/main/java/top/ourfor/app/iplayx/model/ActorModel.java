@@ -1,21 +1,22 @@
 package top.ourfor.app.iplayx.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
 @Data
+@With
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@With
-public class EmbySiteUserModel {
-    @JsonProperty("Name")
-    String name;
-    @JsonProperty("Id")
+@EqualsAndHashCode
+public class ActorModel {
     String id;
+    String name;
+    ImageModel image;
+    String role;
+    String description;
 }

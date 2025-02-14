@@ -19,15 +19,15 @@ import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.R;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.Navigator;
-import top.ourfor.app.iplayx.common.model.MediaModel;
+import top.ourfor.app.iplayx.common.model.IMediaModel;
 import top.ourfor.app.iplayx.action.UpdateModelAction;
 import top.ourfor.app.iplayx.common.type.MediaType;
-import top.ourfor.app.iplayx.model.EmbyAlbumModel;
+import top.ourfor.app.iplayx.model.AlbumModel;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.module.FontModule;
 import top.ourfor.app.iplayx.util.DeviceUtil;
-import top.ourfor.app.iplayx.model.EmbyAlbumMediaModel;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
 import top.ourfor.app.iplayx.view.ListItemClickEvent;
 import top.ourfor.app.iplayx.view.ListView;
 import top.ourfor.app.iplayx.view.infra.TextView;
@@ -35,13 +35,13 @@ import top.ourfor.app.iplayx.view.infra.TextView;
 @Slf4j
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class MediaListViewCell extends ConstraintLayout implements UpdateModelAction {
-    private ListView<MediaModel> listView = new ListView(getContext());
+    ListView<Object> listView = new ListView(getContext());
     private TextView titleLabel = null;
     private TextView viewMoreLabel = null;
     private LayoutParams titleLayout = null;
     private LayoutParams listLayout = null;
     private static Typeface themeFont = null;
-    public Consumer<ListItemClickEvent<MediaModel>> onClick;
+    public Consumer<ListItemClickEvent<IMediaModel>> onClick;
     public MediaListViewCell(@NonNull Context context) {
         super(context);
         setupUI(context);
@@ -118,65 +118,77 @@ public class MediaListViewCell extends ConstraintLayout implements UpdateModelAc
 
     @Override
     public <T> void updateModel(T model) {
-        if (model instanceof EmbyAlbumMediaModel<?>) {
-            EmbyAlbumMediaModel<?> data = (EmbyAlbumMediaModel<?>) model;
-            if (data.getAlbum() != null) {
-                titleLabel.setText(data.getAlbum().getName());
-                titleLayout.topMargin = 10;
-                titleLabel.setVisibility(VISIBLE);
-                viewMoreLabel.setVisibility(VISIBLE);
-                titleLabel.setLayoutParams(titleLayout);
-                listLayout.topMargin = 20;
-                listView.setLayoutParams(listLayout);
-            } else {
-                titleLayout.topMargin = 0;
-                titleLabel.setVisibility(GONE);
-                viewMoreLabel.setVisibility(GONE);
-                titleLabel.setLayoutParams(titleLayout);
-                listLayout.topMargin = 0;
-                listView.setLayoutParams(listLayout);
-            }
-            val title = data.getTitle();
-            if (title != null) {
-                titleLabel.setText(title);
-                titleLabel.setVisibility(VISIBLE);
-            }
-            listView.viewModel.onClick = (event) -> {
-                if (event == null) return;
-                log.info("event: {}", event);
-                val route = XGET(Navigator.class);
-                val args = new HashMap<String, Object>();
-                val m = event.getModel();
-                args.put("id", m.getId());
-                args.put("title", m.getName());
-                boolean isMedia = m instanceof EmbyMediaModel;
-                EmbyMediaModel media = isMedia ? (EmbyMediaModel) m : null;
-                int dstId = m instanceof EmbyMediaModel ? R.id.mediaPage : R.id.albumPage;
-                if (media != null) {
-                    if (media.isMusicAlbum()) {
-                        dstId = R.id.musicPage;
-                    } else if (media.isAudio()) {
-                        dstId = R.id.musicPlayerPage;
-                    }
-                }
-                if (m instanceof EmbyAlbumModel album && album.isMusic()) {
-                    args.put("type", MediaType.MusicAlbum.name());
-                }
-                route.pushPage(dstId, args);
-            };
-
-            listView.resetItems((List<MediaModel>)data.getMedias());
-
-            viewMoreLabel.setOnClickListener(v -> {
-                val route = XGET(Navigator.class);
-                val args = new HashMap<String, Object>();
-                args.put("id", data.getAlbum().getId());
-                args.put("title", data.getAlbum().getName());
-                if (data.getAlbum().isMusic()) {
-                    args.put("type", MediaType.MusicAlbum.name());
-                }
-                route.pushPage(R.id.albumPage, args);
-            });
+        if (!(model instanceof EmbyModel.EmbyAlbumMediaModel<?> data)) {
+            return;
         }
+
+        if (data.getAlbum() != null) {
+            titleLabel.setText(data.getAlbum().getTitle());
+            titleLayout.topMargin = 10;
+            titleLabel.setVisibility(VISIBLE);
+            viewMoreLabel.setVisibility(VISIBLE);
+            titleLabel.setLayoutParams(titleLayout);
+            listLayout.topMargin = 20;
+            listView.setLayoutParams(listLayout);
+        } else {
+            titleLayout.topMargin = 0;
+            titleLabel.setVisibility(GONE);
+            viewMoreLabel.setVisibility(GONE);
+            titleLabel.setLayoutParams(titleLayout);
+            listLayout.topMargin = 0;
+            listView.setLayoutParams(listLayout);
+        }
+        val title = data.getTitle();
+        if (title != null) {
+            titleLabel.setText(title);
+            titleLabel.setVisibility(VISIBLE);
+        }
+
+        listView.viewModel.onClick = (event) -> {
+            if (event == null) return;
+            log.info("event: {}", event);
+            val route = XGET(Navigator.class);
+            val args = new HashMap<String, Object>();
+            val m = event.getModel();
+            String id = null;
+            String name = null;
+            if (m instanceof AlbumModel album) {
+                id = album.getId();
+                name = album.getTitle();
+            } else if (m instanceof MediaModel media) {
+                id = media.getId();
+                name = media.getName();
+            }
+            args.put("id", id);
+            args.put("title", name);
+            boolean isMedia = m instanceof MediaModel;
+            var media = isMedia ? (MediaModel) m : null;
+            int dstId = m instanceof MediaModel ? R.id.mediaPage : R.id.albumPage;
+            if (media != null) {
+                if (media.isMusicAlbum()) {
+                    dstId = R.id.musicPage;
+                } else if (media.isAudio()) {
+                    dstId = R.id.musicPlayerPage;
+                }
+            }
+            if (m instanceof AlbumModel album && album.isMusic()) {
+                args.put("type", MediaType.MusicAlbum.name());
+            }
+            route.pushPage(dstId, args);
+        };
+
+        val medias = (List)data.getMedias();
+        listView.resetItems(medias);
+
+        viewMoreLabel.setOnClickListener(v -> {
+            val route = XGET(Navigator.class);
+            val args = new HashMap<String, Object>();
+            args.put("id", data.getAlbum().getId());
+            args.put("title", data.getAlbum().getTitle());
+            if (data.getAlbum().isMusic()) {
+                args.put("type", MediaType.MusicAlbum.name());
+            }
+            route.pushPage(R.id.albumPage, args);
+        });
     }
 }

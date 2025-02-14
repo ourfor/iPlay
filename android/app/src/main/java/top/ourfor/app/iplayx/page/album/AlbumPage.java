@@ -4,13 +4,10 @@ import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -18,6 +15,7 @@ import com.airbnb.lottie.LottieAnimationView;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -32,10 +30,10 @@ import top.ourfor.app.iplayx.common.type.MediaLayoutType;
 import top.ourfor.app.iplayx.common.type.MediaType;
 import top.ourfor.app.iplayx.common.type.SortType;
 import top.ourfor.app.iplayx.databinding.AlbumPageBinding;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.util.AnimationUtil;
 import top.ourfor.app.iplayx.util.DeviceUtil;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.util.WindowUtil;
 import top.ourfor.app.iplayx.view.GridLayoutManager;
@@ -45,8 +43,8 @@ import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 
 @ViewController(name = "album_page")
 public class AlbumPage implements Page {
-    private AlbumPageBinding binding = null;
-    private ListView<EmbyMediaModel> listView = null;
+    AlbumPageBinding binding;
+    ListView<MediaModel> listView;
     private LottieAnimationView activityIndicator = null;
     private SwipeRefreshLayout swipeRefreshLayout = null;
     private String id = null;
@@ -72,6 +70,7 @@ public class AlbumPage implements Page {
         viewModel = new AlbumViewModel();
         viewModel.getMedias().observe(view, medias -> {
             if (listView == null) return;
+            setupListLayout(medias);
             listView.setItems(medias);
         });
     }
@@ -89,7 +88,7 @@ public class AlbumPage implements Page {
                 XGET(ThreadPoolExecutor.class).submit(this::onRefresh);
             } else if (itemId == R.id.sort_by_date_add) {
                 val items = viewModel.getMedias().getValue();
-                Comparator<EmbyMediaModel> comparator = Comparator.comparing(EmbyMediaModel::getDateCreated);
+                var comparator = Comparator.comparing(MediaModel::getDateCreated);
                 if (sortType == SortType.DateAdded) {
                     sortType = SortType.DateAddedReverse;
                     items.sort(comparator.reversed());
@@ -100,7 +99,7 @@ public class AlbumPage implements Page {
                 viewModel.getMedias().postValue(items);
             } else if (itemId == R.id.sort_by_date_release) {
                 val items = viewModel.getMedias().getValue();
-                Comparator<EmbyMediaModel> comparator = Comparator.comparing(EmbyMediaModel::getProductionYear);
+                var comparator = Comparator.comparing(MediaModel::getProductionYear);
                 if (sortType == SortType.DateReleased) {
                     sortType = SortType.DateReleasedReverse;
                     items.sort(comparator.reversed());
@@ -111,7 +110,7 @@ public class AlbumPage implements Page {
                 viewModel.getMedias().postValue(items);
             } else if (itemId == R.id.sort_by_name) {
                 val items = viewModel.getMedias().getValue();
-                Comparator<EmbyMediaModel> comparator = Comparator.comparing(EmbyMediaModel::getName);
+                var comparator = Comparator.comparing(MediaModel::getName);
                 if (sortType == SortType.Name) {
                     sortType = SortType.NameReverse;
                     items.sort(comparator.reversed());
@@ -126,7 +125,7 @@ public class AlbumPage implements Page {
     }
 
     public void setup() {
-        setupUI(getContext());
+        setupUI(context);
         bind();
     }
 
@@ -134,12 +133,12 @@ public class AlbumPage implements Page {
         binding = null;
     }
 
+    @SuppressWarnings("unchecked")
     void setupUI(Context context) {
         listView = binding.mediaList;
         swipeRefreshLayout = binding.swipeRefresh;
         listView.viewModel.viewCell = MediaGridCell.class;
-        if (DeviceUtil.isTV) {
-        } else {
+        if (!DeviceUtil.isTV) {
             swipeRefreshLayout.setOnRefreshListener(() -> {
                 XGET(ThreadPoolExecutor.class).submit(this::onRefresh);
             });
@@ -173,8 +172,6 @@ public class AlbumPage implements Page {
         XGET(NavigationTitleBar.class).setNavTitle(title);
         listView.setHasFixedSize(true);
         listView.setCacheSize(15);
-        int spanCount = DeviceUtil.screenSize(getContext()).getWidth() / DeviceUtil.dpToPx(120);
-        listView.listView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
         listView.viewModel.onClick = e -> {
             val model = e.getModel();
             val bundle = new HashMap<String, Object>();
@@ -182,6 +179,7 @@ public class AlbumPage implements Page {
             bundle.put("title", model.getName());
             val isSeason = model.getType().equals("Season");
             val isMusic = model.getType().equals("MusicAlbum");
+            val isAlbum = model.isAlbum();
             var dstId = R.id.mediaPage;
             if (isSeason) {
                 bundle.put("seriesId", model.getSeriesId());
@@ -189,6 +187,8 @@ public class AlbumPage implements Page {
                 dstId = R.id.episodePage;
             } else if (isMusic) {
                 dstId = R.id.musicPage;
+            } else if (isAlbum) {
+                dstId = R.id.albumPage;
             }
             XGET(Navigator.class).pushPage(dstId, bundle);
         };
@@ -218,7 +218,7 @@ public class AlbumPage implements Page {
                     stopRefresh();
                     return;
                 }
-                medias.forEach(media -> media.setLayoutType(MediaLayoutType.Poster));
+                medias.forEach(media -> media.setLayoutType(media.getLayoutType() == MediaLayoutType.None ? MediaLayoutType.Poster : media.getLayoutType()));
                 viewModel.getMedias().postValue(medias);
                 stopRefresh();
             });
@@ -250,7 +250,7 @@ public class AlbumPage implements Page {
                     stopRefresh();
                     return;
                 }
-                medias.forEach(media -> media.setLayoutType(MediaLayoutType.Poster));
+                medias.forEach(media -> media.setLayoutType(media.getLayoutType() == MediaLayoutType.None ? MediaLayoutType.Poster : media.getLayoutType()));
                 viewModel.getMedias().postValue(medias);
                 store.getDataSource().getAlbumMedias().put("Actor-" + id, new CopyOnWriteArrayList<>(medias));
                 stopRefresh();
@@ -267,6 +267,16 @@ public class AlbumPage implements Page {
             });
         }
 
+    }
+
+    void setupListLayout(List<MediaModel> medias) {
+        if (medias == null || medias.isEmpty()) return;
+        listView.post(() -> {
+            val media = medias.get(0);
+            if (media == null) return;
+            int spanCount = DeviceUtil.screenSize(getContext()).getWidth() / DeviceUtil.dpToPx(media.getLayoutType() == MediaLayoutType.Backdrop ? 160 : 120);
+            listView.listView.setLayoutManager(new GridLayoutManager(getContext(), spanCount));
+        });
     }
 
     private void stopRefresh() {

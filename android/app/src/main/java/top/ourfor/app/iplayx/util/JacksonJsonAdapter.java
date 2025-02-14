@@ -3,10 +3,15 @@ package top.ourfor.app.iplayx.util;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.lang.reflect.Type;
+
+import lombok.extern.slf4j.Slf4j;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
 
+@Slf4j
 public class JacksonJsonAdapter implements JSONAdapter {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -34,10 +39,28 @@ public class JacksonJsonAdapter implements JSONAdapter {
     }
 
     @Override
+    public <T> T fromJSON(String json, Type type) {
+        try {
+            var newType = new TypeReference<Object>() {
+                @Override
+                public Type getType() {
+                    return type;
+                }
+            };
+            return (T) objectMapper.readValue(json, newType);
+        } catch (Exception e) {
+            log.error("Failed to parse json: {}", json);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
     public <T> T fromJSON(String json, TypeReference<T> typeReference) {
         try {
             return objectMapper.readValue(json, typeReference);
         } catch (Exception e) {
+            log.error("Failed to parse json: {}", json);
             e.printStackTrace();
             return null;
         }

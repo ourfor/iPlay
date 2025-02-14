@@ -13,26 +13,23 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
 import lombok.With;
 import lombok.val;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
 import top.ourfor.app.iplayx.common.api.EmbyLikeApi;
 import top.ourfor.app.iplayx.common.model.SiteEndpointModel;
 import top.ourfor.app.iplayx.common.type.MediaPlayState;
-import top.ourfor.app.iplayx.model.EmbyAlbumModel;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
-import top.ourfor.app.iplayx.model.EmbyPageableModel;
-import top.ourfor.app.iplayx.model.EmbyPlaybackData;
-import top.ourfor.app.iplayx.model.EmbyPlaybackModel;
-import top.ourfor.app.iplayx.model.EmbySiteInfo;
-import top.ourfor.app.iplayx.model.EmbyUserData;
-import top.ourfor.app.iplayx.model.EmbyUserModel;
+import top.ourfor.app.iplayx.model.AlbumModel;
 import top.ourfor.app.iplayx.model.ImageType;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.model.SiteModel;
+import top.ourfor.app.iplayx.model.UserModel;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.util.HTTPModel;
 import top.ourfor.app.iplayx.util.HTTPUtil;
@@ -50,12 +47,12 @@ public class JellyfinApi implements EmbyLikeApi {
     SiteModel site;
 
     public static void login(String server, String username, String password, Consumer<Object> completion) {
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyUserModel>builder()
                 .url(server + (server.endsWith("/") ? "" : "/") + "Users/authenticatebyname")
                 .method("POST")
                 .headers(Map.of("x-emby-authorization", authHeaderValue, "Content-Type", "application/json"))
                 .body(XGET(JSONAdapter.class).toJSON(Map.of("Username", username, "Pw", password)))
-                .modelClass(EmbyUserModel.class)
+                .typeReference(new TypeReference<EmbyModel.EmbyUserModel>() { })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -72,10 +69,15 @@ public class JellyfinApi implements EmbyLikeApi {
                         .protocol(url.getProtocol())
                         .path(url.getPath() == null ? url.getPath() : "/")
                         .build();
-                if (response instanceof EmbyUserModel) {
-                    EmbyUserModel user = (EmbyUserModel) response;
+                if (response != null) {
                     var siteModel = SiteModel.builder()
-                            .user(user)
+                            .user(UserModel.builder()
+                                    .siteId(response.getServerId())
+                                    .username(response.getUser().getName())
+                                    .password(password)
+                                    .id(response.getUser().getId())
+                                    .accessToken(response.getAccessToken())
+                                    .build())
                             .endpoint(endpoint)
                             .build();
                     completion.accept(siteModel);
@@ -88,16 +90,16 @@ public class JellyfinApi implements EmbyLikeApi {
         });
     }
 
-    public void getAlbums(Consumer<Object> completion) {
+    public void getAlbums(Consumer<List<AlbumModel>> completion) {
         if (site == null ||
             site.getEndpoint() == null ||
             site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Users/" + site.getUserId() + "/Views")
                 .method("GET")
                 .headers(Map.of("x-emby-authorization", authHeaderValue, "X-Emby-Token", site.getAccessToken()))
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyAlbumModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyAlbumModel>>() { })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -105,23 +107,28 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
-                EmbyPageableModel<EmbyAlbumModel> pageableModel = (EmbyPageableModel<EmbyAlbumModel>) response;
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                pageableModel.getItems().forEach(item -> item.buildImage(baseUrl, ImageType.Jellyfin));
-                completion.accept(pageableModel);
+                response.getItems().forEach(item -> item.buildImage(baseUrl, ImageType.Jellyfin));
+                val albumItems = response.getItems().stream().map(item -> AlbumModel.builder()
+                        .id(item.getId())
+                        .title(item.getName())
+                        .type(item.getCollectionType())
+                        .backdrop(item.getImage().getPrimary())
+                        .build()).collect(Collectors.toList());
+                completion.accept(albumItems);
                 return;
             }
             completion.accept(null);
         });
     }
 
-    public void getAlbumLatestMedias(String id, Consumer<Object> completion) {
+    public void getAlbumLatestMedias(String id, Consumer<List<MediaModel>> completion) {
         if (site == null ||
             site.getEndpoint() == null ||
             site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<List<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Users/" + site.getUserId() + "/Items/Latest")
                 .method("GET")
                 .headers(Map.of("x-emby-authorization", authHeaderValue, "X-Emby-Token", site.getAccessToken()))
@@ -132,7 +139,8 @@ public class JellyfinApi implements EmbyLikeApi {
                         "Recursive", "true",
                         "Fields", "BasicSyncInfo,People,Genres,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated,ProductionYear,Status,EndDate"
                 ))
-                .typeReference(new TypeReference<List<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<List<EmbyModel.EmbyMediaModel>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -140,11 +148,11 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof List<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyMediaModel> items = (List<EmbyMediaModel>) response;
-                items.forEach(item -> item.buildImage(baseUrl, ImageType.Jellyfin));
-                completion.accept(items);
+                response.forEach(item -> item.buildImage(baseUrl, ImageType.Jellyfin));
+                val finalItems = response.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
+                completion.accept(finalItems);
                 return;
             }
             completion.accept(null);
@@ -167,12 +175,13 @@ public class JellyfinApi implements EmbyLikeApi {
         val params = new HashMap<String, String>();
         params.putAll(fields);
         params.putAll(query);
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Users/" + site.getUserId() + "/Items")
                 .headers(Map.of("x-emby-authorization", authHeaderValue, "X-Emby-Token", site.getAccessToken()))
                 .method("GET")
                 .query(params)
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -180,9 +189,8 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(0);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
-                String baseUrl = site.getEndpoint().getBaseUrl();
-                int count = ((EmbyPageableModel<EmbyMediaModel>) response).getTotalRecordCount();
+            if (response != null) {
+                int count = response.getTotalRecordCount();
                 completion.accept(count);
                 return;
             }
@@ -190,7 +198,7 @@ public class JellyfinApi implements EmbyLikeApi {
         });
     }
 
-    public void getMedias(Map<String, String> query, Consumer<Object> completion) {
+    public void getMedias(Map<String, String> query, Consumer<List<MediaModel>> completion) {
         if (site == null ||
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
@@ -206,12 +214,13 @@ public class JellyfinApi implements EmbyLikeApi {
         val params = new HashMap<String, String>();
         params.putAll(fields);
         params.putAll(query);
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Users/" + site.getUserId() + "/Items")
                 .headers(Map.of("x-emby-authorization", authHeaderValue, "X-Emby-Token", site.getAccessToken()))
                 .method("GET")
                 .query(params)
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -219,11 +228,12 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyMediaModel> items = ((EmbyPageableModel<EmbyMediaModel>) response).getItems();
+                List<EmbyModel.EmbyMediaModel> items = response.getItems();
                 items.forEach(item -> item.buildImage(baseUrl, ImageType.Jellyfin));
-                completion.accept(items);
+                val mediaItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
+                completion.accept(mediaItems);
                 return;
             }
             completion.accept(null);
@@ -247,12 +257,13 @@ public class JellyfinApi implements EmbyLikeApi {
         val params = new HashMap<String, String>();
         params.putAll(fields);
         params.putAll(query);
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Users/" + site.getUserId() + "/Items")
                 .headers(Map.of("x-emby-authorization", authHeaderValue, "X-Emby-Token", site.getAccessToken()))
                 .method("GET")
                 .query(params)
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -260,19 +271,19 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?> pageableModel) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                val totalRecordCount = pageableModel.getTotalRecordCount();
-                val items = new ArrayList<EmbyMediaModel>();
-                items.addAll((List<EmbyMediaModel>)pageableModel.getItems());
+                val totalRecordCount = response.getTotalRecordCount();
+                val items = new ArrayList<EmbyModel.EmbyMediaModel>();
+                items.addAll(response.getItems());
                 val part_size = Integer.valueOf(params.getOrDefault("Limit", "50"));
                 val latch = new CountDownLatch((int)Math.ceil(totalRecordCount * 1.0f / part_size) - 1);
                 for (int i = items.size(); i < totalRecordCount; i+=part_size) {
                     params.put("StartIndex", String.valueOf(i));
                     model.setQuery(params);
-                    HTTPUtil.request(model, res -> {
-                        if (res instanceof EmbyPageableModel<?> pageable) {
-                            items.addAll((List<EmbyMediaModel>)pageable.getItems());
+                    HTTPUtil.request(model, pageable -> {
+                        if (pageable != null) {
+                            items.addAll(pageable.getItems());
                         }
                         latch.countDown();
                     });
@@ -296,7 +307,7 @@ public class JellyfinApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Shows/" + seriesId + "/Seasons")
                 .headers(Map.of("x-emby-authorization", authHeaderValue, "X-Emby-Token", site.getAccessToken()))
                 .method("GET")
@@ -305,7 +316,8 @@ public class JellyfinApi implements EmbyLikeApi {
                         "UserId", site.getUserId(),
                         "Fields", "BasicSyncInfo,People,Genres,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated,ProductionYear,Status,EndDate"
                 ))
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -313,9 +325,9 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyMediaModel> items = ((EmbyPageableModel<EmbyMediaModel>) response).getItems();
+                List<EmbyModel.EmbyMediaModel> items = response.getItems();
                 items.forEach(item -> item.buildImage(baseUrl, ImageType.Jellyfin));
                 completion.accept(items);
                 return;
@@ -329,7 +341,7 @@ public class JellyfinApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Shows/" + seriesId + "/Episodes")
                 .headers(Map.of("x-emby-authorization", authHeaderValue, "X-Emby-Token", site.getAccessToken()))
                 .method("GET")
@@ -339,7 +351,8 @@ public class JellyfinApi implements EmbyLikeApi {
                         "SeasonId", seasonId,
                         "Fields", "BasicSyncInfo,People,Genres,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated,ProductionYear,Status,EndDate"
                 ))
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -347,9 +360,9 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyMediaModel> items = ((EmbyPageableModel<EmbyMediaModel>) response).getItems();
+                List<EmbyModel.EmbyMediaModel> items = response.getItems();
                 items.forEach(item -> item.buildImage(baseUrl, ImageType.Jellyfin));
                 completion.accept(items);
                 return;
@@ -366,7 +379,7 @@ public class JellyfinApi implements EmbyLikeApi {
         val store = XGET(GlobalStore.class);
         val media = store.getDataSource().getMediaMap().get(id);
         val startTimeTicks = media != null ? media.getUserData().getPlaybackPositionTicks() : 0;
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPlaybackModel>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Items/" + id + "/PlaybackInfo")
                 .headers(Map.of("Content-Type", "application/json", "x-emby-authorization", authHeaderValue, "X-Emby-Token", site.getAccessToken()))
                 .method("POST")
@@ -379,7 +392,8 @@ public class JellyfinApi implements EmbyLikeApi {
                     "X-Emby-Token", site.getAccessToken()
                 ))
                 .body(kDeviceProfile)
-                .typeReference(new TypeReference<EmbyPlaybackModel>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPlaybackModel>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -387,18 +401,17 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPlaybackModel) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                EmbyPlaybackModel source = (EmbyPlaybackModel) response;
-                source.buildUrl(baseUrl);
-                source.getMediaSources().forEach(stream -> {
+                response.buildUrl(baseUrl);
+                response.getMediaSources().forEach(stream -> {
                     stream.buildDirectStreamUrl(baseUrl, Map.of(
                         "api_key", site.getAccessToken(),
                         "DeviceId", "9999999",
                         "MediaSourceId", stream.getId()
                     ));
                 });
-                completion.accept(source);
+                completion.accept(response);
                 return;
             }
             completion.accept(null);
@@ -410,7 +423,7 @@ public class JellyfinApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Users/" + site.getUserId() + "/Items/Resume")
                 .headers(Map.of("x-emby-authorization", authHeaderValue, "X-Emby-Token", site.getAccessToken()))
                 .method("GET")
@@ -423,7 +436,8 @@ public class JellyfinApi implements EmbyLikeApi {
                         "MediaTypes", "Video",
                         "Limit", "50"
                 ))
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -431,9 +445,9 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyMediaModel> items = ((EmbyPageableModel<EmbyMediaModel>) response).getItems();
+                List<EmbyModel.EmbyMediaModel> items = response.getItems();
                 items.forEach(item -> item.buildImage(baseUrl, ImageType.Jellyfin));
                 completion.accept(items);
                 return;
@@ -447,7 +461,7 @@ public class JellyfinApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyUserData>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Users/" + site.getUserId() + "/FavoriteItems/" + id + (isFavorite ? "/" : "/Delete"))
                 .headers(Map.of("x-emby-authorization", authHeaderValue, "X-Emby-Token", site.getAccessToken()))
                 .method("POST")
@@ -455,7 +469,8 @@ public class JellyfinApi implements EmbyLikeApi {
                 .query(Map.of(
                         "X-Emby-Token", site.getAccessToken()
                 ))
-                .modelClass(EmbyUserData.class)
+                .typeReference(new TypeReference<EmbyModel.EmbyUserData>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -463,7 +478,7 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyUserData) {
+            if (response != null) {
                 completion.accept(response);
                 return;
             }
@@ -477,7 +492,7 @@ public class JellyfinApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Items")
                 .method("GET")
                 .query(Map.of(
@@ -489,7 +504,8 @@ public class JellyfinApi implements EmbyLikeApi {
                         "ImageTypeLimit", "0",
                         "UserId", site.getUserId()
                 ))
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -497,9 +513,9 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyMediaModel> items = ((EmbyPageableModel<EmbyMediaModel>) response).getItems();
+                List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
                 completion.accept(items);
                 return;
@@ -508,7 +524,7 @@ public class JellyfinApi implements EmbyLikeApi {
         });
     }
 
-    public void trackPlay(MediaPlayState state, EmbyPlaybackData data, Consumer<Object> completion) {
+    public void trackPlay(MediaPlayState state, EmbyModel.EmbyPlaybackData data, Consumer<Object> completion) {
         if (site == null ||
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
@@ -519,7 +535,7 @@ public class JellyfinApi implements EmbyLikeApi {
             default -> "";
         };
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyUserData>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Sessions/Playing/" + playState)
                 .headers(Map.of("x-emby-authorization", authHeaderValue, "X-Emby-Token", site.getAccessToken()))
                 .method("POST")
@@ -529,7 +545,8 @@ public class JellyfinApi implements EmbyLikeApi {
                         "Content-Type", "application/json",
                         "reqformat", "json"
                 ))
-                .modelClass(EmbyUserData.class)
+                .typeReference(new TypeReference<EmbyModel.EmbyUserData>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -537,7 +554,7 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyUserData) {
+            if (response != null) {
                 completion.accept(response);
                 return;
             }
@@ -553,7 +570,7 @@ public class JellyfinApi implements EmbyLikeApi {
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
 
-        HTTPModel model = HTTPModel.builder()
+        var model = HTTPModel.<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "Items/" + id + "/Similar")
                 .method("GET")
                 .headers(Map.of("Authorization", authHeaderValue, "X-Emby-Token", site.getAccessToken()))
@@ -562,7 +579,8 @@ public class JellyfinApi implements EmbyLikeApi {
                         "Limit", "16",
                         "UserId", site.getUserId()
                 ))
-                .typeReference(new TypeReference<EmbyPageableModel<EmbyMediaModel>>() {})
+                .typeReference(new TypeReference<EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>>() {
+                })
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -570,11 +588,12 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbyPageableModel<?>) {
+            if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyMediaModel> items = ((EmbyPageableModel<EmbyMediaModel>) response).getItems();
+                List<EmbyModel.EmbyMediaModel> items = response.getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
-                completion.accept(items);
+                var mediaItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
+                completion.accept(mediaItems);
                 return;
             }
             completion.accept(null);
@@ -588,10 +607,10 @@ public class JellyfinApi implements EmbyLikeApi {
                 site.getUser() == null) return;
 
         // /emby/system/info/public
-        HTTPModel model = HTTPModel.builder()
+        val model = HTTPModel.<EmbyModel.EmbySiteInfo>builder()
                 .url(site.getEndpoint().getBaseUrl() + "system/info/public")
                 .method("GET")
-                .modelClass(EmbySiteInfo.class)
+                .typeReference(new TypeReference<EmbyModel.EmbySiteInfo>() {})
                 .build();
 
         HTTPUtil.request(model, response -> {
@@ -599,7 +618,7 @@ public class JellyfinApi implements EmbyLikeApi {
                 completion.accept(null);
                 return;
             }
-            if (response instanceof EmbySiteInfo) {
+            if (response != null) {
                 completion.accept(response);
                 return;
             }

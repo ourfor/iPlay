@@ -6,11 +6,8 @@ import android.content.Context;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams;
 
@@ -24,10 +21,10 @@ import lombok.val;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.DispatchAction;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
+import top.ourfor.app.iplayx.api.emby.EmbyModel;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
 import top.ourfor.app.iplayx.databinding.EpisodePageBinding;
-import top.ourfor.app.iplayx.model.EmbyMediaModel;
-import top.ourfor.app.iplayx.model.EmbyUserData;
+import top.ourfor.app.iplayx.model.MediaModel;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.util.AnimationUtil;
@@ -40,10 +37,10 @@ import top.ourfor.app.iplayx.view.infra.ToolbarAction;
 public class MusicPage implements Page {
     private EpisodePageBinding binding = null;
     private ConstraintLayout contentView = null;
-    private ListView<EmbyMediaModel> episodeList = null;
+    private ListView<MediaModel> episodeList = null;
     private LottieAnimationView activityIndicator = null;
     private ImageView likeIcon = null;
-    private EmbyMediaModel model = null;
+    private MediaModel model = null;
     private String title = null;
     private String id = null;
 
@@ -83,7 +80,7 @@ public class MusicPage implements Page {
     private void updateFavoriteState() {
         val media = model;
         if (media.getUserData() != null) {
-            val isFavorite = media.getUserData().getIsFavorite();
+            val isFavorite = media.getUserData().isFavorite();
             int resId = isFavorite ? R.drawable.favorite_off : R.drawable.favorite_on;
             val toolbar = XGET(Toolbar.class);
             XGET(DispatchAction.class).runOnUiThread(() -> {
@@ -132,13 +129,13 @@ public class MusicPage implements Page {
             if (itemId == R.id.toggle_favorite) {
                 val media = model;
                 val store = XGET(GlobalStore.class);
-                val favorite = media.getUserData().getIsFavorite();
+                val favorite = media.getUserData().isFavorite();
                 store.markFavorite(media.getId(), !favorite, obj -> {
-                    if (!(obj instanceof EmbyUserData)) {
+                    if (!(obj instanceof EmbyModel.EmbyUserData)) {
                         return;
                     }
-                    val userData = (EmbyUserData) obj;
-                    media.setUserData(userData);
+                    val userData = (EmbyModel.EmbyUserData) obj;
+                    media.setUserData(userData.toUserDataModel());
                     updateFavoriteState();
                 });
                 updateFavoriteState();

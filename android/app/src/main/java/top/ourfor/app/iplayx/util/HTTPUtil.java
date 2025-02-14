@@ -7,6 +7,7 @@ import android.util.Base64;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +22,17 @@ import okhttp3.Response;
 import okio.BufferedSink;
 import okio.Okio;
 import top.ourfor.app.iplayx.bean.JSONAdapter;
-import top.ourfor.app.iplayx.module.Bean;
 
 @Slf4j
 public class HTTPUtil {
-    static OkHttpClient client = new OkHttpClient();
-    static OkHttpClient no320Client = new OkHttpClient.Builder().followRedirects(false).build();
+    static OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .build();
+    static OkHttpClient no320Client = new OkHttpClient.Builder()
+            .followRedirects(false)
+            .build();
     static Map<String, String> deviceInfo = Map.of(
         "X-Emby-Client", "iPlay",
         "X-Emby-Device-Name", "Android",
@@ -65,7 +71,7 @@ public class HTTPUtil {
     }
 
 
-    public static void request(HTTPModel model, Consumer<Object> completion) {
+    public static <T> void request(HTTPModel<T> model, Consumer<T> completion) {
         Request.Builder builder = new Request.Builder();
 //        builder.removeHeader("User-Agent");
         builder.addHeader("User-Agent", "iPlay");
@@ -133,26 +139,27 @@ public class HTTPUtil {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public void onResponse(Call call, Response response) throws IOException {
-                if (model.getTypeReference() != null) {
+                if (model.typeReference != null) {
                     String body = response.body().string();
                     val adapter = XGET(JSONAdapter.class);
-                    Object obj = adapter.fromJSON(body, model.getTypeReference());
-                    completion.accept(obj == null ? body : obj);
+                    T obj = adapter.fromJSON(body, model.typeReference);
+                    completion.accept(obj);
                     return;
                 } else if (model.getModelClass() != null) {
                     String body = response.body().string();
                     val adapter = XGET(JSONAdapter.class);
                     val clazz = model.getModelClass();
                     if (clazz == String.class) {
-                        completion.accept(body);
+                        completion.accept((T) body);
                         return;
                     }
                     Object obj = adapter.fromJSON(body, clazz);
-                    completion.accept(obj == null ? body : obj);
+                    completion.accept(obj == null ? null : (T) obj);
                     return;
                 }
-                completion.accept(response);
+                completion.accept((T) response);
             }
         });
     }
