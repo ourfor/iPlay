@@ -2,25 +2,40 @@ package top.ourfor.app.iplayx.page.setting.theme;
 
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import lombok.Getter;
 import lombok.val;
+import top.ourfor.app.iplayx.App;
 import top.ourfor.app.iplayx.R;
 import top.ourfor.app.iplayx.action.LayoutUpdateAction;
 import top.ourfor.app.iplayx.action.NavigationTitleBar;
+import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
+import top.ourfor.app.iplayx.common.model.HomeTabModel;
 import top.ourfor.app.iplayx.common.type.LayoutType;
 import top.ourfor.app.iplayx.config.AppSetting;
 import top.ourfor.app.iplayx.module.FontModule;
 import top.ourfor.app.iplayx.page.Page;
 import top.ourfor.app.iplayx.page.setting.common.OptionModel;
+import top.ourfor.app.iplayx.util.DeviceUtil;
 import top.ourfor.app.iplayx.util.LayoutUtil;
 import top.ourfor.app.iplayx.page.setting.common.SettingModel;
 import top.ourfor.app.iplayx.page.setting.common.SettingType;
@@ -33,6 +48,8 @@ public class ThemePage implements Page {
     private ConstraintLayout contentView = null;
     private List<SettingModel> settingModels = null;
     private ListView<SettingModel> listView = null;
+    private ListView<HomeTabModel> homeTabListView = null;
+    Dialog dialog = null;
 
     @Getter
     Context context;
@@ -90,6 +107,14 @@ public class ThemePage implements Page {
                         .type(SettingType.SELECT)
                         .build(),
                 SettingModel.builder()
+                        .title(getContext().getString(R.string.home_allow_tabs))
+                        .value(getContext().getString(R.string.home_allow_tabs_modify))
+                        .onClick(object -> {
+                            showTabConfigPanel();
+                        })
+                        .type(SettingType.ACTION)
+                        .build(),
+                SettingModel.builder()
                         .title(getContext().getString(R.string.theme_layout_mode))
                         .value(defaultLayoutOption)
                         .options(layoutOptions)
@@ -115,6 +140,112 @@ public class ThemePage implements Page {
                         .type(SettingType.SPINNER)
                         .build()
         );
+    }
+
+    private void showTabConfigPanel() {
+        val allTabs = XGET(Navigator.class).getHomeTabs();
+        if (homeTabListView == null) {
+            homeTabListView = new ListView<>(getContext());
+            homeTabListView.viewModel.viewCell = HomeTabEditViewCell.class;
+            val itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+                @Override
+                public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                    int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                    int swipeFlags = 0;
+                    return makeMovementFlags(dragFlags, swipeFlags);
+                }
+
+                @Override
+                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                    int fromPosition = viewHolder.getAdapterPosition();
+                    int toPosition = target.getAdapterPosition();
+                    if (fromPosition < toPosition) {
+                        for (int i = fromPosition; i < toPosition; i++) {
+                            Collections.swap(homeTabListView.viewModel.items, i, i + 1);
+                        }
+                    } else {
+                        for (int i = fromPosition; i > toPosition; i--) {
+                            Collections.swap(homeTabListView.viewModel.items, i, i - 1);
+                        }
+                    }
+                    homeTabListView.reloadData();
+                    return true;
+                }
+
+                @Override
+                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+                }
+            });
+            itemTouchHelper.attachToRecyclerView(homeTabListView.listView);
+        }
+        val mapTabToString = new HashMap<HomeTabModel, String>();
+        for (val tab : allTabs.entrySet()) {
+            mapTabToString.put(tab.getValue(), tab.getKey());
+        }
+        homeTabListView.viewModel.isSelected = (model) -> {
+            val tab = mapTabToString.get(model);
+            if (tab != null && AppSetting.shared.allowTabs.contains(tab)) {
+                return true;
+            }
+            return false;
+        };
+        var allItems = new ArrayList<>(allTabs.values());
+        var allowItems = new ArrayList<HomeTabModel>();
+        var notAllowItems = new ArrayList<HomeTabModel>();
+        for (val tabKey: AppSetting.shared.allowTabs.split(",")) {
+            val tab = allTabs.get(tabKey);
+            if (tab != null) {
+                allowItems.add(tab);
+            }
+        }
+        for (val tabKey: allTabs.keySet()) {
+            val tab = allTabs.get(tabKey);
+            if (tab != null && !AppSetting.shared.allowTabs.contains(tabKey)) {
+                notAllowItems.add(tab);
+            }
+        }
+        allowItems.addAll(notAllowItems);
+        homeTabListView.setItems(allowItems);
+        homeTabListView.viewModel.onClick = (event) -> {
+            val model = event.getModel();
+            val key = mapTabToString.get(model);
+            var tabs = new ArrayList<>(List.of(AppSetting.shared.allowTabs.split(",")));
+            if (tabs.contains(key)) {
+                tabs.remove(key);
+            } else {
+                tabs.add(key);
+            }
+            AppSetting.shared.allowTabs = String.join(",", tabs);
+            AppSetting.shared.save();
+            homeTabListView.reloadData();
+        };
+        val context = getContext();
+        dialog = new BottomSheetDialog(context, R.style.SiteBottomSheetDialog);
+        dialog.setOnDismissListener(dlg -> {
+            ViewGroup parent = (ViewGroup) homeTabListView.getParent();
+            if (parent != null) {
+                parent.removeView(homeTabListView);
+            }
+            var orderedTabs = new ArrayList<String>();
+            for (val item : homeTabListView.viewModel.items) {
+                val key = mapTabToString.get(item);
+                if (AppSetting.shared.allowTabs.contains(key)) {
+                    orderedTabs.add(key);
+                }
+            }
+            AppSetting.shared.allowTabs = String.join(",", orderedTabs);
+            AppSetting.shared.save();
+        });
+        val parent = (ViewGroup)homeTabListView.getParent();
+        if (parent != null) {
+            parent.removeView(homeTabListView);
+        }
+        dialog.setContentView(homeTabListView);
+        BottomSheetBehavior behavior = BottomSheetBehavior.from((View) homeTabListView.getParent());
+        val height = (int) (DeviceUtil.screenSize(context).getHeight() * 0.6);
+        behavior.setPeekHeight(height);
+        dialog.show();
     }
 
     public void setup() {

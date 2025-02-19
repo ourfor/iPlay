@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import lombok.AllArgsConstructor;
@@ -52,6 +53,7 @@ public class AppSetting {
     public String fontFamily;
     public String webHomePage;
     public boolean exitAfterCrash;
+    public String allowTabs;
 
     static AppSetting getShared() {
         var instance = XGET(KVStorage.class).getObject(settingCacheKey, AppSetting.class);
@@ -73,7 +75,15 @@ public class AppSetting {
                 instance.playerKernel = PlayerKernelType.EXO;
             }
         }
+        if (instance.allowTabs == null || instance.allowTabs.isEmpty()) {
+            instance.allowTabs = String.join(",", instance.getDefaultTabs());
+        }
         return instance;
+    }
+
+    @JsonIgnore
+    public List<String> getDefaultTabs() {
+        return List.of("search", "star", "home", "file", "setting");
     }
 
     @JsonIgnore
