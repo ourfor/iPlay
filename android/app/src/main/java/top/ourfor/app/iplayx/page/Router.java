@@ -263,7 +263,7 @@ public class Router implements Navigator {
                 XGET(NavigationTitleBar.class).setNavTitle(title);
             }
         }
-        if (this.canGoBack()) {
+        if (page == PageType.SETTING && this.canGoBack()) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.show();
             bottomNavigation.setVisibility(View.GONE);
