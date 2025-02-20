@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:paddingHorizontal="5dp"
-    android:paddingVertical="2.5dp">
+    android:paddingVertical="12dp">
 
     <ImageView
         android:id="@+id/indicator"
