@@ -430,7 +430,7 @@ public class EmbyApi implements EmbyLikeApi {
             }
             if (response != null) {
                 String baseUrl = site.getEndpoint().getBaseUrl();
-                List<EmbyModel.EmbyMediaModel> items = ((EmbyModel.EmbyPageableModel<EmbyModel.EmbyMediaModel>) response).getItems();
+                List<EmbyModel.EmbyMediaModel> items = response.getItems();
                 items.forEach(item -> item.buildImage(baseUrl));
                 var mediaItems = items.stream().map(EmbyModel.EmbyMediaModel::toMediaModel).collect(Collectors.toList());
                 completion.accept(mediaItems);

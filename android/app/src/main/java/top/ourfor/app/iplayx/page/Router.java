@@ -3,17 +3,17 @@ package top.ourfor.app.iplayx.page;
 import static top.ourfor.app.iplayx.module.Bean.XGET;
 import static top.ourfor.app.iplayx.page.PageMaker.makePage;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.Interpolator;
 
 import androidx.appcompat.app.ActionBar;
 
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.IOException;
@@ -29,6 +29,8 @@ import top.ourfor.app.iplayx.action.NavigationTitleBar;
 import top.ourfor.app.iplayx.bean.Navigator;
 import top.ourfor.app.iplayx.bean.PageLifecycle;
 import top.ourfor.app.iplayx.common.annotation.ViewController;
+import top.ourfor.app.iplayx.common.model.HomeTabModel;
+import top.ourfor.app.iplayx.config.AppSetting;
 import top.ourfor.app.iplayx.store.GlobalStore;
 import top.ourfor.app.iplayx.util.AnnotationUtil;
 import top.ourfor.app.iplayx.util.LayoutUtil;
@@ -79,6 +81,43 @@ public class Router implements Navigator {
             navigate(item.getItemId());
             return true;
         });
+        var allowTabStr = AppSetting.shared.getAllowTabs();
+        val tabMap = getHomeTabs();
+        val allTabs = AppSetting.shared.getDefaultTabs();
+        if (allowTabStr == null || allowTabStr.isEmpty()) {
+            allowTabStr = String.join(",", allTabs);
+        }
+        val allowTabs = allowTabStr.split(",");
+        val menu = bottomNavigation.getMenu();
+        if (allTabs.equals(allowTabs)) return;
+        for (val tab : allTabs) {
+            val homeTabModel = tabMap.get(tab);
+            menu.removeItem(homeTabModel.getId());
+        }
+        for (val tab : allowTabs) {
+            val homeTabModel = tabMap.get(tab);
+            menu.add(0, homeTabModel.getId(), 0, homeTabModel.getTitle()).setIcon(homeTabModel.getIcon());
+        }
+        @SuppressLint("RestrictedApi")
+        val menuView = (BottomNavigationMenuView)bottomNavigation.getChildAt(0);
+        val childCount = menuView.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            menuView.getChildAt(i).setOnLongClickListener(v -> {
+                XGET(Navigator.class).pushPage(R.id.settingPage, null);
+                return true;
+            });
+        }
+    }
+
+    @Override
+    public Map<String, HomeTabModel> getHomeTabs() {
+        return Map.of(
+                "search", new HomeTabModel(R.id.searchPage, R.string.menu_search, R.drawable.search_icon),
+                "star", new HomeTabModel(R.id.starPage, R.string.menu_star, R.drawable.star_icon),
+                "home", new HomeTabModel(R.id.homePage, R.string.menu_home, R.drawable.home_icon),
+                "file", new HomeTabModel(R.id.filePage, R.string.menu_file, R.drawable.doc_icon),
+                "setting", new HomeTabModel(R.id.settingPage, R.string.menu_setting, R.drawable.setting_icon)
+        );
     }
 
     public void scanPage() {
@@ -223,6 +262,12 @@ public class Router implements Navigator {
             } else {
                 XGET(NavigationTitleBar.class).setNavTitle(title);
             }
+        }
+        if (page == PageType.SETTING && this.canGoBack()) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.show();
+            bottomNavigation.setVisibility(View.GONE);
+            return;
         }
         switch (page) {
             case HOME, SEARCH, SETTING, STAR, FILE ->  {

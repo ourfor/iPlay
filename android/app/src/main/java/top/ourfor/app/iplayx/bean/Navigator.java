@@ -2,6 +2,7 @@ package top.ourfor.app.iplayx.bean;
 
 import java.util.Map;
 
+import top.ourfor.app.iplayx.common.model.HomeTabModel;
 import top.ourfor.app.iplayx.page.Page;
 
 public interface Navigator {
@@ -22,5 +23,9 @@ public interface Navigator {
 
     default int getCurrentPageId() {
         return 0;
+    }
+
+    default Map<String, HomeTabModel> getHomeTabs() {
+        return null;
     }
 }

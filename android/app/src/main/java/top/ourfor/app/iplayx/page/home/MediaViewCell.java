@@ -63,8 +63,8 @@ public class MediaViewCell extends ConstraintLayout implements UpdateModelAction
             nameLabel.setText(media.getName());
             String imageUrl;
             if (layoutType == MediaLayoutType.Backdrop || layoutType == MediaLayoutType.EpisodeDetail) {
-                if (((MediaModel) model).isEpisode()) imageUrl = media.getImage().getPrimary();
-                else imageUrl = media.getImage().getThumb();
+                if (media.isEpisode()) imageUrl = media.getImage().getPrimary();
+                else imageUrl = media.getImage().getBackdrop();
             } else {
                 imageUrl = media.getImage().getPrimary();
             }
