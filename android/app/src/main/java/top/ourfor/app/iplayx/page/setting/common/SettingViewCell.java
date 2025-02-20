@@ -95,6 +95,12 @@ public class SettingViewCell extends ConstraintLayout implements UpdateModelActi
                 binding.nameLabel.setText(model.title);
                 setupSpinner();
                 break;
+            case ACTION:
+                binding.settingSwitch.setVisibility(GONE);
+                binding.settingButton.setVisibility(VISIBLE);
+                binding.nameLabel.setText(model.title);
+                setupAction();
+                break;
             default:
                 binding.settingSwitch.setVisibility(GONE);
                 binding.settingButton.setVisibility(GONE);
@@ -160,6 +166,15 @@ public class SettingViewCell extends ConstraintLayout implements UpdateModelActi
         binding.settingSwitch.setOnCheckedChangeListener((button, flag) -> {
             if (model.onClick == null) return;
             model.onClick.accept(flag);
+        });
+    }
+
+    void setupAction() {
+        binding.settingButton.setVisibility(VISIBLE);
+        binding.settingButton.setText(model.value.toString());
+        binding.settingButton.setOnClickListener(v -> {
+            if (model.onClick == null) return;
+            model.onClick.accept(null);
         });
     }
 

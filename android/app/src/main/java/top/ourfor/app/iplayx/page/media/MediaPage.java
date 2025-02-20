@@ -240,7 +240,7 @@ public class MediaPage implements Page {
 
         showActorList();
 
-        var isPlayable = model instanceof EmbyModel.EmbyMediaModel media && (media.isEpisode() || media.isMovie());
+        var isPlayable = model instanceof MediaModel media && (media.isEpisode() || media.isMovie());
         binding.playerConfig.setVisibility(isPlayable ? View.VISIBLE : View.GONE);
         binding.playerConfig.setOnClickListener(v -> {
             showPlayConfigPanel();
