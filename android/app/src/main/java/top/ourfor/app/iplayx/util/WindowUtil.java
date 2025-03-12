@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -100,7 +101,9 @@ public class WindowUtil {
         window.getDecorView().setPadding(0, 0, 0, 0);
         WindowManager.LayoutParams layoutParams = window.getAttributes();
         layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+        layoutParams.height = DeviceUtil.height;
+        layoutParams.gravity = Gravity.START | Gravity.TOP;
+        layoutParams.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             WindowManager.LayoutParams lp = window.getAttributes();
