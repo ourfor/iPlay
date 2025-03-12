@@ -89,6 +89,7 @@ public class AlistApi {
                             .path(parentPath + file.getName())
                             .type(file.isDir() ? FileType.DIRECTORY : FileType.FILE)
                             .size(file.getSize())
+                            .extra(file.sign)
                             .build()).collect(Collectors.toList());
                     completion.accept(files);
                 } else {
