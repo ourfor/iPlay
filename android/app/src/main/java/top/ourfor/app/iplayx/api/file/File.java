@@ -18,4 +18,5 @@ public class File {
     Long size;
 
     Object extra;
+    Object ref;
 }

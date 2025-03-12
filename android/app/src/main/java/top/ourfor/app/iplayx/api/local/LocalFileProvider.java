@@ -46,7 +46,7 @@ public class LocalFileProvider implements FileProvider {
                     .path(item.getAbsolutePath())
                     .build()).collect(Collectors.toList());
             if (hasParent) {
-                items.add(0, new File("..", baseDir.getParentFile().getAbsolutePath(), FileType.LINK, 0L, null));
+                items.add(0, new File("..", baseDir.getParentFile().getAbsolutePath(), FileType.LINK, 0L, null, null));
             }
             completion.accept(items);
         }

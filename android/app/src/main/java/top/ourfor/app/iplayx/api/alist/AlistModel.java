@@ -33,6 +33,8 @@ public class AlistModel {
         @JsonAlias("is_dir")
         boolean isDir;
         long size;
+        String sign;
+        String thumb;
     }
 
     @Data
