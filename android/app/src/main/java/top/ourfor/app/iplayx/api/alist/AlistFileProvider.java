@@ -1,11 +1,14 @@
 package top.ourfor.app.iplayx.api.alist;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.function.Consumer;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.val;
 import top.ourfor.app.iplayx.api.file.File;
 import top.ourfor.app.iplayx.api.file.FileProvider;
 import top.ourfor.app.iplayx.api.file.FileType;
@@ -49,6 +52,10 @@ public class AlistFileProvider implements FileProvider {
         var path = file.getPath();
         String server = api.drive.getServer();
         server = server.endsWith("/") ? server : server + "/";
-        completion.accept(server + "d" + path);
+        var url = server + "d" + path;
+        if (file.getExtra() instanceof String sign && !sign.isEmpty()) {
+            url += "?sign=" + sign;
+        }
+        completion.accept(url);
     }
 }

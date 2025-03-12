@@ -186,8 +186,8 @@ public class FilePage implements DriveUpdateAction, ThemeUpdateAction, Page {
         if (dialog != null) dialog.dismiss();
         if (drive != null) {
             val path = "/";
-            viewModel.getPath().setValue(path);
-            viewModel.getFileProvider().setValue(FileProviderFactory.create(drive));
+            viewModel.getPath().postValue(path);
+            viewModel.getFileProvider().postValue(FileProviderFactory.create(drive));
             viewModel.listFiles(path);
         }
     }

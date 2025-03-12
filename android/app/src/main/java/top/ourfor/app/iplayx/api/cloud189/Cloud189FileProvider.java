@@ -32,16 +32,16 @@ public class Cloud189FileProvider implements FileProvider {
                 completion.accept(List.of());
                 return;
             }
-            val folders = response.fileListAO.folderList.stream().map(item -> new File(item.name, item.path, FileType.DIRECTORY, item.size, item)).collect(Collectors.toList());
+            val folders = response.fileListAO.folderList.stream().map(item -> new File(item.name, item.path, FileType.DIRECTORY, item.size, item, null)).collect(Collectors.toList());
             if (!path.equals("/")) {
                 var parentPath = path.substring(0, path.lastIndexOf('/'));
                 if (parentPath.isEmpty()) {
                     parentPath = "/";
                 }
-                val parent = new File("..", parentPath, FileType.LINK, null, null);
+                val parent = new File("..", parentPath, FileType.LINK, null, null, null);
                 folders.add(0, parent);
             }
-            val files = response.fileListAO.fileList.stream().map(item -> new File(item.name, item.path, FileType.FILE, item.size, item)).collect(Collectors.toList());
+            val files = response.fileListAO.fileList.stream().map(item -> new File(item.name, item.path, FileType.FILE, item.size, item, null)).collect(Collectors.toList());
             folders.addAll(files);
             completion.accept(folders);
         });
