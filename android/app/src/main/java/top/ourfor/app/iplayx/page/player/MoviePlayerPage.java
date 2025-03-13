@@ -7,16 +7,12 @@ import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -80,23 +76,6 @@ public class MoviePlayerPage implements Page {
     Map<String, Object> params;
 
     Queue<MediaModel> playlist;
-
-
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        XGET(ActionBar.class).hide();
-        val args = params;
-        id = (String) args.getOrDefault("id", null);
-        url = (String) args.getOrDefault("url", null);
-        title = (String) args.getOrDefault("title", null);
-        source = (PlayerConfigPanelViewModel.MediaSourceModel) args.getOrDefault("source", null);
-        setupUI(getContext());
-        bind();
-        WindowUtil.enterFullscreen();
-    }
-
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return contentView;
-    }
 
     @SneakyThrows
     void setupUI(Context context) {
@@ -415,8 +394,15 @@ public class MoviePlayerPage implements Page {
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
         this.params = (Map<String, Object>)params;
-        onCreate(null);
-        onCreateView(LayoutInflater.from(context), null, null);
+        XGET(ActionBar.class).hide();
+        val args = params;
+        id = (String) args.getOrDefault("id", null);
+        url = (String) args.getOrDefault("url", null);
+        title = (String) args.getOrDefault("title", null);
+        source = (PlayerConfigPanelViewModel.MediaSourceModel) args.getOrDefault("source", null);
+        setupUI(getContext());
+        bind();
+        WindowUtil.enterFullscreen();
     }
 
     @Override
