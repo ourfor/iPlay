@@ -44,6 +44,7 @@ It is developed in my free time ⏰
 <td> Windows </td>
 <td> MacOS/iOS/tvOS </td>
 <td> Android </td>
+<td> Harmony </td>
 </tr>
 <tr>
 <td>
@@ -65,6 +66,9 @@ It is developed in my free time ⏰
 <a href="https://www.amazon.com/gp/product/B0DB2KL58G">
    <img width="130" style="border-radius: 5px;object-fit:fill;" src="./doc/image/amazon_appstore.png">
 </a>
+</td>
+<td>
+Coming soon
 </td>
 </tr>
 </table>
