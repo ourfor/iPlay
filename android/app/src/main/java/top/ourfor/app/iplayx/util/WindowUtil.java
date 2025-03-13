@@ -97,17 +97,16 @@ public class WindowUtil {
         val activity = XGET(Activity.class);
         Window window = activity.getWindow();
         if (window == null) return;
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         window.getDecorView().setPadding(0, 0, 0, 0);
         WindowManager.LayoutParams layoutParams = window.getAttributes();
         layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-        layoutParams.height = DeviceUtil.height;
-        layoutParams.gravity = Gravity.START | Gravity.TOP;
-        layoutParams.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             WindowManager.LayoutParams lp = window.getAttributes();
-            lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+            lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
             window.setAttributes(lp);
             final View decorView = window.getDecorView();
@@ -121,7 +120,6 @@ public class WindowUtil {
         }
 
         window.setAttributes(layoutParams);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
         // update bottomBar layout
