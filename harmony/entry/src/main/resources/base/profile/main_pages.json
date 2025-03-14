@@ -2,6 +2,7 @@
   "src": [
     "pages/HomePage",
     "pages/MediaPage",
-    "pages/AlbumPage"
+    "pages/AlbumPage",
+    "pages/LoginPage"
   ]
 }

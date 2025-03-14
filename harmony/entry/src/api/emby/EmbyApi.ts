@@ -17,7 +17,7 @@ export class EmbyApi implements iPlayDataSourceApi {
     "X-Emby-Client-Version": "0.0.1",
   }
 
-  async login(site: SiteModel): Promise<object> {
+  async login(site: SiteModel): Promise<SiteModel> {
     let response = await this.client.request({
       url: `${site.server}/emby/Users/authenticatebyname`,
       method: "post",

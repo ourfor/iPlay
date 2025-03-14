@@ -43,7 +43,7 @@ export interface ActorModel {
 }
 
 export interface iPlayDataSourceApi {
-  login(site: SiteModel): Promise<object>
+  login(site: SiteModel): Promise<SiteModel>
   getAllAlbums(): Promise<AlbumModel[]>
   getAlbumLatestMedias(id: string): Promise<MediaModel[]>
 }

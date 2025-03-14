@@ -13,7 +13,7 @@ struct AlbumPage {
 
   build() {
     Column() {
-      Image(this.media?.image?.backdrop)
+      Image(this.media?.image?.backdrop ?? "")
         .width("100%")
         .aspectRatio(16/9)
       Row() {
