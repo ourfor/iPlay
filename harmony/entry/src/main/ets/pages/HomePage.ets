@@ -1,6 +1,9 @@
 import { EmbyApi } from "../../../api/emby/EmbyApi"
 import { SiteModel, MediaModel } from "../../../api/iPlayDataSource"
-import { AlbumMediaList, AlbumMediasModel } from "./AlbumMediaList"
+import { kv } from "../../../module/KVStorage"
+import { router } from "../../../module/Router"
+import { store } from "../store/Store"
+import { AlbumMediaList, AlbumMediasModel } from "../view/AlbumMediaList"
 
 @Entry
 @Component
@@ -55,17 +58,25 @@ struct Index {
     })
   }
 
-  async fetchData() {
-    // local emby server for test
-    let site: SiteModel = {
-      id: null,
-      server: "http://10.10.10.3:8096",
-      username: "guest",
-      password: "123abc$$",
-      extra: undefined
+  onPageShow(): void {
+    store.load()
+    if (!store.site) {
+      router.pushPage("pages/LoginPage", {})
+      return
     }
 
-    let api = new EmbyApi()
+    new Promise<void>(async () => {
+      this.albums = await this.fetchData()
+    })
+  }
+
+  async fetchData() {
+    // local emby server for test
+    let api = store.api
+    let site = store.site
+    if (api == null || site == null) {
+      return []
+    }
     await api.login(site);
     let albums = await api.getAllAlbums()
     albums.forEach(album => console.info("album: " + album.title + album.image?.primary))
@@ -76,13 +87,16 @@ struct Index {
         id: item.id,
         title: item.title,
         image: item.image,
-        type: "album"
+        type: "album",
+        tags: null,
+        overview: null,
+        actors: null
       }
       return media
     })
 
     let albumMedias = await Promise.all(albums.map(async album => {
-      let medias = await api.getAlbumLatestMedias(album.id)
+      let medias = await api!.getAlbumLatestMedias(album.id)
       let model = new AlbumMediasModel()
       model.id = album.id ?? ""
       model.title = album.title ?? ""

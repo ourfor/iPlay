@@ -15,6 +15,10 @@
     {
       "name": "album_view_more",
       "value": "查看更多"
+    },
+    {
+      "name": "media_actor_list",
+      "value": "演职人员"
     }
   ]
 }

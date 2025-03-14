@@ -1,4 +1,6 @@
 import { MediaModel, nil } from "../../../api/iPlayDataSource";
+import { logger } from "../../../module/Log";
+import { router } from "../../../module/Router";
 
 
 @Component
@@ -12,7 +14,7 @@ export struct MediaCellView {
 
   build() {
     Column() {
-        Image(this.model?.image?.primary)
+        Image(this.model?.image?.primary ?? "")
           .width(this.model?.type == "album" ? 120 : 100)
           .aspectRatio(this.model?.type == "album" ? 16/9 : 2/3)
           .margin(5)
@@ -26,7 +28,10 @@ export struct MediaCellView {
           .width(100)
     }
     .onClick(() => {
-      console.log(this.model?.title);
+      logger.info(this.model?.title);
+      router.pushPage("pages/MediaPage", {
+        media: this.model
+      })
     })
   }
 }

@@ -1,17 +1,18 @@
 export type nil = null|undefined
 
-export interface SiteModel {
-  id: string|null|undefined
-  server: string|null|undefined
-  username: string|null|undefined
-  password: string|null|undefined
-  extra: string|null|undefined
+export interface SiteUserModel {
+  id: string|nil
+  username: string|nil
+  password: string|nil
+  accessToken: string|nil
 }
 
-export interface SiteUserModel {
-  id: string|null|undefined
-  username: string|null|undefined
-  accessToken: string|null|undefined
+export interface SiteModel {
+  id: string|nil
+  type: string|nil
+  server: string|nil
+  user: SiteUserModel|nil
+  extra: string|null|undefined
 }
 
 export interface ImageModel {
@@ -31,10 +32,31 @@ export interface MediaModel {
   title: string|nil;
   image: ImageModel|nil;
   type: string|nil;
+  overview: string|nil;
+  tags: string[]|nil;
+  actors: ActorModel[]|nil
+}
+
+export interface ActorModel {
+  id: string|null;
+  name: string|null;
+  avatar: string|null;
+}
+
+export interface MediaSourceModel {
+  name: string|nil;
+  type: string|nil;
+  url: string|nil;
+}
+
+export interface PlaybackModel {
+  id: string|nil;
+  sources: MediaSourceModel[]|nil
 }
 
 export interface iPlayDataSourceApi {
-  login(site: SiteModel): Promise<object>
+  login(site: SiteModel): Promise<SiteModel>
   getAllAlbums(): Promise<AlbumModel[]>
   getAlbumLatestMedias(id: string): Promise<MediaModel[]>
+  getPlayback(id: string): Promise<PlaybackModel>
 }
