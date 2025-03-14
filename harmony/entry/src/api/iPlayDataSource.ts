@@ -31,6 +31,15 @@ export interface MediaModel {
   title: string|nil;
   image: ImageModel|nil;
   type: string|nil;
+  overview: string|nil;
+  tags: string[]|nil;
+  actors: ActorModel[]|nil
+}
+
+export interface ActorModel {
+  id: string|null;
+  name: string|null;
+  avatar: string|null;
 }
 
 export interface iPlayDataSourceApi {

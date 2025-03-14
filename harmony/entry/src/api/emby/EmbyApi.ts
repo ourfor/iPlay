@@ -77,8 +77,7 @@ export class EmbyApi implements iPlayDataSourceApi {
     }) as EmbyMediaModel[]
     let medias = response
     return medias.map(media => {
-      let model = MediaModelToModel(media)
-      model.image = MediaModelImageBuild(media, this.site?.server)
+      let model = MediaModelToModel(media, this.site?.server)
       return model
     });
   }

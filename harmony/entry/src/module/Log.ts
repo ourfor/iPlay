@@ -23,4 +23,4 @@ export class ConsoleLogger implements Logger {
     }
 }
 
-export const logger = new ConsoleLogger()
+export const logger: Logger = new ConsoleLogger()

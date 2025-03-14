@@ -1,6 +1,6 @@
 import { EmbyApi } from "../../../api/emby/EmbyApi"
 import { SiteModel, MediaModel } from "../../../api/iPlayDataSource"
-import { AlbumMediaList, AlbumMediasModel } from "./AlbumMediaList"
+import { AlbumMediaList, AlbumMediasModel } from "../view/AlbumMediaList"
 
 @Entry
 @Component
@@ -55,6 +55,12 @@ struct Index {
     })
   }
 
+  onPageShow(): void {
+    new Promise<void>(async () => {
+      this.albums = await this.fetchData()
+    })
+  }
+
   async fetchData() {
     // local emby server for test
     let site: SiteModel = {
@@ -76,7 +82,10 @@ struct Index {
         id: item.id,
         title: item.title,
         image: item.image,
-        type: "album"
+        type: "album",
+        tags: null,
+        overview: null,
+        actors: null
       }
       return media
     })

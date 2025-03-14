@@ -1,4 +1,5 @@
-import { ImageModel, AlbumModel as StdAlbumModel, MediaModel as StdMediaModel, nil } from "../iPlayDataSource";
+import { ImageModel, AlbumModel as StdAlbumModel, MediaModel as StdMediaModel, nil,
+    ActorModel } from "../iPlayDataSource";
 
 export class Response<T> {
     TotalRecordCount: number;
@@ -8,6 +9,13 @@ export class Response<T> {
 export class AlbumModel {
     Id: string;
     Name: string;
+}
+
+export interface People {
+    Name: string;
+    Id: string;
+    Role: string;
+    Type: string;
 }
 
 export function AlbumModelImageBuild(self: AlbumModel, endpoint: string) {
@@ -36,18 +44,32 @@ export function AlbumModelToModel(self: AlbumModel) {
     } as StdAlbumModel
 }
 
-export function MediaModelToModel(self: MediaModel) {
+export function MediaModelToModel(self: MediaModel, endpoint: string) {
     return {
         id: self.Id,
         type: self.Type,
         title: self.Name,
-        image: undefined
+        tags: self.Genres ?? [],
+        overview: self.Overview,
+        image: MediaModelImageBuild(self, endpoint),
+        actors: self.People?.map(people => PeopleModelToModel(people, endpoint)) ?? []
     } as StdMediaModel
+}
+
+export function PeopleModelToModel(self: People, endpoint: string) {
+    return {
+        id: self.Id,
+        name: self.Name,
+        avatar: `${endpoint}/emby/Items/${self.Id}/Images/Primary`,
+    } as ActorModel
 }
 
 export class MediaModel {
     Id: string;
     Name: string;
     Image: ImageModel|nil
+    Overview: string|nil
+    Genres: string[]|nil
     Type: string|nil
+    People: People[]|nil
 }
