@@ -1,13 +1,9 @@
-export class MediaModel {
-  id: string = ""
-  type: string = ""
-  title: string = "Media Title";
-  image: string = "https://drive.ourfor.top/od_kiss/Primary.jpeg";
-}
+import { MediaModel, nil } from "../../../api/iPlayDataSource";
+
 
 @Component
 export struct MediaCellView {
-  @Prop model: MediaModel|null = new MediaModel()
+  @Prop model: MediaModel|nil;
 
   public constructor(model: MediaModel|null) {
     super();
@@ -16,14 +12,18 @@ export struct MediaCellView {
 
   build() {
     Column() {
-        Image(this.model?.image)
-          .width(this.model?.type == "album" ? 120 : 90)
-          .aspectRatio(this.model?.type == "media" ? 3/4 : 16/9)
+        Image(this.model?.image?.primary)
+          .width(this.model?.type == "album" ? 120 : 100)
+          .aspectRatio(this.model?.type == "album" ? 16/9 : 2/3)
           .margin(5)
-          .borderRadius(5)
+          .borderRadius(10)
         Text(this.model?.title)
-          .fontSize(16)
+          .fontSize(15)
           .fontWeight(FontWeight.Normal)
+          .lineBreakStrategy(LineBreakStrategy.HIGH_QUALITY)
+          .textAlign(TextAlign.Center)
+          .maxLines(1)
+          .width(100)
     }
     .onClick(() => {
       console.log(this.model?.title);
