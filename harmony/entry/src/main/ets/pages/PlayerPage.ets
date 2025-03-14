@@ -1,23 +1,29 @@
 import video from '@ohos.multimedia.media';
 import window from '@ohos.window';
 import { BusinessError } from '@ohos.base';
+import { Dict, router } from '../../../module/Router';
+import { PlaybackModel } from '../../../api/iPlayDataSource';
 
 @Entry
 @Component
 struct FullscreenVideoPlayer {
   private controller: VideoController = new VideoController();
+  @State params: Dict = router.params()
   @State isPlaying: boolean = false;
   @State currentTime: number = 0;
   @State duration: number = 0;
   @State isFullScreen: boolean = false;
 
-  // 视频源配置
-  private videoSrc: string = 'https://test/breaking-bad.mp4';
+  private videoSrc: string = '';
 
   // 获取窗口对象
   private windowClass: window.Window | null = null;
 
   aboutToAppear() {
+    let playback = this.params["playback"] as PlaybackModel
+    if (playback != undefined) {
+      this.videoSrc = playback.sources?.[0].url ?? ""
+    }
     window.getLastWindow(this.getUIContext().getHostContext()).then((win: window.Window) => {
       this.windowClass = win;
     });

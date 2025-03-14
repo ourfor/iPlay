@@ -1,5 +1,6 @@
 import { ActorModel, MediaModel, nil } from '../../../api/iPlayDataSource'
 import { Dict, router } from '../../../module/Router'
+import { store } from '../store/Store'
 import { ActorCellView } from '../view/ActorCellView'
 
 @Entry
@@ -18,7 +19,11 @@ struct MediaPage {
         .width("100%")
         .aspectRatio(16/9)
         .onClick(() => {
-          router.pushPage("pages/PlayerPage", {})
+          store.api?.getPlayback(this.media?.id ?? "").then(playback => {
+              router.pushPage("pages/PlayerPage", {
+                "playback": playback
+              })
+          })
         })
       Row() {
         List({ space: 5, initialIndex: 0 }) {

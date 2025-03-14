@@ -43,8 +43,20 @@ export interface ActorModel {
   avatar: string|null;
 }
 
+export interface MediaSourceModel {
+  name: string|nil;
+  type: string|nil;
+  url: string|nil;
+}
+
+export interface PlaybackModel {
+  id: string|nil;
+  sources: MediaSourceModel[]|nil
+}
+
 export interface iPlayDataSourceApi {
   login(site: SiteModel): Promise<SiteModel>
   getAllAlbums(): Promise<AlbumModel[]>
   getAlbumLatestMedias(id: string): Promise<MediaModel[]>
+  getPlayback(id: string): Promise<PlaybackModel>
 }

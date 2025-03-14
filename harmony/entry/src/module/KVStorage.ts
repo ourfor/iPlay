@@ -9,7 +9,7 @@ export interface KVStorage {
 }
 
 export class SimpleKVStorage implements KVStorage {
-  real: KVStorage|nil
+  real: KVStorage|nil = null
 
   get<T>(key: string): T | nil {
     return this.real?.get(key)

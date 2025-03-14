@@ -64,6 +64,25 @@ export function PeopleModelToModel(self: People, endpoint: string) {
     } as ActorModel
 }
 
+export interface EmbyMediaStream {
+    DeliveryUrl: string
+}
+
+export interface EmbyMediaSource {
+    Id: string;
+    Container: string;
+    Name: string;
+    Path: string;
+    DirectStreamUrl: string;
+    TranscodingUrl: string;
+    MediaStreams: EmbyMediaStream[]
+}
+
+export interface EmbyPlaybackModel {
+    PlaySessionId: string;
+    MediaSources: EmbyMediaSource[];
+}
+
 export class MediaModel {
     Id: string;
     Name: string;
