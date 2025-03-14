@@ -1,3 +1,5 @@
+import { EmbyApi } from "../../../api/emby/EmbyApi"
+import { SiteModel } from "../../../api/iPlayDataSource"
 import { AlbumMediaList, AlbumMediasModel } from "./AlbumMediaList"
 import { MediaModel } from "./MediaCellView"
 
@@ -52,6 +54,18 @@ struct Index {
   }
 
   fetchData() {
+    let site: SiteModel = {
+      id: null,
+      server: "http://10.10.10.3:8096",
+      username: "guest",
+      password: "123abc$$"
+    }
+
+    let api = new EmbyApi()
+    api.login(site).then(user => {
+      console.log(`user: ${user}`);
+    })
+
     let albums = ["A", "B", "C", "D", "E", "F"];
     let album = new AlbumMediasModel();
     album.type = "albums"
