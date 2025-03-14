@@ -1,6 +1,4 @@
-// @ts-nocheck
-import { rcp } from '@kit.RemoteCommunicationKit';
-import { BusinessError } from '@kit.BasicServicesKit';
+import axios from '@ohos/axios'
 
 export interface HttpModel {
     url: string|undefined
@@ -11,22 +9,23 @@ export interface HttpModel {
 }
 
 export class HttpClient {
-  session = rcp.createSession();
 
   get(url: string) {
-    return this.session.get(url)
+    return
   }
 
   post(url: string) {
-    return this.session.post(url)
+    return
   }
 
   async request(model: HttpModel) {
-    let request = new rcp.Request(model.url)
-    request.method = model.method
-    request.headers = model.headers
-    let response = await this.session.fetch(request)
-    let obj = response.toJSON()
-    return obj
+    let response = await axios.request({
+      url: model.url,
+      headers: model.headers,
+      method: model.method,
+      params: model.query,
+      data: model.body
+    })
+    return response.data
   }
 }

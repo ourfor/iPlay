@@ -1,4 +1,5 @@
-import { MediaCellView, MediaModel } from "./MediaCellView"
+import { MediaModel } from "../../../api/iPlayDataSource"
+import { MediaCellView } from "./MediaCellView"
 
 
 export class AlbumMediasModel {
@@ -23,10 +24,11 @@ export struct AlbumMediaList {
           .fontWeight(FontWeight.Bold)
           .flexGrow(1)
           .margin({top: 5, left: 15, bottom: 10})
-        Text("view more")
+        Text($r("app.string.album_view_more"))
           .fontWeight(16)
           .textAlign(TextAlign.End)
           .fontWeight(FontWeight.Normal)
+          .fontColor($r("app.color.home_album_view_more"))
           .margin({top: 5, right: 8, bottom: 10})
       }
       .height(this.model.type == "albums" ? 0 : "auto")
@@ -65,7 +67,7 @@ export struct AlbumMediaList {
       .width('100%')
     }
     .width('100%')
-    .height(this.model.type == "albums" ? 100 : 180)
+    .height(this.model.type == "albums" ? 100 : 210)
     .padding({ top: 0 })
   }
 

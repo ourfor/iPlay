@@ -6,11 +6,15 @@
     },
     {
       "name": "EntryAbility_desc",
-      "value": "description"
+      "value": "A cross-platform media player"
     },
     {
       "name": "EntryAbility_label",
-      "value": "label"
+      "value": "iPlay"
+    },
+    {
+      "name": "album_view_more",
+      "value": "查看更多"
     }
   ]
 }

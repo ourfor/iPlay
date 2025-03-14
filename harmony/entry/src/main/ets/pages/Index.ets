@@ -1,12 +1,11 @@
 import { EmbyApi } from "../../../api/emby/EmbyApi"
-import { SiteModel } from "../../../api/iPlayDataSource"
+import { SiteModel, MediaModel } from "../../../api/iPlayDataSource"
 import { AlbumMediaList, AlbumMediasModel } from "./AlbumMediaList"
-import { MediaModel } from "./MediaCellView"
 
 @Entry
 @Component
 struct Index {
-  @State albums: AlbumMediasModel[] = this.fetchData()
+  @State albums: AlbumMediasModel[] = []
 
   constructor() {
     super()
@@ -51,48 +50,47 @@ struct Index {
     .width('100%')
     .height("100%")
     .padding({ top: 5 })
+    .onAppear(async () => {
+      this.albums = await this.fetchData()
+    })
   }
 
-  fetchData() {
+  async fetchData() {
+    // local emby server for test
     let site: SiteModel = {
       id: null,
       server: "http://10.10.10.3:8096",
       username: "guest",
-      password: "123abc$$"
+      password: "123abc$$",
+      extra: undefined
     }
 
     let api = new EmbyApi()
-    api.login(site).then(user => {
-      console.log(`user: ${user}`);
-    })
-
-    let albums = ["A", "B", "C", "D", "E", "F"];
+    await api.login(site);
+    let albums = await api.getAllAlbums()
+    albums.forEach(album => console.info("album: " + album.title + album.image?.primary))
     let album = new AlbumMediasModel();
     album.type = "albums"
     album.medias = albums.map(item => {
-      let media = new MediaModel()
-      media.id = `album-${item}`
-      media.title = `Album-${item}`
-      media.type = "album"
+      let media: MediaModel = {
+        id: item.id,
+        title: item.title,
+        image: item.image,
+        type: "album"
+      }
       return media
     })
-    let albumMedias = albums.map(item => {
-      let id = `id-${item}`
-      let title = `Album-${item}`
-      let medias = ["1", "2", "3", "4", "5"].map(item => {
-        let media = new MediaModel()
-        media.id = `id-${item}`
-        media.title = `Media-${item}`
-        media.type = "media"
-        return media
-      })
+
+    let albumMedias = await Promise.all(albums.map(async album => {
+      let medias = await api.getAlbumLatestMedias(album.id)
       let model = new AlbumMediasModel()
-      model.id = id
-      model.title = title
+      model.id = album.id ?? ""
+      model.title = album.title ?? ""
       model.type = "medias"
       model.medias = medias
       return model
-    })
+    }))
+    albumMedias = albumMedias.filter(item => item.medias.length > 0)
     return [album, ...albumMedias]
   }
 }

@@ -3,6 +3,10 @@
     {
       "name": "start_window_background",
       "value": "#FFFFFF"
+    },
+    {
+      "name": "home_album_view_more",
+      "value": "#FF302C2C"
     }
   ]
 }
