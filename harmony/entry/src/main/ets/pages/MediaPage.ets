@@ -17,6 +17,9 @@ struct MediaPage {
       Image(this.media?.image?.backdrop)
         .width("100%")
         .aspectRatio(16/9)
+        .onClick(() => {
+          router.pushPage("pages/PlayerPage", {})
+        })
       Row() {
         List({ space: 5, initialIndex: 0 }) {
           ForEach(this.media?.tags, (item: string) => {

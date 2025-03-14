@@ -3,6 +3,7 @@
     "pages/HomePage",
     "pages/MediaPage",
     "pages/AlbumPage",
-    "pages/LoginPage"
+    "pages/LoginPage",
+    "pages/PlayerPage"
   ]
 }
