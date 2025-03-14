@@ -2,7 +2,6 @@ import { HttpClient } from "../../module/HttpClient"
 import { iPlayDataSourceApi, SiteModel, SiteUserModel, AlbumModel, MediaModel } from "../iPlayDataSource"
 import { AlbumModel as EmbyAlbumModel, AlbumModelImageBuild, AlbumModelToModel,
   MediaModel as EmbyMediaModel,
-  MediaModelImageBuild,
   MediaModelToModel,
   Response } from "./EmbyModel"
 
@@ -22,18 +21,16 @@ export class EmbyApi implements iPlayDataSourceApi {
       url: `${site.server}/emby/Users/authenticatebyname`,
       method: "post",
       query: {},
-      body: `Username=${site.username}&Pw=${site.password}`,
+      body: `Username=${site.user.username}&Pw=${site.user.password}`,
       headers: {
         ...this.commonHeaders,
         "Content-Type": "application/x-www-form-urlencoded"
       }
     })
-    site.extra = response["AccessToken"]
-    this.user = {
-      id: response["User"]["Id"],
-      username: site.username,
-      accessToken: site.extra
-    }
+    site.user.accessToken = response["AccessToken"]
+    site.user.id = response["User"]["Id"]
+    site.id = response["ServerId"]
+    this.user = site.user
     this.site = site
     return site
   }

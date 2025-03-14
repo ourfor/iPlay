@@ -1,19 +1,28 @@
 import { nil } from "../api/iPlayDataSource"
 
+
 export interface KVStorage {
   get<T>(key: string): T|nil
-  set<T>(key: string, value: T|nil)
+  set<T>(key: string, value: T|nil): void
+
+  init(ctx: object): void
 }
 
-class SimpleStorage implements KVStorage {
-  get<T>(key: string): T|nil {
-    return AppStorage.get<T>(key)
+export class SimpleKVStorage implements KVStorage {
+  real: KVStorage|nil
+
+  get<T>(key: string): T | nil {
+    return this.real?.get(key)
   }
 
-  set<T>(key: any, value: T|nil): void {
-    PersistentStorage.persistProp<T>(key, value)
+  set<T>(key: string, value: nil | T): void {
+    return this.real?.set(key, value)
+  }
+
+  init(ctx: object): void {
+    this.real = ctx as KVStorage
   }
 
 }
 
-export const kv: KVStorage = new SimpleStorage()
+export let kv: KVStorage = new SimpleKVStorage()

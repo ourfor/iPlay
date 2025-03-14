@@ -1,17 +1,18 @@
 export type nil = null|undefined
 
-export interface SiteModel {
-  id: string|null|undefined
-  server: string|null|undefined
-  username: string|null|undefined
-  password: string|null|undefined
-  extra: string|null|undefined
+export interface SiteUserModel {
+  id: string|nil
+  username: string|nil
+  password: string|nil
+  accessToken: string|nil
 }
 
-export interface SiteUserModel {
-  id: string|null|undefined
-  username: string|null|undefined
-  accessToken: string|null|undefined
+export interface SiteModel {
+  id: string|nil
+  type: string|nil
+  server: string|nil
+  user: SiteUserModel|nil
+  extra: string|null|undefined
 }
 
 export interface ImageModel {

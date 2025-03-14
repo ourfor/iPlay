@@ -7,6 +7,11 @@ export class Store {
     sites: SiteModel[]|nil;
     api: iPlayDataSourceApi|nil;
 
+    addSite(site: SiteModel) {
+      this.site = site;
+      this.sites = [...(this.sites ?? []), this.site]
+      this.save()
+    }
 
     load() {
       let old = kv.get<Store>("@store")

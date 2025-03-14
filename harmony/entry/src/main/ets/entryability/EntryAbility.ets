@@ -1,12 +1,17 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
+import { MMKVStorage } from '../../../module/MMKVStorage';
+import { kv } from '../../../module/KVStorage';
 
 const DOMAIN = 0x0000;
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
+    let storage = new MMKVStorage();
+    storage.init(this.context.getApplicationContext())
+    kv.init(storage)
   }
 
   onDestroy(): void {

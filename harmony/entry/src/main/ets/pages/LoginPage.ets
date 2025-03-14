@@ -85,15 +85,19 @@ struct LoginPage {
             let api = new EmbyApi()
             let site: SiteModel = {
               id: null,
+              type: "emby",
               server: this.serverAddress,
-              username: this.username,
-              password: this.password,
+              user: {
+                id: null,
+                username: this.username,
+                password: this.password,
+                accessToken: null,
+              },
               extra: undefined
             }
             api.login(site).then(site => {
-                store.site = site
                 store.api = api
-                store.save()
+                store.addSite(site)
                 logger.info(`${site}`)
               this.getUIContext().getPromptAction().showToast({
                 message: `登录成功`,
