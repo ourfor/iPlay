@@ -47,7 +47,7 @@ struct MediaPage {
       .flexShrink(1)
       .margin({top: 10})
       Row() {
-        Text(this.media?.overview)
+        Text(this.media?.overview ?? "")
           .fontSize(14)
           .width("100%")
       }
