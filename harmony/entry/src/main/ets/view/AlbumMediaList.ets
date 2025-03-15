@@ -1,10 +1,11 @@
 import { MediaModel } from "../../../api/iPlayDataSource"
+import { router } from "../../../module/Router"
 import { MediaCellView } from "./MediaCellView"
 
 
 export class AlbumMediasModel {
   id: string|null = null
-  type: "albums"|"medias"|null = null
+  type: string|null = null
   title: string = ""
   image: string = ""
   medias: MediaModel[] = []
@@ -30,6 +31,12 @@ export struct AlbumMediaList {
           .fontWeight(FontWeight.Normal)
           .fontColor($r("app.color.home_album_view_more"))
           .margin({top: 5, right: 8, bottom: 10})
+          .visibility(this.model.type == "resume" ? Visibility.Hidden : Visibility.Visible)
+          .onClick(() => {
+            router.pushPage("pages/AlbumPage", {
+              albumId: this.model?.id
+            })
+          })
       }
       .height(this.model.type == "albums" ? 0 : "auto")
       .visibility(this.model.type == "albums" ? Visibility.Hidden : Visibility.Visible)
@@ -67,8 +74,19 @@ export struct AlbumMediaList {
       .width('100%')
     }
     .width('100%')
-    .height(this.model.type == "albums" ? 100 : 210)
+    .height(this.cellHeight())
     .padding({ top: 0 })
+  }
+
+  cellHeight() {
+    let type = this.model.type
+    let height = 230;
+    if (type == "albums") {
+      height = 100;
+    } else if (type == "resume") {
+      height = 175
+    }
+    return height
   }
 
 }
