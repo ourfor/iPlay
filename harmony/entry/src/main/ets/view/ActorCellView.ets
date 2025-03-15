@@ -27,7 +27,7 @@ export struct ActorCellView {
     .onClick(() => {
       logger.info(this.model?.name);
       router.pushPage("pages/AlbumPage", {
-        media: this.model
+        actorId: this.model?.id
       })
     })
   }

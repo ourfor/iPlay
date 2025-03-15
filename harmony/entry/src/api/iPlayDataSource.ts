@@ -59,4 +59,8 @@ export interface iPlayDataSourceApi {
   getAllAlbums(): Promise<AlbumModel[]>
   getAlbumLatestMedias(id: string): Promise<MediaModel[]>
   getPlayback(id: string): Promise<PlaybackModel>
+  getResume(): Promise<MediaModel[]>
+  getSeasons(id: string): Promise<MediaModel[]>
+  getEpisodes(seriesId: string, seasonId: string): Promise<MediaModel[]>
+  getMedias(query: {[k: string]: string}): Promise<MediaModel[]>
 }

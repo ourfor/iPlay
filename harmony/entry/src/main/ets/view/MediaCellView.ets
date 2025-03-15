@@ -14,9 +14,9 @@ export struct MediaCellView {
 
   build() {
     Column() {
-        Image(this.model?.image?.primary ?? "")
-          .width(this.model?.type == "album" ? 120 : 100)
-          .aspectRatio(this.model?.type == "album" ? 16/9 : 2/3)
+        Image(this.imageUrl())
+          .width(this.cellWidth())
+          .aspectRatio(this.cellImageAspect())
           .margin(5)
           .borderRadius(10)
         Text(this.model?.title)
@@ -29,9 +29,40 @@ export struct MediaCellView {
     }
     .onClick(() => {
       logger.info(this.model?.title);
-      router.pushPage("pages/MediaPage", {
-        media: this.model
+      router.pushPage(this.model?.type === "album" ? "pages/AlbumPage" : "pages/MediaPage", {
+        media: this.model,
+        albumId: this.model?.id
       })
     })
+  }
+
+  cellWidth() {
+    let type = this.model?.type?.toLowerCase()
+    let width = 100;
+    if (type == "movie" || type == "episode") {
+      width = 160;
+    } else if (type == "album") {
+      width = 110
+    }
+    return width
+  }
+
+  cellImageAspect() {
+    let type = this.model?.type?.toLowerCase()
+    let width = 2/3;
+    if (type == "movie" || type == "episode") {
+      width = 16/9;
+    } else if (type == "album") {
+      width = 16/9
+    }
+    return width
+  }
+
+  imageUrl() {
+    let type = this.model?.type?.toLowerCase()
+    if (type == "movie") {
+      return this.model?.image?.backdrop ?? ""
+    }
+    return this.model?.image?.primary ?? ""
   }
 }

@@ -54,7 +54,7 @@ struct Index {
     .height("100%")
     .padding({ top: 5 })
     .onAppear(async () => {
-      this.albums = await this.fetchData()
+      // this.albums = await this.fetchData()
     })
   }
 
@@ -68,6 +68,7 @@ struct Index {
     new Promise<void>(async () => {
       this.albums = await this.fetchData()
     })
+
   }
 
   async fetchData() {
@@ -95,6 +96,13 @@ struct Index {
       return media
     })
 
+    let resumes = await api!.getResume()
+    let resumeAlbum = new AlbumMediasModel()
+    resumeAlbum.id = "-2" ?? ""
+    resumeAlbum.title = "Continue" ?? ""
+    resumeAlbum.type = "resume"
+    resumeAlbum.medias = resumes
+
     let albumMedias = await Promise.all(albums.map(async album => {
       let medias = await api!.getAlbumLatestMedias(album.id)
       let model = new AlbumMediasModel()
@@ -104,7 +112,7 @@ struct Index {
       model.medias = medias
       return model
     }))
-    albumMedias = albumMedias.filter(item => item.medias.length > 0)
+    albumMedias = [resumeAlbum, ...albumMedias].filter(item => item.medias.length > 0)
     return [album, ...albumMedias]
   }
 }

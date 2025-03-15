@@ -116,4 +116,107 @@ export class EmbyApi implements iPlayDataSourceApi {
     }
     return playback
   }
+
+  async getSeasons(id: string): Promise<MediaModel[]> {
+    let url = `${this.site?.server}/emby/Shows/${id}/Seasons`
+    let response = await this.client.request({
+      url,
+      method: "get",
+      query: {
+        "UserId": this.site?.user?.id ?? "",
+        "Fields": "BasicSyncInfo,People,Genres,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated,ProductionYear,Status,EndDate"
+      },
+      headers: {
+        ...this.commonHeaders,
+        "X-Emby-Token": this.user?.accessToken,
+      },
+      body: undefined
+    }) as Response<EmbyMediaModel>
+    let medias = response.Items
+    return medias.map(media => {
+      let model = MediaModelToModel(media, this.site?.server)
+      return model
+    });
+  }
+
+  async getEpisodes(seriesId: string, seasonId: string): Promise<MediaModel[]> {
+    let url = `${this.site?.server}/emby/Shows/${seriesId}/Episodes`
+    let response = await this.client.request({
+      url,
+      method: "get",
+      query: {
+        "SeasonId": seasonId ?? "",
+        "UserId": this.site?.user?.id ?? "",
+        "Fields": "BasicSyncInfo,People,Genres,SortName,Overview,CanDelete,Container,PrimaryImageAspectRatio,Prefix,DateCreated,ProductionYear,Status,EndDate"
+      },
+      headers: {
+        ...this.commonHeaders,
+        "X-Emby-Token": this.user?.accessToken,
+      },
+      body: undefined
+    }) as Response<EmbyMediaModel>
+    let medias = response.Items
+    return medias.map(media => {
+      let model = MediaModelToModel(media, this.site?.server)
+      model.type = "episode"
+      return model
+    });
+  }
+
+  async getResume(): Promise<MediaModel[]> {
+    let url = `${this.site?.server}/emby/Users/${this.site?.user?.id}/Items/Resume`
+    let response = await this.client.request({
+      url,
+      method: "get",
+      query: {
+        "Recursive": "true",
+        "Fields": "BasicSyncInfo,People,Genres,CanDelete,Container,PrimaryImageAspectRatio,ProductionYear,Status,EndDate,Overview",
+        "ImageTypeLimit": "1",
+        "EnableImageTypes": "Primary,Backdrop,Thumb",
+        "MediaTypes": "Video",
+        "Limit": "50",
+      },
+      headers: {
+        ...this.commonHeaders,
+        "X-Emby-Token": this.user?.accessToken,
+      },
+      body: undefined
+    }) as Response<EmbyMediaModel>
+    let medias = response.Items
+    return medias.map(media => {
+      let model = MediaModelToModel(media, this.site?.server)
+      return model
+    });
+  }
+
+  async getMedias(query: { [k: string]: string }): Promise<MediaModel[]> {
+    let url = `${this.site?.server}/emby/Users/${this.site?.user?.id}/Items`
+    let response = await this.client.request({
+      url,
+      method: "get",
+      query: {
+        "Recursive": "true",
+        "Fields": "BasicSyncInfo,People,Genres,CanDelete,Container,PrimaryImageAspectRatio,ProductionYear,Status,EndDate,Overview",
+        "ImageTypeLimit": "1",
+        "EnableImageTypes": "Primary,Backdrop,Thumb",
+        "Limit": "50",
+        "MediaTypes": "",
+        "SortBy": "SortName",
+        "SortOrder": "Ascending",
+        // "IncludeItemTypes": "Movie,Series",
+        "StartIndex": "0",
+        ...query
+      },
+      headers: {
+        ...this.commonHeaders,
+        "X-Emby-Token": this.user?.accessToken,
+      },
+      body: undefined
+    }) as Response<EmbyMediaModel>
+    let medias = response.Items
+    return medias.map(media => {
+      let model = MediaModelToModel(media, this.site?.server)
+      return model
+    });
+  }
 }
