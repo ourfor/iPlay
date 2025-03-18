@@ -4,14 +4,16 @@ import { window } from '@kit.ArkUI';
 // import { MMKVStorage } from '../../../module/MMKVStorage';
 import { kv } from '../../../module/KVStorage';
 import { PreferencesStorage } from '../../../module/PreferencesStorage';
+import { MMKVStorage } from '../../../module/MMKVStorage';
 
 const DOMAIN = 0x0000;
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
-    let isPreviewEnv = true
-    let storage = isPreviewEnv ? new PreferencesStorage() : new PreferencesStorage();
+    let isPreviewEnv = false
+    let storage = isPreviewEnv ? new PreferencesStorage() : new MMKVStorage();
+    // let storage = new PreferencesStorage();
     storage.init(this.context.getApplicationContext())
     kv.init(storage)
   }
