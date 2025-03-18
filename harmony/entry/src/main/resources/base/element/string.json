@@ -5,6 +5,10 @@
       "value": "module description"
     },
     {
+      "name": "module_test_desc",
+      "value": "module test"
+    },
+    {
       "name": "EntryAbility_desc",
       "value": "A cross-platform media player"
     },

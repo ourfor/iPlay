@@ -3,13 +3,15 @@ import window from '@ohos.window';
 import { BusinessError } from '@ohos.base';
 import { Dict, router } from '../../../module/Router';
 import { PlaybackModel } from '../../../api/iPlayDataSource';
+import { FontIcon } from '../view/FontIcon';
+import { IconDef } from '../view/IconDef';
 
 @Entry
 @Component
 struct FullscreenVideoPlayer {
   private controller: VideoController = new VideoController();
   @State params: Dict = router.params()
-  @State isPlaying: boolean = false;
+  @State isPlaying: boolean = true;
   @State currentTime: number = 0;
   @State duration: number = 0;
   @State isFullScreen: boolean = false;
@@ -26,21 +28,23 @@ struct FullscreenVideoPlayer {
     }
     window.getLastWindow(this.getUIContext().getHostContext()).then((win: window.Window) => {
       this.windowClass = win;
+      let block = async () => {
+        await win.setPreferredOrientation(window.Orientation.LANDSCAPE);
+        await win.setWindowSystemBarEnable([]); // 隐藏状态栏
+        await win.setWindowLayoutFullScreen(true);
+        this.isFullScreen = true
+      }
+      block()
     });
   }
 
   build() {
-    Column() {
+    Stack() {
       this.VideoPlayerComponent()
-
-      if (!this.isFullScreen) {
-        this.ControlPanel()
-      }
+      this.ControlPanel()
     }
     .onClick(() => {
-      if (this.isFullScreen) {
-        this.toggleControls();
-      }
+      this.toggleControls()
     })
   }
 
@@ -52,43 +56,110 @@ struct FullscreenVideoPlayer {
       })
         .width(this.isFullScreen ? '100%' : '100%')
         .height(this.isFullScreen ? '100%' : 300)
-        .onPrepared(() => {
+        .onPrepared((event) => {
+          this.duration = event.duration
         })
+        .autoPlay(true)
+        .objectFit(ImageFit.Auto)
+        .controls(false)
         .onUpdate((event) => {
           this.currentTime = event.time;
         })
     }
     .width('100%')
     .height(this.isFullScreen ? '100%' : 300)
+    .onClick(() => {
+      this.toggleControls()
+    })
   }
 
   @Builder ControlPanel() {
-    Column() {
-      Slider({
-        value: this.currentTime,
-        min: 0,
-        max: this.duration,
-        step: 1
-      })
+      Column() {
+        Row() {
+          Text("Title")
+            .fontColor("#ffffffff")
+            .margin({top: 10})
+        }
+        .flexGrow(0)
+        Row() {
+          FontIcon({
+            icon: IconDef.ic_fluent_device_eq_24_filled
+          })
+            .margin(5)
+          FontIcon({
+            icon: IconDef.ic_fluent_closed_caption_24_filled
+          })
+            .margin(5)
+        }
+        .justifyContent(FlexAlign.End)
         .width('90%')
-        .onChange((value: number) => {
-          // seek
-        })
+        Row(){
 
-      Row({ space: 20 }) {
-        Button(this.isPlaying ? '⏸' : '▶')
-          .onClick(() => this.togglePlayback())
-
-        Text(`${this.formatTime(this.currentTime)}/${this.formatTime(this.duration)}`)
-          .fontSize(14)
-
-        Button('⛶')
-          .onClick(() => this.toggleFullscreen())
+        }
+        .flexGrow(1)
+        Row() {
+          FontIcon({
+            icon: IconDef.ic_fluent_skip_back_10_24_filled
+          })
+            .margin(5)
+            .onClick(() => {
+              this.controller.setCurrentTime(this.currentTime - 10)
+            })
+          FontIcon({
+            icon: this.isPlaying ? IconDef.ic_fluent_pause_32_filled : IconDef.ic_fluent_play_24_filled
+          })
+            .margin(5)
+            .onClick(() => {
+              this.togglePlayback()
+            })
+          FontIcon({
+            icon: IconDef.ic_fluent_skip_forward_10_24_filled
+          })
+            .margin(5)
+            .onClick(() => {
+              this.controller.setCurrentTime(this.currentTime + 10)
+            })
+          Column()
+            .flexGrow(1)
+          FontIcon({
+            icon: IconDef.ic_fluent_top_speed_24_filled
+          })
+            .margin(5)
+          FontIcon({
+            icon: IconDef.ic_fluent_orientation_24_filled
+          })
+            .margin(5)
+          FontIcon({
+            icon: IconDef.ic_fluent_news_24_filled
+          })
+            .margin(5)
+        }
+        .width('90%')
+        .flexGrow(0)
+        .margin({bottom: 5})
+        Row() {
+          Slider({
+            value: this.currentTime,
+            min: 0,
+            max: this.duration,
+            step: 1
+          })
+            .width('90%')
+            .backgroundColor('#75737373')
+            .borderRadius(10)
+            .padding({left: 10, right: 10})
+            .margin({bottom: 10})
+            .onChange((value: number) => {
+              // seek
+              this.controller.setCurrentTime(value)
+            })
+        }
+        .flexShrink(0)
       }
-      .padding(10)
-    }
-    .backgroundColor('#CC000000')
-    .width('100%')
+      .backgroundColor("#00000000")
+      .height('100%')
+      .width('100%')
+      .visibility(this.showControls ? Visibility.Visible : Visibility.Hidden)
   }
 
   private async toggleFullscreen() {

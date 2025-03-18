@@ -58,6 +58,8 @@ struct Index {
     })
   }
 
+
+
   onPageShow(): void {
     store.load()
     if (!store.site) {

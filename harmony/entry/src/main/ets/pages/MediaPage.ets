@@ -39,7 +39,11 @@ struct MediaPage {
           .backgroundColor('#000000')
           .fontColor(Color.White)
           .onClick(() => {
-
+            store.api?.getPlayback(this.media?.id ?? "").then(playback => {
+              router.pushPage("pages/PlayerPage", {
+                "playback": playback
+              })
+            })
           })
 
         Row() {
