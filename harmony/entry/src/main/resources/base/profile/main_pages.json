@@ -4,6 +4,7 @@
     "pages/MediaPage",
     "pages/AlbumPage",
     "pages/LoginPage",
-    "pages/PlayerPage"
+    "pages/PlayerPage",
+    "pages/SeasonPage"
   ]
 }
