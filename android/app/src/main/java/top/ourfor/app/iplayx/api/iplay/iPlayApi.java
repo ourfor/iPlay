@@ -21,6 +21,7 @@ import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.api.emby.EmbyModel;
+import top.ourfor.app.iplayx.bean.JSONAdapter;
 import top.ourfor.app.iplayx.common.api.EmbyLikeApi;
 import top.ourfor.app.iplayx.common.model.SiteEndpointModel;
 import top.ourfor.app.iplayx.common.type.MediaLayoutType;
@@ -208,6 +209,10 @@ public class iPlayApi implements EmbyLikeApi {
             params.put("page", String.valueOf(Integer.parseInt(startIndex) / 26));
         }
 
+        if (query.get("Filters") != null && query.get("Filters").contains("IsFavorite")) {
+            params.put("favorite", "true");
+        }
+
         val model = HTTPModel.<iPlayModel.Response<List<iPlayModel.MediaModel>>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "media/search")
                 .headers(Map.of(
@@ -387,6 +392,33 @@ public class iPlayApi implements EmbyLikeApi {
         if (site == null ||
                 site.getEndpoint() == null ||
                 site.getUser() == null) return;
+        val model = HTTPModel.<iPlayModel.Response<iPlayModel.MediaModel>>builder()
+                .url(site.getEndpoint().getBaseUrl() + "media/detail")
+                .method("POST")
+                .headers(Map.of(
+                        "Authorization", site.getAccessToken(),
+                        "Content-Type", "application/json"
+                ))
+                .body(XGET(JSONAdapter.class).toJSON(Map.of(
+                        "mediaId", id,
+                        "favorite", isFavorite
+                )))
+                .typeReference(new TypeReference<iPlayModel.Response<iPlayModel.MediaModel>>() {
+                })
+                .build();
+
+        HTTPUtil.request(model, response -> {
+            if (Objects.isNull(response)) {
+                completion.accept(null);
+                return;
+            }
+            if (response.code == 200) {
+                var item = (iPlayModel.MediaModel)response.data;
+                completion.accept(item.toMediaModel());
+                return;
+            }
+            completion.accept(null);
+        });
     }
 
     @Override

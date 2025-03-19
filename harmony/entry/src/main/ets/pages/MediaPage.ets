@@ -32,19 +32,21 @@ struct MediaPage {
             })
           })
 
-        Button('播 放')
-          .width('90%')
-          .height(40)
-          .margin({ top: 10 })
-          .backgroundColor('#000000')
-          .fontColor(Color.White)
-          .onClick(() => {
-            store.api?.getPlayback(this.media?.id ?? "").then(playback => {
-              router.pushPage("pages/PlayerPage", {
-                "playback": playback
+        if (this.media?.type?.toLowerCase() != "series") {
+          Button('播 放')
+            .width('90%')
+            .height(40)
+            .margin({ top: 10 })
+            .backgroundColor('#000000')
+            .fontColor(Color.White)
+            .onClick(() => {
+              store.api?.getPlayback(this.media?.id ?? "").then(playback => {
+                router.pushPage("pages/PlayerPage", {
+                  "playback": playback
+                })
               })
             })
-          })
+        }
 
         Row() {
           List({ space: 5, initialIndex: 0 }) {
@@ -99,16 +101,18 @@ struct MediaPage {
 
         Row() {
           List({ space: 5, initialIndex: 0 }) {
-            ListItem() {
-              Text("All")
-                .fontColor("#ffffff")
-                .margin(5)
+            if (this.seasons?.length ?? 0 > 0) {
+              ListItem() {
+                Text("All")
+                  .fontColor("#ffffff")
+                  .margin(5)
+              }
+              .onClick(() => {
+                this.episodes = this.seasons
+              })
+              .backgroundColor("#000000")
+              .borderRadius(5)
             }
-            .onClick(() => {
-              this.episodes = this.seasons
-            })
-            .backgroundColor("#000000")
-            .borderRadius(5)
             ForEach(this.seasons, (item: MediaModel, idx: number) => {
               ListItem() {
                 Text(item.title ?? "")
@@ -141,6 +145,9 @@ struct MediaPage {
                 })
               }
               .borderRadius(5)
+              .onSelect((selected) => {
+
+              })
             }, (item: MediaModel) => item.id)
           }
           .height(180)

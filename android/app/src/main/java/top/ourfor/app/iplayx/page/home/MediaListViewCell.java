@@ -56,6 +56,7 @@ public class MediaListViewCell extends ConstraintLayout implements UpdateModelAc
 
         titleLabel = new TextView(context);
         titleLabel.setId(View.generateViewId());
+        titleLabel.setSingleLine(true);
         titleLabel.setTextSize(18);
         titleLabel.setGravity(Gravity.LEFT);
         titleLabel.setTextAlignment(TEXT_ALIGNMENT_VIEW_START);
