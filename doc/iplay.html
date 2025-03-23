@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPlay视频播放测试</title>
+</head>
+<body>
+    <span>
+        <input type="text" id="url-input" placeholder="https://example.com/test.mp4" style="width: 300px;">
+        <button onclick="play()">播放</button>
+    </span> 
+    <script type="text/javascript">
+        function play() {
+            try {
+                const source = document.getElementById("url-input").value;
+                const video_url = source;
+                const audio_url = source;
+                const url = "iplay://play/any";
+                const video = new URL(url);
+                const origin = new URL(window.location.href).origin;
+                const http_option = {
+                    "demuxer-lavf-o": `headers=Referer:${origin}`,
+                    "http-header-fields": `Referer:${origin}`
+                };
+                const extra = {
+                    "Referer": origin
+                };
+                video.searchParams.set("option", JSON.stringify(http_option));
+                video.searchParams.set("source", JSON.stringify({
+                    "video": video_url,
+                    "audio": audio_url,
+                    "extra": extra
+                }));
+                // for mobile: window.bridge.postMessage
+                // for desktop: window.chrome.webview.postMessage
+                window.chrome.webview.postMessage(JSON.stringify({
+                    "type": "play",
+                    "data": video.href
+                }));
+            } catch (error) {
+                if (`${error}`.includes("postMessage")) {
+                    window.location.reload();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
