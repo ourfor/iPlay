@@ -47,12 +47,12 @@ It is developed in my free time ⏰
 </tr>
 <tr>
 <td>
-<a href="https://www.microsoft.com/store/apps/9PD0SG0LZTNL">
+<a href="https://apps.microsoft.com/detail/9PD0SG0LZTNL">
    <img width="120" style="border-radius: 5px;object-fit:fill;" src="./doc/image/English_get it from MS_864X312.png">
 </a>
 </td>
 <td>
-<a href="https://www.microsoft.com/store/apps/9NBZ2BXD4WFZ">
+<a href="https://apps.microsoft.com/detail/9NBZ2BXD4WFZ">
    <img width="120" style="border-radius: 5px;object-fit:fill;" src="./doc/image/English_get it from MS_864X312.png">
 </a>
 </td>
