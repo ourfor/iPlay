@@ -466,6 +466,31 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
 
     private void loginToAlist(String remake, String server, String username, String password) {
         binding.loginButton.setEnabled(false);
+        // guest login for alist, if username and password are empty
+        if (username.isEmpty() && password.isEmpty()) {
+            int resId;
+            val drive = AlistDriveModel.builder()
+                    .remark(binding.remarkInput.getText().toString())
+                    .username(binding.usernameInput.getText().toString())
+                    .password(binding.passwordInput.getText().toString())
+                    .server(binding.serverInput.getText().toString())
+                    .token("")
+                    .build();
+
+            val store = XGET(GlobalStore.class);
+            store.addDrive(drive);
+            store.switchDrive(drive);
+            resId = R.string.login_success;
+            XGET(Activity.class).runOnUiThread(() -> {
+                Toast.makeText(getContext(), resId, Toast.LENGTH_SHORT).show();
+                binding.loginButton.setEnabled(true);
+                if (isDialogModel) {
+                    dismiss();
+                }
+            });
+            return;
+        }
+
         AlistApi.login(server, username, password, token -> {
             boolean success = token != null;
             int resId;

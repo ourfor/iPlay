@@ -66,3 +66,4 @@ yarn-error.log
 # env
 .env.local
 msbuild.binlog
+/harmony/oh_modules
