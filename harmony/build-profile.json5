@@ -1,0 +1,56 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "storePassword": "0000001A880D2308C394302E09E99A8F5F840DC2A65A3D43798FEEC29AF6CD356197EBD8CA3083DCE2F7",
+          "certpath": "/Users/endpne/Data/Harmony-iPlay.cer",
+          "keyAlias": "iPlay",
+          "keyPassword": "0000001A8528D3310E42E6A035C80138BF41E055D447F94D712869F881DFC5601A2049BE950ECA552876",
+          "profile": "/Users/endpne/Data/Harmony-iPlayRelease.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/endpne/Data/Harmony-iPlay.p12"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "compatibleSdkVersion": "5.0.2(14)",
+        "runtimeOS": "HarmonyOS",
+        "bundleName": "top.ourfor.app.iPlay",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": false
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug",
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}

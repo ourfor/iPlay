@@ -1,0 +1,28 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "module_test_desc",
+      "value": "module test"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "A cross-platform media player"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "iPlay"
+    },
+    {
+      "name": "album_view_more",
+      "value": "查看更多"
+    },
+    {
+      "name": "media_actor_list",
+      "value": "演职人员"
+    }
+  ]
+}

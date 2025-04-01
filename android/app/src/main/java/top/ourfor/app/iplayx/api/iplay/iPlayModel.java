@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 import lombok.val;
 import top.ourfor.app.iplayx.model.ImageModel;
+import top.ourfor.app.iplayx.model.MediaUserData;
 
 public class iPlayModel {
 
@@ -23,6 +24,16 @@ public class iPlayModel {
         public String backdrop;
         public String primary;
         public String logo;
+    }
+
+    @Data
+    @With
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserDataModel {
+        public boolean favorite;
+        public Long lastPlayTime;
     }
 
     @Data
@@ -102,6 +113,8 @@ public class iPlayModel {
 
         List<ActorModel> actors;
 
+        UserDataModel userData;
+
 
         public top.ourfor.app.iplayx.model.MediaModel toMediaModel() {
             val builder = top.ourfor.app.iplayx.model.MediaModel.builder();
@@ -127,6 +140,10 @@ public class iPlayModel {
                     .id(id)
                     .type("Movie")
                     .duration(duration)
+                    .userData(MediaUserData.builder()
+                            .isFavorite(userData != null ? userData.favorite : false)
+                            .playbackPositionTicks(userData != null ? userData.lastPlayTime : 0)
+                            .build())
                     .image(ImageModel.builder()
                             .thumb(image.backdrop)
                             .primary(image.primary)
