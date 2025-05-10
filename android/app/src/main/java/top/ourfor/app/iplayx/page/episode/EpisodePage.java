@@ -154,6 +154,7 @@ public class EpisodePage implements Page {
         }
 
         activityIndicator.post(() -> {
+            episodeList.emptyTipView.setVisibility(View.GONE);
             activityIndicator.setVisibility(View.VISIBLE);
         });
 
