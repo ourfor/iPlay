@@ -35,6 +35,8 @@ public class SettingViewCell extends ConstraintLayout implements UpdateModelActi
     SettingCellBinding binding = null;
     SettingModel model = null;
 
+    private boolean isSpinnerInit = false;
+
     public SettingViewCell(@NonNull Context context) {
         super(context);
         binding = SettingCellBinding.inflate(LayoutInflater.from(context), this, true);
@@ -122,10 +124,14 @@ public class SettingViewCell extends ConstraintLayout implements UpdateModelActi
         val adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, model.options);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setSelection(model.options.indexOf(model.value));
+        spinner.setSelection(model.options.indexOf(model.value), true);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (!isSpinnerInit) {
+                    isSpinnerInit = true;
+                    return;
+                }
                 if (model.onClick == null) return;
                 model.onClick.accept(model.options.get(position));
             }
