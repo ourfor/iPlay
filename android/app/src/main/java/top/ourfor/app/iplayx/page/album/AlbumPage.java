@@ -83,6 +83,7 @@ public class AlbumPage implements Page {
             val itemId = item.getItemId();
             if (itemId == R.id.refresh) {
                 activityIndicator.post(() -> {
+                    listView.emptyTipView.setVisibility(View.GONE);
                     activityIndicator.setVisibility(View.VISIBLE);
                 });
                 XGET(ThreadPoolExecutor.class).submit(this::onRefresh);
@@ -196,6 +197,7 @@ public class AlbumPage implements Page {
 
         if (isStale) {
             activityIndicator.post(() -> {
+                listView.emptyTipView.setVisibility(View.GONE);
                 activityIndicator.setVisibility(View.VISIBLE);
             });
         }
