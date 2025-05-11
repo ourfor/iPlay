@@ -69,7 +69,6 @@ public class AppSetting {
             instance.pictureQuality = PictureQuality.Auto;
             instance.playerKernel = PlayerKernelType.MPV;
             instance.layoutType = LayoutType.Auto;
-            instance.fontFamily = XGET(Context.class).getResources().getResourceEntryName(R.font.lxgw_wen_kai_screen);
             if (DeviceUtil.isTV) {
                 instance.videoDecodeType = VideoDecodeType.Hardware;
                 instance.playerKernel = PlayerKernelType.EXO;

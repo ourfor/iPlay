@@ -99,6 +99,6 @@
     <string name="add_folder">添加目录</string>
     <string name="add_folder_success">目录添加成功</string>
     <string name="iplay">iPlay</string>
-    <string name="home_allow_tabs">主页菜单项目，长按菜单项可以打开设置</string>
+    <string name="home_allow_tabs">主页菜单项目，长按菜单打开设置</string>
     <string name="home_allow_tabs_modify">修改配置</string>
 </resources>

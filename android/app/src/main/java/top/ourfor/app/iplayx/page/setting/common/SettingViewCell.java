@@ -23,6 +23,7 @@ import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import lombok.val;
 import top.ourfor.app.iplayx.R;
@@ -119,13 +120,21 @@ public class SettingViewCell extends ConstraintLayout implements UpdateModelActi
     private void setupSpinner() {
         binding.settingContainer.removeAllViews();
         val spinner = new Spinner(getContext());
-        val adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, model.options);
+        val options = new CopyOnWriteArrayList<>();
+        if (model.options.indexOf(model.value) == -1) {
+            options.add("default");
+        }
+        options.addAll(model.options);
+        val adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, options);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setSelection(model.options.indexOf(model.value));
+        spinner.setSelection(model.options.indexOf(model.value), true);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    return;
+                }
                 if (model.onClick == null) return;
                 model.onClick.accept(model.options.get(position));
             }
