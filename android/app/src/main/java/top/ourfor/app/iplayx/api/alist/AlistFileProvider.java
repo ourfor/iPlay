@@ -8,12 +8,14 @@ import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplayx.api.file.File;
 import top.ourfor.app.iplayx.api.file.FileProvider;
 import top.ourfor.app.iplayx.api.file.FileType;
 import top.ourfor.app.iplayx.model.drive.AlistDriveModel;
 
+@Slf4j
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,6 +26,16 @@ public class AlistFileProvider implements FileProvider {
         api = AlistApi.builder()
                 .drive(drive)
                 .build();
+        if (drive.getServer() == null || drive.getUsername() == null || drive.getPassword() == null) {
+            return;
+        }
+        AlistApi.login(drive.getServer(), drive.getUsername(), drive.getPassword(), (token) -> {
+            if (token != null) {
+                drive.setToken(token);
+            } else {
+                log.info("login failed");
+            }
+        });
     }
 
     @Override
