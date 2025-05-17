@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplay.api.emby.EmbyModel;
 import top.ourfor.app.iplay.bean.JSONAdapter;
-import top.ourfor.app.iplay.common.api.EmbyLikeApi;
+import top.ourfor.app.iplay.common.api.IDataSourceApi;
 import top.ourfor.app.iplay.common.model.SiteEndpointModel;
 import top.ourfor.app.iplay.common.type.MediaLayoutType;
 import top.ourfor.app.iplay.common.type.MediaPlayState;
@@ -40,7 +40,7 @@ import top.ourfor.app.iplay.util.HTTPUtil;
 @Setter
 @Builder
 @EqualsAndHashCode
-public class iPlayApi implements EmbyLikeApi {
+public class iPlayApi implements IDataSourceApi {
     SiteModel site;
 
     public static void login(String server, String username, String password, Consumer<Object> completion) {

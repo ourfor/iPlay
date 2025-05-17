@@ -10,7 +10,7 @@ import top.ourfor.app.iplay.model.AlbumModel;
 import top.ourfor.app.iplay.model.MediaModel;
 import top.ourfor.app.iplay.model.SiteModel;
 
-public interface EmbyLikeApi {
+public interface IDataSourceApi {
 
     default void setSiteModel(SiteModel site) { }
 

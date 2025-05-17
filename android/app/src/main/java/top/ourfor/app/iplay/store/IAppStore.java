@@ -2,15 +2,13 @@ package top.ourfor.app.iplay.store;
 
 import static top.ourfor.app.iplay.module.Bean.XGET;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import top.ourfor.app.iplay.api.emby.EmbyModel;
 import top.ourfor.app.iplay.bean.JSONAdapter;
-import top.ourfor.app.iplay.common.api.EmbyLikeApi;
+import top.ourfor.app.iplay.common.api.IDataSourceApi;
 import top.ourfor.app.iplay.common.type.MediaPlayState;
 import top.ourfor.app.iplay.common.type.MediaType;
 import top.ourfor.app.iplay.model.AlbumModel;
@@ -20,7 +18,7 @@ import top.ourfor.app.iplay.model.drive.Drive;
 import top.ourfor.app.iplay.view.video.PlayerSourceModel;
 
 public interface IAppStore {
-    EmbyLikeApi getApi();
+    IDataSourceApi getApi();
     SiteModel getSite();
     List<SiteModel> getSites();
     Drive getDrive();

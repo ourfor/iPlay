@@ -39,7 +39,7 @@ import top.ourfor.app.iplay.api.iplay.iPlayApi;
 import top.ourfor.app.iplay.api.jellyfin.JellyfinApi;
 import top.ourfor.app.iplay.bean.JSONAdapter;
 import top.ourfor.app.iplay.bean.KVStorage;
-import top.ourfor.app.iplay.common.api.EmbyLikeApi;
+import top.ourfor.app.iplay.common.api.IDataSourceApi;
 import top.ourfor.app.iplay.common.type.MediaPlayState;
 import top.ourfor.app.iplay.common.type.MediaType;
 import top.ourfor.app.iplay.common.type.ServerType;
@@ -61,7 +61,7 @@ public class SimpleInMemoryStore implements IAppStore {
     private static String storeKey = "@store/emby";
 
     @JsonIgnore
-    private EmbyLikeApi api;
+    private IDataSourceApi api;
 
     @JsonProperty("site")
     private SiteModel site;
