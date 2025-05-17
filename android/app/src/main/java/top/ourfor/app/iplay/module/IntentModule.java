@@ -1,5 +1,7 @@
 package top.ourfor.app.iplay.module;
 
+import static top.ourfor.app.iplay.module.Bean.XGET;
+
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +20,7 @@ public class IntentModule {
             return;
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Context context = Bean.get(Context.class);
+        Context context = XGET(Context.class);
         try {
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
@@ -29,7 +31,7 @@ public class IntentModule {
     public void playFile(String filepath) {
         Intent intent = new Intent();
         intent.putExtra("filepath", filepath);
-        Context context = Bean.get(Context.class);
+        Context context = XGET(Context.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setClassName(context, "top.ourfor.app.iplayx.MPVActivity");
         context.startActivity(intent);
