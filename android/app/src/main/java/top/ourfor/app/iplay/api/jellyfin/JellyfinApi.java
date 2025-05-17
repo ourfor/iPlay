@@ -21,7 +21,7 @@ import lombok.Setter;
 import lombok.With;
 import lombok.val;
 import top.ourfor.app.iplay.api.emby.EmbyModel;
-import top.ourfor.app.iplay.bean.JSONAdapter;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
 import top.ourfor.app.iplay.common.api.IDataSourceApi;
 import top.ourfor.app.iplay.common.model.SiteEndpointModel;
 import top.ourfor.app.iplay.common.type.MediaPlayState;
@@ -51,7 +51,7 @@ public class JellyfinApi implements IDataSourceApi {
                 .url(server + (server.endsWith("/") ? "" : "/") + "Users/authenticatebyname")
                 .method("POST")
                 .headers(Map.of("x-emby-authorization", authHeaderValue, "Content-Type", "application/json"))
-                .body(XGET(JSONAdapter.class).toJSON(Map.of("Username", username, "Pw", password)))
+                .body(XGET(IJSONAdapter.class).toJSON(Map.of("Username", username, "Pw", password)))
                 .typeReference(new TypeReference<EmbyModel.EmbyUserModel>() { })
                 .build();
 
@@ -539,7 +539,7 @@ public class JellyfinApi implements IDataSourceApi {
                 .url(site.getEndpoint().getBaseUrl() + "Sessions/Playing/" + playState)
                 .headers(Map.of("x-emby-authorization", authHeaderValue, "X-Emby-Token", site.getAccessToken()))
                 .method("POST")
-                .body(XGET(JSONAdapter.class).toJSON(data))
+                .body(XGET(IJSONAdapter.class).toJSON(data))
                 .headers(Map.of(
                         "X-Emby-Token", site.getAccessToken(),
                         "Content-Type", "application/json",

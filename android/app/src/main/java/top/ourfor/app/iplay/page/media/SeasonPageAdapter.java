@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 import top.ourfor.app.iplay.R;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.type.MediaLayoutType;
 import top.ourfor.app.iplay.model.MediaModel;
 import top.ourfor.app.iplay.page.home.MediaViewCell;
@@ -81,7 +81,7 @@ public class SeasonPageAdapter extends PagerAdapter {
                 args.put("seasonId", seasonId);
                 args.put("title", model.getName());
             }
-            XGET(Navigator.class).pushPage(dstId, args);
+            XGET(INavigator.class).pushPage(dstId, args);
         };
         seasonList.viewModel.onClick = onClick;
         val store = XGET(IAppStore.class);

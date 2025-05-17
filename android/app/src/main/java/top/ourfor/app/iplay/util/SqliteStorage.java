@@ -7,12 +7,12 @@ import android.app.Application;
 import androidx.room.Room;
 
 import lombok.val;
-import top.ourfor.app.iplay.bean.JSONAdapter;
-import top.ourfor.app.iplay.bean.KVStorage;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
+import top.ourfor.app.iplay.bean.IKVStorage;
 import top.ourfor.app.iplay.database.AppDatabase;
 import top.ourfor.app.iplay.database.entity.KVCacheEntity;
 
-public class SqliteStorage implements KVStorage {
+public class SqliteStorage implements IKVStorage {
     public static final SqliteStorage shared = new SqliteStorage();
 
     private final AppDatabase db;
@@ -47,11 +47,11 @@ public class SqliteStorage implements KVStorage {
         if (value == null) {
             return null;
         }
-        return XGET(JSONAdapter.class).fromJSON(value, clazz);
+        return XGET(IJSONAdapter.class).fromJSON(value, clazz);
     }
 
     @Override
     public void setObject(String key, Object obj) {
-        set(key, XGET(JSONAdapter.class).toJSON(obj));
+        set(key, XGET(IJSONAdapter.class).toJSON(obj));
     }
 }

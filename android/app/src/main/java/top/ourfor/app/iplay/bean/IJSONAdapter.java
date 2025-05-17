@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.lang.reflect.Type;
 
-public interface JSONAdapter {
+public interface IJSONAdapter {
 
     default String toJSON(Object obj) {
         return null;

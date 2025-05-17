@@ -19,7 +19,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import okhttp3.Response;
-import top.ourfor.app.iplay.bean.JSONAdapter;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
 import top.ourfor.app.iplay.util.HTTPModel;
 import top.ourfor.app.iplay.util.HTTPUtil;
 import top.ourfor.app.iplay.util.PathUtil;
@@ -254,7 +254,7 @@ public class Cloud189Api {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                val adapter = XGET(JSONAdapter.class);
+                val adapter = XGET(IJSONAdapter.class);
                 LoginResponse obj = adapter.fromJSON(body, new TypeReference<LoginResponse>() { });
                 loginSubmitResult.set(obj);
             }

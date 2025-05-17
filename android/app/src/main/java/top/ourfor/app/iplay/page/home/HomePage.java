@@ -29,7 +29,7 @@ import top.ourfor.app.iplay.action.DispatchAction;
 import top.ourfor.app.iplay.action.SiteListUpdateAction;
 import top.ourfor.app.iplay.action.SiteUpdateAction;
 import top.ourfor.app.iplay.action.ThemeUpdateAction;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.databinding.HomePageBinding;
 import top.ourfor.app.iplay.model.SiteModel;
@@ -111,7 +111,7 @@ public class HomePage implements SiteUpdateAction, ThemeUpdateAction, SiteListUp
             } else if (itemId == R.id.line_manage) {
                 showSiteLineSelectPanel();
             } else if (itemId == R.id.web_page) {
-                val route = XGET(Navigator.class);
+                val route = XGET(INavigator.class);
                 val args = new HashMap<String, Object>();
                 assert route != null;
                 route.pushPage("web_page", args);
@@ -181,10 +181,10 @@ public class HomePage implements SiteUpdateAction, ThemeUpdateAction, SiteListUp
         };
 
         binding.addSiteButton.setOnClickListener(v -> {
-            XGET(Navigator.class).pushPage(R.id.loginPage, null);
+            XGET(INavigator.class).pushPage(R.id.loginPage, null);
         });
         binding.syncWebdavButton.setOnClickListener(v -> {
-            XGET(Navigator.class).pushPage(R.id.cloudPage, null);
+            XGET(INavigator.class).pushPage(R.id.cloudPage, null);
         });
         if (DeviceUtil.isTV) {
             binding.addSiteButton.setFocusable(true);

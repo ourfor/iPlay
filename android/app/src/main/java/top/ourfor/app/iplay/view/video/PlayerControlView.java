@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.action.BatteryUpdateAction;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.datetime.DateTimeMonitor;
 import top.ourfor.app.iplay.common.device.BatteryMonitor;
 import top.ourfor.app.iplay.common.network.NetworkMonitor;
@@ -307,7 +307,7 @@ public class PlayerControlView extends ConstraintLayout implements PlayerEventLi
         }
         updateIcon(binding.exit, com.microsoft.fluent.mobile.icons.R.drawable.ic_fluent_dismiss_24_filled);
         binding.exit.setOnClickListener(v -> {
-            XGET(Navigator.class).popPage();
+            XGET(INavigator.class).popPage();
         });
     }
 

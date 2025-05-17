@@ -16,8 +16,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import top.ourfor.app.iplay.R;
-import top.ourfor.app.iplay.bean.KVStorage;
+import top.ourfor.app.iplay.bean.IKVStorage;
 import top.ourfor.app.iplay.common.type.LayoutType;
 import top.ourfor.app.iplay.common.type.PlayerKernelType;
 import top.ourfor.app.iplay.common.type.VideoDecodeType;
@@ -54,7 +53,7 @@ public class AppSetting {
     public String allowTabs;
 
     static AppSetting getShared() {
-        var instance = XGET(KVStorage.class).getObject(settingCacheKey, AppSetting.class);
+        var instance = XGET(IKVStorage.class).getObject(settingCacheKey, AppSetting.class);
         if (instance == null) {
             instance = new AppSetting();
             instance.videoDecodeType = VideoDecodeType.Software;
@@ -113,6 +112,6 @@ public class AppSetting {
 
     @JsonIgnore
     public void save() {
-        XGET(KVStorage.class).setObject(settingCacheKey, this);
+        XGET(IKVStorage.class).setObject(settingCacheKey, this);
     }
 }

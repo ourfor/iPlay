@@ -38,7 +38,7 @@ import top.ourfor.app.iplay.action.NavigationTitleBar;
 import top.ourfor.app.iplay.api.dandan.DanDanPlayApi;
 import top.ourfor.app.iplay.api.dandan.DanDanPlayModel;
 import top.ourfor.app.iplay.api.emby.EmbyModel;
-import top.ourfor.app.iplay.bean.JSONAdapter;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
 import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.common.model.SeekableRange;
 import top.ourfor.app.iplay.common.model.WebMediaMessage;
@@ -112,7 +112,7 @@ public class MoviePlayerPage implements Page {
                 var urlObj = Uri.parse(url);
                 var source = urlObj.getQueryParameter("source");
                 var option = urlObj.getQueryParameter("option");
-                val json = XGET(JSONAdapter.class);
+                val json = XGET(IJSONAdapter.class);
                 var sourceDict = json.fromJSON(source, new TypeReference<WebMediaMessage>() { });
                 var optionDict = json.fromJSON(option, new TypeReference<Map<String, String>>() { });
                 var audioFile = sourceDict.getAudio();

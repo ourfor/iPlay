@@ -53,9 +53,9 @@ import top.ourfor.app.iplay.api.onedrive.OneDriveAction;
 import top.ourfor.app.iplay.api.onedrive.OneDriveApi;
 import top.ourfor.app.iplay.api.onedrive.OneDriveAuth;
 import top.ourfor.app.iplay.api.webdav.WebDavFileApi;
-import top.ourfor.app.iplay.bean.KVStorage;
+import top.ourfor.app.iplay.bean.IKVStorage;
 import top.ourfor.app.iplay.action.NavigationTitleBar;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.common.type.ServerType;
 import top.ourfor.app.iplay.databinding.LoginPageBinding;
@@ -358,7 +358,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
         EmbyApi.login(server, username, password, (response) -> {
             log.info("login response: {}", response);
             if (response != null) {
-                var kv = XGET(KVStorage.class);
+                var kv = XGET(IKVStorage.class);
                 assert kv != null;
                 kv.set(remarkKey, remake);
                 kv.set(serverKey, server);
@@ -376,7 +376,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                     action.onSiteUpdate();
                     Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
                     if (isPage) {
-                        XGET(Navigator.class).popPage();
+                        XGET(INavigator.class).popPage();
                     } else {
                         dismiss();
                     }
@@ -398,7 +398,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
         JellyfinApi.login(server, username, password, (response) -> {
             log.info("login response: {}", response);
             if (response != null) {
-                var kv = XGET(KVStorage.class);
+                var kv = XGET(IKVStorage.class);
                 assert kv != null;
                 kv.set(remarkKey, remake);
                 kv.set(serverKey, server);
@@ -416,7 +416,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                     action.onSiteUpdate();
                     Toast.makeText(context, "Login success", Toast.LENGTH_SHORT).show();
                     if (isPage) {
-                        XGET(Navigator.class).popPage();
+                        XGET(INavigator.class).popPage();
                     } else {
                         dismiss();
                     }

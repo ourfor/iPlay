@@ -25,8 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.action.NavigationTitleBar;
-import top.ourfor.app.iplay.bean.Navigator;
-import top.ourfor.app.iplay.bean.PageLifecycle;
+import top.ourfor.app.iplay.bean.INavigator;
+import top.ourfor.app.iplay.bean.IPageLifecycle;
 import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.common.model.HomeTabModel;
 import top.ourfor.app.iplay.config.AppSetting;
@@ -36,7 +36,7 @@ import top.ourfor.app.iplay.util.LayoutUtil;
 import top.ourfor.app.iplay.view.infra.Toolbar;
 
 @Slf4j
-public class Router implements Navigator {
+public class Router implements INavigator {
     private static final HashMap<Integer, PageType> pageType;
     private static Map<Integer, Stack<Page>> navigators;
     private static Integer stackId = null;
@@ -102,7 +102,7 @@ public class Router implements Navigator {
         val childCount = menuView.getChildCount();
         for (int i = 0; i < childCount; i++) {
             menuView.getChildAt(i).setOnLongClickListener(v -> {
-                XGET(Navigator.class).pushPage(R.id.settingPage, null);
+                XGET(INavigator.class).pushPage(R.id.settingPage, null);
                 return true;
             });
         }
@@ -145,7 +145,7 @@ public class Router implements Navigator {
         if (pages.isEmpty()) {
             val page = makePage(id);
             page.create(container.getContext(), new HashMap<>());
-            if (page.view() instanceof PageLifecycle lifecycle) {
+            if (page.view() instanceof IPageLifecycle lifecycle) {
                 lifecycle.onAttach();
             }
             pageId.put(page, id);
@@ -174,7 +174,7 @@ public class Router implements Navigator {
         val view = newPage.view();
         view.setBackgroundResource(R.drawable.bg);
         container.addView(view, LayoutUtil.fill());
-        if (view instanceof PageLifecycle lifecycle) {
+        if (view instanceof IPageLifecycle lifecycle) {
             lifecycle.onAttach();
         }
         pushPageAnimation(oldPage, newPage);
@@ -206,7 +206,7 @@ public class Router implements Navigator {
         view.setBackgroundResource(R.drawable.bg);
         newPage.viewWillAppear();
         container.addView(view, LayoutUtil.fill());
-        if (view instanceof PageLifecycle lifecycle) {
+        if (view instanceof IPageLifecycle lifecycle) {
             lifecycle.onAttach();
         }
         pushPageAnimation(oldPage, newPage);
@@ -219,7 +219,7 @@ public class Router implements Navigator {
         if (pages.isEmpty()) return false;
         val oldPage = pages.pop();
         pageId.remove(oldPage);
-        if (oldPage.view() instanceof PageLifecycle lifecycle) {
+        if (oldPage.view() instanceof IPageLifecycle lifecycle) {
             lifecycle.onDetach();
         }
         val newPage = pages.peek();

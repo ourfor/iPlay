@@ -28,7 +28,7 @@ import java.util.UUID;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import top.ourfor.app.iplay.bean.JSONAdapter;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
 import top.ourfor.app.iplay.util.HTTPUtil;
 import top.ourfor.app.iplay.util.PathUtil;
 import top.ourfor.app.iplay.view.player.Player;
@@ -132,7 +132,7 @@ public class MPVPlayerViewModel implements Player {
             }
             val option = uri.getQueryParameter("option");
             if (option != null) {
-                val map = XGET(JSONAdapter.class).fromJSON(option, Map.class);
+                val map = XGET(IJSONAdapter.class).fromJSON(option, Map.class);
                 applyOption(map);
             }
         }
@@ -150,7 +150,7 @@ public class MPVPlayerViewModel implements Player {
             }
             val option = uri.getQueryParameter("option");
             if (option != null) {
-                val map = XGET(JSONAdapter.class).fromJSON(option, Map.class);
+                val map = XGET(IJSONAdapter.class).fromJSON(option, Map.class);
                 applyOption(map);
             }
         }

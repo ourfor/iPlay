@@ -12,9 +12,9 @@ import androidx.lifecycle.LifecycleRegistry;
 import androidx.lifecycle.ViewModelStore;
 import androidx.lifecycle.ViewModelStoreOwner;
 
-import top.ourfor.app.iplay.bean.PageLifecycle;
+import top.ourfor.app.iplay.bean.IPageLifecycle;
 
-public class LifecycleHolder extends ConstraintLayout implements LifecycleOwner, ViewModelStoreOwner, PageLifecycle {
+public class LifecycleHolder extends ConstraintLayout implements LifecycleOwner, ViewModelStoreOwner, IPageLifecycle {
     private final LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
     public LifecycleHolder(Context context) {

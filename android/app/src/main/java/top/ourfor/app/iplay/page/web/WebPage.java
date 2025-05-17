@@ -30,9 +30,9 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.action.ThemeUpdateAction;
-import top.ourfor.app.iplay.bean.JSONAdapter;
-import top.ourfor.app.iplay.bean.KVStorage;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
+import top.ourfor.app.iplay.bean.IKVStorage;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.config.AppSetting;
 import top.ourfor.app.iplay.databinding.WebPageBinding;
@@ -127,10 +127,10 @@ public class WebPage implements ThemeUpdateAction, Page {
     @JavascriptInterface
     public void postMessage(String msg) {
         log.info("message: {}", msg);
-        var model = XGET(JSONAdapter.class).fromJSON(msg, new TypeReference<WebScriptMessage<String>>() { });
+        var model = XGET(IJSONAdapter.class).fromJSON(msg, new TypeReference<WebScriptMessage<String>>() { });
         log.info(model.getType());
         if (model.getType().equals("play")) {
-            val route = XGET(Navigator.class);
+            val route = XGET(INavigator.class);
             val args = new HashMap<String, Object>();
             args.put("url", model.getData());
             XGET(Activity.class).runOnUiThread(() -> {
@@ -141,7 +141,7 @@ public class WebPage implements ThemeUpdateAction, Page {
 
     void injectJs() {
         var webview = binding.webview;
-        var script = XGET(KVStorage.class).get("@script");
+        var script = XGET(IKVStorage.class).get("@script");
         if (script == null) return;
         XGET(Activity.class).runOnUiThread(() -> {
             webview.loadUrl("javascript:" + script);

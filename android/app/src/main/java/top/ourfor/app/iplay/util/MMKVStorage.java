@@ -9,10 +9,10 @@ import android.content.SharedPreferences;
 import com.tencent.mmkv.MMKV;
 
 import lombok.val;
-import top.ourfor.app.iplay.bean.JSONAdapter;
-import top.ourfor.app.iplay.bean.KVStorage;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
+import top.ourfor.app.iplay.bean.IKVStorage;
 
-public class MMKVStorage implements KVStorage {
+public class MMKVStorage implements IKVStorage {
     public static final MMKVStorage shared = new MMKVStorage();
 
     public MMKV client;
@@ -47,13 +47,13 @@ public class MMKVStorage implements KVStorage {
 
     @Override
     public <T> T getObject(String key, Class<T> clazz) {
-        JSONAdapter adapter = XGET(JSONAdapter.class);
+        IJSONAdapter adapter = XGET(IJSONAdapter.class);
         return (T)adapter.fromJSON(get(key), clazz);
     }
 
     @Override
     public void setObject(String key, Object obj) {
-        JSONAdapter adapter = XGET(JSONAdapter.class);
+        IJSONAdapter adapter = XGET(IJSONAdapter.class);
         set(key, adapter.toJSON(obj));
     }
 }

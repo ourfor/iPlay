@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 import top.ourfor.app.iplay.R;
-import top.ourfor.app.iplay.bean.KVStorage;
+import top.ourfor.app.iplay.bean.IKVStorage;
 import top.ourfor.app.iplay.databinding.ScriptManageBinding;
 import top.ourfor.app.iplay.util.DeviceUtil;
 
@@ -39,11 +39,11 @@ public class ScriptManageView extends ConstraintLayout {
     }
 
     private void bind() {
-        viewModel.value = XGET(KVStorage.class).get("@script");
+        viewModel.value = XGET(IKVStorage.class).get("@script");
         setupTextArea();
 
         binding.saveButton.setOnClickListener(v -> {
-            val kv = XGET(KVStorage.class);
+            val kv = XGET(IKVStorage.class);
             if (kv != null) {
                 kv.set("@script", viewModel.value);
             }

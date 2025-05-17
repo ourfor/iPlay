@@ -18,7 +18,7 @@ import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.action.DispatchAction;
 import top.ourfor.app.iplay.action.NavigationTitleBar;
 import top.ourfor.app.iplay.api.emby.EmbyModel;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.databinding.EpisodePageBinding;
 import top.ourfor.app.iplay.model.MediaModel;
@@ -144,7 +144,7 @@ public class EpisodePage implements Page {
             val model = e.getModel();
             val args = new HashMap<String, Object>();
             args.put("id", model.getId());
-            XGET(Navigator.class).pushPage(R.id.playerPage, args);
+            XGET(INavigator.class).pushPage(R.id.playerPage, args);
         };
 
         val seasonEpisodes = store.getDataSource().getSeasonEpisodes();

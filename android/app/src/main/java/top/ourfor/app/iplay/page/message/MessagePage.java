@@ -24,7 +24,7 @@ import lombok.val;
 import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.action.SiteUpdateAction;
 import top.ourfor.app.iplay.action.ThemeUpdateAction;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.model.MediaModel;
 import top.ourfor.app.iplay.util.AnimationUtil;
@@ -85,7 +85,7 @@ public class MessagePage extends Fragment implements SiteUpdateAction, ThemeUpda
                 args.put("id", model.getId());
                 args.put("title", model.getName());
                 args.put("type", model.getType());
-                XGET(Navigator.class).pushPage(R.id.mediaPage, args);
+                XGET(INavigator.class).pushPage(R.id.mediaPage, args);
             }
         };
         XWATCH(SiteUpdateAction.class, this);

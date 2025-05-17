@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import top.ourfor.app.iplay.bean.JSONAdapter;
-import top.ourfor.app.iplay.bean.KVStorage;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
+import top.ourfor.app.iplay.bean.IKVStorage;
 import top.ourfor.app.iplay.config.AppSetting;
 import top.ourfor.app.iplay.module.FontModule;
 import top.ourfor.app.iplay.store.SimpleInMemoryStore;
@@ -38,8 +38,8 @@ public class App extends Application {
         DeviceUtil.init(context);
         XSET(Application.class, this);
         XSET(Context.class, context);
-        XSET(JSONAdapter.class, JacksonJsonAdapter.shared);
-        XSET(KVStorage.class, MMKVStorage.shared);
+        XSET(IJSONAdapter.class, JacksonJsonAdapter.shared);
+        XSET(IKVStorage.class, MMKVStorage.shared);
         XSET(IAppStore.class, SimpleInMemoryStore.shared);
         // get device cpu core count
         val coreCount = DeviceUtil.cpuCoreCount();

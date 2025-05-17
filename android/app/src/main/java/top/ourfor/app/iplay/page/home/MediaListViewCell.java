@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.api.emby.EmbyModel;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.model.IMediaModel;
 import top.ourfor.app.iplay.action.UpdateModelAction;
 import top.ourfor.app.iplay.common.type.MediaType;
@@ -148,7 +148,7 @@ public class MediaListViewCell extends ConstraintLayout implements UpdateModelAc
         listView.viewModel.onClick = (event) -> {
             if (event == null) return;
             log.info("event: {}", event);
-            val route = XGET(Navigator.class);
+            val route = XGET(INavigator.class);
             val args = new HashMap<String, Object>();
             val m = event.getModel();
             String id = null;
@@ -182,7 +182,7 @@ public class MediaListViewCell extends ConstraintLayout implements UpdateModelAc
         listView.resetItems(medias);
 
         viewMoreLabel.setOnClickListener(v -> {
-            val route = XGET(Navigator.class);
+            val route = XGET(INavigator.class);
             val args = new HashMap<String, Object>();
             args.put("id", data.getAlbum().getId());
             args.put("title", data.getAlbum().getTitle());

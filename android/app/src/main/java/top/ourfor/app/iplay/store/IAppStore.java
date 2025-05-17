@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import top.ourfor.app.iplay.api.emby.EmbyModel;
-import top.ourfor.app.iplay.bean.JSONAdapter;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
 import top.ourfor.app.iplay.common.api.IDataSourceApi;
 import top.ourfor.app.iplay.common.type.MediaPlayState;
 import top.ourfor.app.iplay.common.type.MediaType;
@@ -32,7 +32,7 @@ public interface IAppStore {
     }
 
     default String toJSON() {
-        return XGET(JSONAdapter.class).toJSON(this);
+        return XGET(IJSONAdapter.class).toJSON(this);
     }
 
     default String toSiteJSON() {

@@ -21,7 +21,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.BufferedSink;
 import okio.Okio;
-import top.ourfor.app.iplay.bean.JSONAdapter;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
 
 @Slf4j
 public class HTTPUtil {
@@ -143,13 +143,13 @@ public class HTTPUtil {
             public void onResponse(Call call, Response response) throws IOException {
                 if (model.typeReference != null) {
                     String body = response.body().string();
-                    val adapter = XGET(JSONAdapter.class);
+                    val adapter = XGET(IJSONAdapter.class);
                     T obj = adapter.fromJSON(body, model.typeReference);
                     completion.accept(obj);
                     return;
                 } else if (model.getModelClass() != null) {
                     String body = response.body().string();
-                    val adapter = XGET(JSONAdapter.class);
+                    val adapter = XGET(IJSONAdapter.class);
                     val clazz = model.getModelClass();
                     if (clazz == String.class) {
                         completion.accept((T) body);

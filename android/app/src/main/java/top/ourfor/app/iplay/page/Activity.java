@@ -47,12 +47,11 @@ import top.ourfor.app.iplay.action.LayoutUpdateAction;
 import top.ourfor.app.iplay.action.NavigationTitleBar;
 import top.ourfor.app.iplay.action.ThemeUpdateAction;
 import top.ourfor.app.iplay.api.onedrive.OneDriveApi;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.type.LayoutType;
 import top.ourfor.app.iplay.config.AppSetting;
 import top.ourfor.app.iplay.databinding.ActivityBinding;
 import top.ourfor.app.iplay.module.CacheModule;
-import top.ourfor.app.iplay.module.ModuleManager;
 import top.ourfor.app.iplay.page.setting.theme.ThemeColorModel;
 import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.DeviceUtil;
@@ -119,7 +118,7 @@ public class Activity extends AppCompatActivity implements NavigationTitleBar,
 
         router = new Router(binding.container, binding.bottomNavigation, binding.toolbar);
         router.scanPage();
-        XSET(Navigator.class, router);
+        XSET(INavigator.class, router);
         setContentView(binding.getRoot());
 
         updateNavBar();
@@ -157,13 +156,13 @@ public class Activity extends AppCompatActivity implements NavigationTitleBar,
 
     @Override
     public boolean onSupportNavigateUp() {
-        return XGET(Navigator.class).popPage();
+        return XGET(INavigator.class).popPage();
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            val navigator = XGET(Navigator.class);
+            val navigator = XGET(INavigator.class);
             if (navigator.canGoBack()) {
                 return navigator.popPage();
             }
@@ -271,7 +270,7 @@ public class Activity extends AppCompatActivity implements NavigationTitleBar,
                     val bundle = new HashMap<String, Object>();
                     bundle.put("url", url);
                     XGET(DispatchAction.class).runOnUiThread(() -> {
-                        XGET(Navigator.class).pushPage(R.id.playerPage, bundle);
+                        XGET(INavigator.class).pushPage(R.id.playerPage, bundle);
                     });
                 }
             }

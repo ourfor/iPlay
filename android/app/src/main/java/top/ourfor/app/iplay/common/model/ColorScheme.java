@@ -16,7 +16,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import lombok.val;
-import top.ourfor.app.iplay.bean.JSONAdapter;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
 import top.ourfor.app.iplay.util.PathUtil;
 
 @Data
@@ -38,7 +38,7 @@ public class ColorScheme {
             val is = application.getAssets().open("color.json");
             val content = PathUtil.getContent(is);
             is.close();
-            return XGET(JSONAdapter.class).fromJSON(content, ColorScheme.class);
+            return XGET(IJSONAdapter.class).fromJSON(content, ColorScheme.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

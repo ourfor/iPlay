@@ -1,6 +1,6 @@
 package top.ourfor.app.iplay.bean;
 
-public interface KVStorage {
+public interface IKVStorage {
     default void set(String key, String value) {};
     default String get(String key) { return null; }
     default <T> T getObject(String key, Class<T> clazz) { return null; }

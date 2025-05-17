@@ -21,7 +21,7 @@ import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplay.api.emby.EmbyModel;
-import top.ourfor.app.iplay.bean.JSONAdapter;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
 import top.ourfor.app.iplay.common.api.IDataSourceApi;
 import top.ourfor.app.iplay.common.model.SiteEndpointModel;
 import top.ourfor.app.iplay.common.type.MediaLayoutType;
@@ -399,7 +399,7 @@ public class iPlayApi implements IDataSourceApi {
                         "Authorization", site.getAccessToken(),
                         "Content-Type", "application/json"
                 ))
-                .body(XGET(JSONAdapter.class).toJSON(Map.of(
+                .body(XGET(IJSONAdapter.class).toJSON(Map.of(
                         "mediaId", id,
                         "favorite", isFavorite
                 )))

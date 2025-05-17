@@ -29,7 +29,7 @@ import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.action.AnimationAction;
 import top.ourfor.app.iplay.action.SiteUpdateAction;
 import top.ourfor.app.iplay.action.ThemeUpdateAction;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.common.model.ColorScheme;
 import top.ourfor.app.iplay.databinding.SearchPageBinding;
@@ -197,7 +197,7 @@ public class SearchPage implements SiteUpdateAction, ThemeUpdateAction, Page {
             args.put("id", model.getId());
             args.put("title", model.getName());
             args.put("type", model.getType());
-            XGET(Navigator.class).pushPage(R.id.mediaPage, args);
+            XGET(INavigator.class).pushPage(R.id.mediaPage, args);
         };
         binding.searchView.setIconifiedByDefault(false);
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

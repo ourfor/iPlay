@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.val;
 import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.action.NavigationTitleBar;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.common.type.MediaLayoutType;
 import top.ourfor.app.iplay.common.type.MediaType;
@@ -191,7 +191,7 @@ public class AlbumPage implements Page {
             } else if (isAlbum) {
                 dstId = R.id.albumPage;
             }
-            XGET(Navigator.class).pushPage(dstId, bundle);
+            XGET(INavigator.class).pushPage(dstId, bundle);
         };
 
 

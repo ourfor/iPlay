@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.action.UpdateModelAction;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.model.IMediaModel;
 import top.ourfor.app.iplay.common.type.MediaType;
 import top.ourfor.app.iplay.model.MediaModel;
@@ -149,7 +149,7 @@ public class MediaStarListViewCell extends ConstraintLayout implements UpdateMod
                         args.put("seasonId", media.getId());
                     }
                 }
-                XGET(Navigator.class).pushPage(dstId, args);
+                XGET(INavigator.class).pushPage(dstId, args);
             };
             post(() -> listView.reloadData());
 
@@ -157,7 +157,7 @@ public class MediaStarListViewCell extends ConstraintLayout implements UpdateMod
                 val args = new HashMap<String, Object>();
                 args.put("type", data.getType().name());
                 args.put("title", data.getName());
-                XGET(Navigator.class).pushPage(R.id.albumPage, args);
+                XGET(INavigator.class).pushPage(R.id.albumPage, args);
             });
         }
     }

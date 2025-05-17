@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import top.ourfor.app.iplay.bean.JSONAdapter;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
 
 public class NetworkUtil {
     public static class SiteInfo {
@@ -86,7 +86,7 @@ public class NetworkUtil {
             if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
 
             String responseBody = response.body().string();
-            var json = XGET(JSONAdapter.class).fromJSON(responseBody, Map.class);
+            var json = XGET(IJSONAdapter.class).fromJSON(responseBody, Map.class);
             return json.get("country").toString();
         }
     }

@@ -8,10 +8,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Type;
 
 import lombok.extern.slf4j.Slf4j;
-import top.ourfor.app.iplay.bean.JSONAdapter;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
 
 @Slf4j
-public class JacksonJsonAdapter implements JSONAdapter {
+public class JacksonJsonAdapter implements IJSONAdapter {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     public static JacksonJsonAdapter shared = new JacksonJsonAdapter();

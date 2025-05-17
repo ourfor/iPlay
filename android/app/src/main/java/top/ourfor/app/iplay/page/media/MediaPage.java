@@ -24,7 +24,7 @@ import lombok.val;
 import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.action.DispatchAction;
 import top.ourfor.app.iplay.action.NavigationTitleBar;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.common.model.ColorScheme;
 import top.ourfor.app.iplay.common.model.IMediaModel;
@@ -197,7 +197,7 @@ public class MediaPage implements Page {
             binding.watchButton.setOnClickListener(v -> {
                 val args = new HashMap<String, Object>();
                 args.put("id", model.getId());
-                XGET(Navigator.class).pushPage(R.id.playerPage, args);
+                XGET(INavigator.class).pushPage(R.id.playerPage, args);
             });
             if (!DeviceUtil.isTV) {
                 val layout = (ConstraintLayout.LayoutParams)binding.watchButton.getLayoutParams();
@@ -302,7 +302,7 @@ public class MediaPage implements Page {
                 dstId = R.id.episodePage;
             }
             store.getDataSource().getMediaMap().put(model.getId(), model);
-            XGET(Navigator.class).pushPage(dstId, args);
+            XGET(INavigator.class).pushPage(dstId, args);
         };
         binding.similarList.addView(similarList, LayoutUtil.fit());
         viewModel.fetchSimilar(id);
@@ -324,7 +324,7 @@ public class MediaPage implements Page {
                 args.put("id", actorId);
                 args.put("title", actor.getName());
                 args.put("type", MediaType.Actor.name());
-                XGET(Navigator.class).pushPage(R.id.albumPage, args);
+                XGET(INavigator.class).pushPage(R.id.albumPage, args);
             };
             binding.actorList.addView(actorList);
             binding.actorList.requestLayout();

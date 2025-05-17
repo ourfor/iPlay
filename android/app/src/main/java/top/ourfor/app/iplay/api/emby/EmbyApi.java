@@ -21,7 +21,7 @@ import lombok.Setter;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import top.ourfor.app.iplay.bean.JSONAdapter;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
 import top.ourfor.app.iplay.common.api.IDataSourceApi;
 import top.ourfor.app.iplay.common.type.MediaPlayState;
 import top.ourfor.app.iplay.model.AlbumModel;
@@ -556,7 +556,7 @@ public class EmbyApi implements IDataSourceApi {
         var model = HTTPModel.<EmbyModel.EmbyUserData>builder()
                 .url(site.getEndpoint().getBaseUrl() + "emby/Sessions/Playing/" + playState)
                 .method("POST")
-                .body(XGET(JSONAdapter.class).toJSON(data))
+                .body(XGET(IJSONAdapter.class).toJSON(data))
                 .headers(Map.of(
                         "X-Emby-Token", site.getAccessToken(),
                         "Content-Type", "application/json",

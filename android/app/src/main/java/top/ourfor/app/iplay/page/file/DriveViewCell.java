@@ -14,7 +14,7 @@ import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.action.DispatchAction;
 import top.ourfor.app.iplay.action.DriveUpdateAction;
 import top.ourfor.app.iplay.action.UpdateModelAction;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.databinding.DriveCellBinding;
 import top.ourfor.app.iplay.model.drive.Drive;
 import top.ourfor.app.iplay.store.IAppStore;
@@ -57,7 +57,7 @@ public class DriveViewCell extends ConstraintLayout implements UpdateModelAction
         binding.content.setOnClickListener(v -> callOnClick());
         binding.delete.setOnClickListener(v -> XGET(IAppStore.class).removeDrive(model));
         binding.modify.setOnClickListener(v -> {
-            val id = XGET(Navigator.class).getCurrentPageId();
+            val id = XGET(INavigator.class).getCurrentPageId();
             if (id == R.id.sitePage) {
                 val action = XGET(DriveUpdateAction.class);
                 if (action == null) return;

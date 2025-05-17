@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.databinding.PlayerConfigPanelBinding;
 import top.ourfor.app.iplay.model.MediaModel;
 import top.ourfor.app.iplay.view.LifecycleHolder;
@@ -73,7 +73,7 @@ public class PlayerConfigPanelView extends LifecycleHolder {
                 onPlayButtonClick.accept(v);
             }
 
-            var navigator = XGET(Navigator.class);
+            var navigator = XGET(INavigator.class);
             assert navigator != null;
             navigator.pushPage("movie_player_page", Map.of(
                     "source", PlayerConfigPanelViewModel.MediaSourceModel.builder()

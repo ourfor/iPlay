@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import top.ourfor.app.iplay.api.file.File;
 import top.ourfor.app.iplay.api.file.FileType;
-import top.ourfor.app.iplay.bean.JSONAdapter;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
 import top.ourfor.app.iplay.model.drive.AlistDriveModel;
 import top.ourfor.app.iplay.util.HTTPModel;
 import top.ourfor.app.iplay.util.HTTPUtil;
@@ -33,7 +33,7 @@ public class AlistApi {
                 .url(server + (server.endsWith("/") ? "" : "/") + "api/auth/login/hash")
                 .method("POST")
                 .headers(Map.of("Content-Type", "application/json"))
-                .body(XGET(JSONAdapter.class).toJSON(Map.of("username", username, "password", sha256(password+"-https://github.com/alist-org/alist"))))
+                .body(XGET(IJSONAdapter.class).toJSON(Map.of("username", username, "password", sha256(password+"-https://github.com/alist-org/alist"))))
                 .typeReference(new TypeReference<AlistModel.AlistResponse<AlistModel.AlistAuth>>() {})
                 .build();
         HTTPUtil.request(request, response -> {
@@ -76,7 +76,7 @@ public class AlistApi {
                 .url(server + (server.endsWith("/") ? "" : "/") + "api/fs/list")
                 .method("POST")
                 .headers(Map.of("Content-Type", "application/json", "Authorization", drive.getToken()))
-                .body(XGET(JSONAdapter.class).toJSON(Map.of("path", path, "refresh", false, "page", 1, "per_page", 1000, "password", "")))
+                .body(XGET(IJSONAdapter.class).toJSON(Map.of("path", path, "refresh", false, "page", 1, "per_page", 1000, "password", "")))
                 .typeReference(new TypeReference<AlistModel.AlistResponse<AlistModel.AlistFileList>>() {})
                 .build();
         HTTPUtil.request(request, response -> {

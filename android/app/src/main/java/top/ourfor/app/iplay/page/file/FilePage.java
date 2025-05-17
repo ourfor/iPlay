@@ -33,7 +33,7 @@ import top.ourfor.app.iplay.action.ThemeUpdateAction;
 import top.ourfor.app.iplay.api.file.File;
 import top.ourfor.app.iplay.api.file.FileProviderFactory;
 import top.ourfor.app.iplay.api.file.FileType;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.common.type.ServerType;
 import top.ourfor.app.iplay.databinding.FilePageBinding;
@@ -169,7 +169,7 @@ public class FilePage implements DriveUpdateAction, ThemeUpdateAction, Page {
                     bundle.put("url", url);
                     bundle.put("title", file.getName());
                     XGET(DispatchAction.class).runOnUiThread(() -> {
-                        XGET(Navigator.class).pushPage(R.id.playerPage, bundle);
+                        XGET(INavigator.class).pushPage(R.id.playerPage, bundle);
                     });
                 });
             }

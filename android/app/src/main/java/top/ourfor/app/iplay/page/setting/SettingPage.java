@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.val;
 import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.action.ThemeUpdateAction;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.databinding.SettingPageBinding;
 import top.ourfor.app.iplay.page.Page;
@@ -56,7 +56,7 @@ public class SettingPage implements ThemeUpdateAction, Page {
     void setupUI(Context context) {
         listView.viewModel.viewCell = SettingItemViewCell.class;
         listView.viewModel.onClick = (ListItemClickEvent<SettingItemModel> event) -> {
-            val navigator = XGET(Navigator.class);
+            val navigator = XGET(INavigator.class);
             assert navigator != null;
             val type = event.getModel().type;
             switch (type) {

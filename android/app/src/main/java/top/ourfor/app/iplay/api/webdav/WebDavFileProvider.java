@@ -16,7 +16,7 @@ import lombok.val;
 import top.ourfor.app.iplay.api.file.File;
 import top.ourfor.app.iplay.api.file.FileProvider;
 import top.ourfor.app.iplay.api.file.FileType;
-import top.ourfor.app.iplay.bean.JSONAdapter;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
 import top.ourfor.app.iplay.model.WebDavSiteModel;
 import top.ourfor.app.iplay.model.drive.WebDAVModel;
 import top.ourfor.app.iplay.util.HTTPUtil;
@@ -65,7 +65,7 @@ public class WebDavFileProvider implements FileProvider {
 
         val url = Uri.parse("iplay://play/webdav").buildUpon()
                 .appendQueryParameter("source", source)
-                .appendQueryParameter("option", XGET(JSONAdapter.class).toJSON(option))
+                .appendQueryParameter("option", XGET(IJSONAdapter.class).toJSON(option))
                 .build().toString();
         completion.accept(url);
     }

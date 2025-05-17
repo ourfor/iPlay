@@ -37,8 +37,8 @@ import top.ourfor.app.iplay.api.emby.EmbyApi;
 import top.ourfor.app.iplay.api.emby.EmbyModel;
 import top.ourfor.app.iplay.api.iplay.iPlayApi;
 import top.ourfor.app.iplay.api.jellyfin.JellyfinApi;
-import top.ourfor.app.iplay.bean.JSONAdapter;
-import top.ourfor.app.iplay.bean.KVStorage;
+import top.ourfor.app.iplay.bean.IJSONAdapter;
+import top.ourfor.app.iplay.bean.IKVStorage;
 import top.ourfor.app.iplay.common.api.IDataSourceApi;
 import top.ourfor.app.iplay.common.type.MediaPlayState;
 import top.ourfor.app.iplay.common.type.MediaType;
@@ -85,7 +85,7 @@ public class SimpleInMemoryStore implements IAppStore {
     }
 
     public static SimpleInMemoryStore defaultStore() {
-        KVStorage kv = XGET(KVStorage.class);
+        IKVStorage kv = XGET(IKVStorage.class);
         SimpleInMemoryStore instance = kv.getObject(storeKey, SimpleInMemoryStore.class);
         if (instance == null) {
             instance = new SimpleInMemoryStore();
@@ -158,17 +158,17 @@ public class SimpleInMemoryStore implements IAppStore {
 
 
     public void save() {
-        KVStorage kv = XGET(KVStorage.class);
+        IKVStorage kv = XGET(IKVStorage.class);
         kv.setObject(storeKey, this);
     }
 
     public String toJSON() {
-        return XGET(JSONAdapter.class).toJSON(this);
+        return XGET(IJSONAdapter.class).toJSON(this);
     }
 
     public String toSiteJSON() {
         val store = this.withDataSource(null);
-        return XGET(JSONAdapter.class).toJSON(store);
+        return XGET(IJSONAdapter.class).toJSON(store);
     }
 
     public String toSiteJSON(boolean filterSync) {
@@ -176,11 +176,11 @@ public class SimpleInMemoryStore implements IAppStore {
         if (filterSync) {
             store.sites.removeIf(site -> !site.isSync());
         }
-        return XGET(JSONAdapter.class).toJSON(store);
+        return XGET(IJSONAdapter.class).toJSON(store);
     }
 
     public void fromJSON(String json) {
-        val store = XGET(JSONAdapter.class).fromJSON(json, SimpleInMemoryStore.class);
+        val store = XGET(IJSONAdapter.class).fromJSON(json, SimpleInMemoryStore.class);
         if (store == null) return;
         this.site = store.site;
         this.sites = store.sites;
@@ -188,7 +188,7 @@ public class SimpleInMemoryStore implements IAppStore {
     }
 
     public void fromSiteJSON(String json) {
-        val store = XGET(JSONAdapter.class).fromJSON(json, SimpleInMemoryStore.class);
+        val store = XGET(IJSONAdapter.class).fromJSON(json, SimpleInMemoryStore.class);
         if (store == null) return;
         this.site = store.site;
         this.sites = store.sites;

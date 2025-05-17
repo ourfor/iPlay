@@ -18,7 +18,7 @@ import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.action.DispatchAction;
 import top.ourfor.app.iplay.action.SiteUpdateAction;
 import top.ourfor.app.iplay.action.UpdateModelAction;
-import top.ourfor.app.iplay.bean.Navigator;
+import top.ourfor.app.iplay.bean.INavigator;
 import top.ourfor.app.iplay.databinding.SiteCellBinding;
 import top.ourfor.app.iplay.module.GlideApp;
 import top.ourfor.app.iplay.util.DeviceUtil;
@@ -83,11 +83,11 @@ public class SiteViewCell extends ConstraintLayout implements UpdateModelAction 
     void bind() {
         binding.content.setOnClickListener(v -> callOnClick());
         binding.delete.setOnClickListener(v -> XGET(IAppStore.class).removeSite(model));
-        val currentPageId = XGET(Navigator.class).getCurrentPageId();
+        val currentPageId = XGET(INavigator.class).getCurrentPageId();
         boolean allowModify = currentPageId == R.id.sitePage || currentPageId == R.id.settingPage;
         binding.modify.setVisibility(allowModify ? VISIBLE : GONE);
         binding.modify.setOnClickListener(v -> {
-            val pageId = XGET(Navigator.class).getCurrentPageId();
+            val pageId = XGET(INavigator.class).getCurrentPageId();
             if (pageId == R.id.sitePage || pageId == R.id.settingPage) {
                 val action = XGET(SiteUpdateAction.class);
                 if (action == null) return;
