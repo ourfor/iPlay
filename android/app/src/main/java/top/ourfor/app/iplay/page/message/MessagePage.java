@@ -30,7 +30,7 @@ import top.ourfor.app.iplay.model.MediaModel;
 import top.ourfor.app.iplay.util.AnimationUtil;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.util.LayoutUtil;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.view.ListView;
 
 @ViewController(name = "message_page")
@@ -97,7 +97,7 @@ public class MessagePage extends Fragment implements SiteUpdateAction, ThemeUpda
 
     @Override
     public void onSiteUpdate() {
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         store.getResume(resumes -> {
             if (resumes == null) {
                 stopRefresh();

@@ -23,7 +23,7 @@ import top.ourfor.app.iplay.databinding.SiteCellBinding;
 import top.ourfor.app.iplay.module.GlideApp;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.model.SiteModel;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 
 @Slf4j
 public class SiteViewCell extends ConstraintLayout implements UpdateModelAction {
@@ -82,7 +82,7 @@ public class SiteViewCell extends ConstraintLayout implements UpdateModelAction 
 
     void bind() {
         binding.content.setOnClickListener(v -> callOnClick());
-        binding.delete.setOnClickListener(v -> XGET(GlobalStore.class).removeSite(model));
+        binding.delete.setOnClickListener(v -> XGET(IAppStore.class).removeSite(model));
         val currentPageId = XGET(Navigator.class).getCurrentPageId();
         boolean allowModify = currentPageId == R.id.sitePage || currentPageId == R.id.settingPage;
         binding.modify.setVisibility(allowModify ? VISIBLE : GONE);

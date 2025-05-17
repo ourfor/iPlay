@@ -9,7 +9,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import top.ourfor.app.iplay.model.MediaModel;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 
 @NoArgsConstructor
 public class MediaViewModel extends ViewModel {
@@ -21,9 +21,9 @@ public class MediaViewModel extends ViewModel {
     private final MutableLiveData<List<MediaModel>> similar = new MutableLiveData<>();
 
 
-    GlobalStore store;
+    IAppStore store;
 
-    MediaViewModel(GlobalStore store) {
+    MediaViewModel(IAppStore store) {
         this.store = store;
     }
 

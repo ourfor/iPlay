@@ -22,7 +22,7 @@ import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.api.emby.EmbyModel;
 import top.ourfor.app.iplay.common.type.MediaLayoutType;
 import top.ourfor.app.iplay.model.AlbumModel;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 
 @Slf4j
 @Getter
@@ -34,9 +34,9 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<Boolean> hasValidSite = new MutableLiveData<>(false);
     private boolean isFirstLoad = true;
 
-    GlobalStore store;
+    IAppStore store;
 
-    HomeViewModel(GlobalStore store) {
+    HomeViewModel(IAppStore store) {
         this.store = store;
     }
 

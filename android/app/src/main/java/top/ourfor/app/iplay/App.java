@@ -19,11 +19,12 @@ import top.ourfor.app.iplay.bean.JSONAdapter;
 import top.ourfor.app.iplay.bean.KVStorage;
 import top.ourfor.app.iplay.config.AppSetting;
 import top.ourfor.app.iplay.module.FontModule;
+import top.ourfor.app.iplay.store.SimpleInMemoryStore;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.util.JacksonJsonAdapter;
 import top.ourfor.app.iplay.util.MMKVStorage;
 import top.ourfor.app.iplay.module.CrashManager;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 
 @Slf4j
 public class App extends Application {
@@ -39,7 +40,7 @@ public class App extends Application {
         XSET(Context.class, context);
         XSET(JSONAdapter.class, JacksonJsonAdapter.shared);
         XSET(KVStorage.class, MMKVStorage.shared);
-        XSET(GlobalStore.class, GlobalStore.shared);
+        XSET(IAppStore.class, SimpleInMemoryStore.shared);
         // get device cpu core count
         val coreCount = DeviceUtil.cpuCoreCount();
         executor = new ThreadPoolExecutor(coreCount, coreCount * 2, 60, TimeUnit.SECONDS, new LinkedBlockingQueue<>());

@@ -22,7 +22,7 @@ import top.ourfor.app.iplay.bean.Navigator;
 import top.ourfor.app.iplay.common.type.MediaLayoutType;
 import top.ourfor.app.iplay.model.MediaModel;
 import top.ourfor.app.iplay.page.home.MediaViewCell;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.view.LinearLayoutManager;
 import top.ourfor.app.iplay.view.ListItemClickEvent;
 import top.ourfor.app.iplay.view.ListView;
@@ -84,7 +84,7 @@ public class SeasonPageAdapter extends PagerAdapter {
             XGET(Navigator.class).pushPage(dstId, args);
         };
         seasonList.viewModel.onClick = onClick;
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         for (var season : seasons) {
             ListView<MediaModel> listView = new ListView<>(context);
             listView.listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));

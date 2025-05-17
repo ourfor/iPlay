@@ -16,7 +16,7 @@ import top.ourfor.app.iplay.action.UpdateModelAction;
 import top.ourfor.app.iplay.common.model.ColorScheme;
 import top.ourfor.app.iplay.databinding.SiteLineCellBinding;
 import top.ourfor.app.iplay.model.SiteLineModel;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.util.NetworkUtil;
 
@@ -88,9 +88,9 @@ public class SiteLineViewCell extends ConstraintLayout implements UpdateModelAct
         binding.content.setOnClickListener(v -> callOnClick());
 
         binding.delete.setOnClickListener(v -> {
-            val globalStore = XGET(GlobalStore.class);
-            globalStore.getSite().getEndpoints().remove(model);
-            globalStore.save();
+            val IAppStore = XGET(IAppStore.class);
+            IAppStore.getSite().getEndpoints().remove(model);
+            IAppStore.save();
             XGET(SiteLineUpdateAction.class).updateSiteLines();
         });
 

@@ -54,7 +54,7 @@ import top.ourfor.app.iplay.databinding.ActivityBinding;
 import top.ourfor.app.iplay.module.CacheModule;
 import top.ourfor.app.iplay.module.ModuleManager;
 import top.ourfor.app.iplay.page.setting.theme.ThemeColorModel;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.util.PackageUtil;
 import top.ourfor.app.iplay.util.PathUtil;
@@ -66,7 +66,7 @@ import top.ourfor.app.iplay.view.player.Player;
 public class Activity extends AppCompatActivity implements NavigationTitleBar,
         DispatchAction, NavigationTitleBar.ThemeManageAction, ThemeUpdateAction, LayoutUpdateAction {
     CacheModule cacheModule;
-    GlobalStore store;
+    IAppStore store;
     private ActivityBinding binding = null;
 
     Router router;
@@ -81,7 +81,7 @@ public class Activity extends AppCompatActivity implements NavigationTitleBar,
         super.onCreate(savedInstanceState);
         XSET(android.app.Activity.class, this);
         XSET(Activity.class, this);
-        store = XGET(GlobalStore.class);
+        store = XGET(IAppStore.class);
         cacheModule = new CacheModule();
         cacheModule.clean();
         event.register();

@@ -25,7 +25,7 @@ import top.ourfor.app.iplay.model.MediaModel;
 import top.ourfor.app.iplay.page.Page;
 import top.ourfor.app.iplay.util.AnimationUtil;
 import top.ourfor.app.iplay.util.DeviceUtil;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.WindowUtil;
 import top.ourfor.app.iplay.view.EpisodeCellView;
 import top.ourfor.app.iplay.view.ListView;
@@ -42,7 +42,7 @@ public class EpisodePage implements Page {
     private String seriesId = null;
     private String seasonId = null;
 
-    GlobalStore store;
+    IAppStore store;
     EpisodeViewModel viewModel;
     HashMap<String, Object> params;
     @Getter
@@ -55,7 +55,7 @@ public class EpisodePage implements Page {
         seriesId = args.getOrDefault("seriesId", "").toString();
         seasonId = args.getOrDefault("seasonId", "").toString();
         binding = EpisodePageBinding.inflate(LayoutInflater.from(context));
-        store = XGET(GlobalStore.class);
+        store = XGET(IAppStore.class);
         val view = binding.getRoot();
         viewModel = new EpisodeViewModel();
         if (seriesId == null) return;

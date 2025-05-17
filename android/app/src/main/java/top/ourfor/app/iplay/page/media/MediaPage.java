@@ -35,7 +35,7 @@ import top.ourfor.app.iplay.model.MediaModel;
 import top.ourfor.app.iplay.module.GlideApp;
 import top.ourfor.app.iplay.page.Page;
 import top.ourfor.app.iplay.page.home.MediaViewCell;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.util.LayoutUtil;
 import top.ourfor.app.iplay.util.WindowUtil;
@@ -59,13 +59,13 @@ public class MediaPage implements Page {
     Context context;
     Map<String, Object> params;
     MediaPageBinding binding;
-    GlobalStore store;
+    IAppStore store;
     MediaViewModel viewModel;
 
 
     public void init() {
         binding = MediaPageBinding.inflate(LayoutInflater.from(context), null, false);
-        store = XGET(GlobalStore.class);
+        store = XGET(IAppStore.class);
         viewModel = new MediaViewModel(store);
         val view = binding.getRoot();
         viewModel.getMedia().observe(view, detail -> {

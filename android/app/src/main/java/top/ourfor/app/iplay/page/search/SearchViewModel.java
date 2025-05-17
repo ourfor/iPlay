@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import top.ourfor.app.iplay.model.MediaModel;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 
 @Slf4j
 @Getter
@@ -22,9 +22,9 @@ public class SearchViewModel extends ViewModel {
     private final MutableLiveData<String> keyword = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> isSearchTipVisible = new MutableLiveData<>(true);
 
-    GlobalStore store;
+    IAppStore store;
 
-    SearchViewModel(GlobalStore store) {
+    SearchViewModel(IAppStore store) {
         this.store = store;
     }
 

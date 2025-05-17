@@ -30,7 +30,7 @@ import top.ourfor.app.iplay.bean.PageLifecycle;
 import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.common.model.HomeTabModel;
 import top.ourfor.app.iplay.config.AppSetting;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.AnnotationUtil;
 import top.ourfor.app.iplay.util.LayoutUtil;
 import top.ourfor.app.iplay.view.infra.Toolbar;
@@ -256,7 +256,7 @@ public class Router implements Navigator {
         };
         if (title != R.string.menu_unknown) {
             if (page == PageType.HOME) {
-                val store = XGET(GlobalStore.class);
+                val store = XGET(IAppStore.class);
                 XGET(NavigationTitleBar.class).setNavTitle(store.getSiteName());
             } else {
                 XGET(NavigationTitleBar.class).setNavTitle(title);

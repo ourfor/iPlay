@@ -42,7 +42,7 @@ import top.ourfor.app.iplay.page.ActivityEvent;
 import top.ourfor.app.iplay.page.Page;
 import top.ourfor.app.iplay.page.login.LoginPage;
 import top.ourfor.app.iplay.util.DeviceUtil;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.PathUtil;
 import top.ourfor.app.iplay.util.WindowUtil;
 
@@ -100,7 +100,7 @@ public class CloudPage implements DriveUpdateAction, Page {
                 }
                 log.info("file content {}", result);
                 if (result instanceof String) {
-                    val store = XGET(GlobalStore.class);
+                    val store = XGET(IAppStore.class);
                     store.fromSiteJSON((String) result);
                     syncSuccess();
                 }
@@ -112,7 +112,7 @@ public class CloudPage implements DriveUpdateAction, Page {
                 binding.fromButton.setEnabled(false);
                 binding.toButton.setEnabled(false);
             });
-            fileProvider.write("iPlay/sites.json", XGET(GlobalStore.class).toSiteJSON(true), result -> {
+            fileProvider.write("iPlay/sites.json", XGET(IAppStore.class).toSiteJSON(true), result -> {
                 XGET(DispatchAction.class).runOnUiThread(() -> {
                     binding.fromButton.setEnabled(true);
                     binding.toButton.setEnabled(true);
@@ -156,7 +156,7 @@ public class CloudPage implements DriveUpdateAction, Page {
     }
 
     void showDriveSelection() {
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         if (store.hasValidDrive()) {
             binding.loginButton.setVisibility(View.GONE);
             binding.driveSpinner.setVisibility(View.VISIBLE);
@@ -197,7 +197,7 @@ public class CloudPage implements DriveUpdateAction, Page {
 
             try {
                 val is = getContext().getContentResolver().openInputStream(dir.getUri());
-                val store = XGET(GlobalStore.class);
+                val store = XGET(IAppStore.class);
                 final var content = PathUtil.getContent(is);
                 assert is != null;
                 is.close();
@@ -225,7 +225,8 @@ public class CloudPage implements DriveUpdateAction, Page {
             try {
                 val os = getContext().getContentResolver().openOutputStream(file.getUri());
                 BufferedOutputStream bos = new BufferedOutputStream(os);
-                bos.write(GlobalStore.shared.toSiteJSON().getBytes());
+                val store = XGET(IAppStore.class);
+                bos.write(store.toSiteJSON().getBytes());
                 bos.close();
                 os.close();
                 Toast.makeText(getContext(), R.string.local_sync_success, Toast.LENGTH_SHORT).show();

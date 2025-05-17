@@ -17,7 +17,7 @@ import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import top.ourfor.app.iplay.model.MediaModel;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.view.video.PlayerSourceModel;
 
 @Slf4j
@@ -36,7 +36,7 @@ public class PlayerConfigPanelViewModel {
         if (this.media.getValue() == null) return;
 
         val media = this.media.getValue();
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         assert store != null;
         store.getPlayback(media.getId(), playback -> {
             if (playback == null) return;

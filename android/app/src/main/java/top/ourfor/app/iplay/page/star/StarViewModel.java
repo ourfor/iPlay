@@ -21,7 +21,7 @@ import lombok.val;
 import top.ourfor.app.iplay.R;
 import top.ourfor.app.iplay.common.type.MediaLayoutType;
 import top.ourfor.app.iplay.common.type.MediaType;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 
 @Slf4j
 @Getter
@@ -30,9 +30,9 @@ public class StarViewModel extends ViewModel {
     private final MutableLiveData<List<MediaStarModel>> starItems = new MutableLiveData<>(new CopyOnWriteArrayList<>());
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
-    GlobalStore store;
+    IAppStore store;
 
-    StarViewModel(GlobalStore store) {
+    StarViewModel(IAppStore store) {
         this.store = store;
     }
 

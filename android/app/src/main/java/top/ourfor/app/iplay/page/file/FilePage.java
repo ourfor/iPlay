@@ -41,7 +41,7 @@ import top.ourfor.app.iplay.model.drive.Drive;
 import top.ourfor.app.iplay.page.Activity;
 import top.ourfor.app.iplay.page.Page;
 import top.ourfor.app.iplay.page.login.LoginPage;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.AnimationUtil;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.util.PathUtil;
@@ -53,7 +53,7 @@ import top.ourfor.app.iplay.view.infra.ToolbarAction;
 @Slf4j
 @ViewController(name = "file_page")
 public class FilePage implements DriveUpdateAction, ThemeUpdateAction, Page {
-    GlobalStore store;
+    IAppStore store;
     @Getter
     Context context;
     FileViewModel viewModel;
@@ -67,7 +67,7 @@ public class FilePage implements DriveUpdateAction, ThemeUpdateAction, Page {
 
     public void init() {
         binding = FilePageBinding.inflate(LayoutInflater.from(context), null, false);
-        store = XGET(GlobalStore.class);
+        store = XGET(IAppStore.class);
         val view = binding.getRoot();
         viewModel = new FileViewModel(store);
         viewModel.getIsLoading().observe(view, isLoading -> {

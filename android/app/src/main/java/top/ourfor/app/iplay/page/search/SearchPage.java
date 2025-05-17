@@ -38,7 +38,7 @@ import top.ourfor.app.iplay.page.Page;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.common.type.MediaLayoutType;
 import top.ourfor.app.iplay.page.home.MediaViewCell;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.WindowUtil;
 import top.ourfor.app.iplay.view.FlexLayoutManager;
 import top.ourfor.app.iplay.view.ListView;
@@ -50,7 +50,7 @@ import top.ourfor.app.iplay.view.infra.ToolbarAction;
 public class SearchPage implements SiteUpdateAction, ThemeUpdateAction, Page {
     @Getter
     Context context;
-    GlobalStore store;
+    IAppStore store;
     SearchViewModel viewModel;
     SearchPageBinding binding = null;
     AnimationAction activityIndicator;
@@ -58,7 +58,7 @@ public class SearchPage implements SiteUpdateAction, ThemeUpdateAction, Page {
 
     public void init() {
         binding = SearchPageBinding.inflate(LayoutInflater.from(context));
-        store = XGET(GlobalStore.class);
+        store = XGET(IAppStore.class);
         val view = binding.getRoot();
         viewModel = new SearchViewModel(store);
         viewModel.getIsLoading().observe(view, isLoading -> {

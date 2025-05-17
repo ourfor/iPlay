@@ -23,7 +23,7 @@ import top.ourfor.app.iplay.action.SiteLineUpdateAction;
 import top.ourfor.app.iplay.common.model.SiteEndpointModel;
 import top.ourfor.app.iplay.databinding.SiteLineManageBinding;
 import top.ourfor.app.iplay.model.SiteLineModel;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.view.ListView;
 
 @Slf4j
@@ -54,7 +54,7 @@ public class SiteLineManageView extends ConstraintLayout implements SiteLineUpda
     }
 
     public void loadData() {
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         val site = store.getSite();
         if (site == null) return;
         var items = new ArrayList<SiteLineModel>();
@@ -86,11 +86,11 @@ public class SiteLineManageView extends ConstraintLayout implements SiteLineUpda
         siteLineListView.setLayoutParams(listViewLayout);
         siteLineListView.viewModel.onClick = e -> {
             XGET(DispatchAction.class).runOnUiThread(() -> {
-                val globalStore = XGET(GlobalStore.class);
-                val remark = globalStore.getSite().getEndpoint().getRemark();
+                val IAppStore = XGET(IAppStore.class);
+                val remark = IAppStore.getSite().getEndpoint().getRemark();
                 val endpoint = e.getModel().getEndpoint();
-                globalStore.getSite().setEndpoint(endpoint.withRemark(remark));
-                globalStore.save();
+                IAppStore.getSite().setEndpoint(endpoint.withRemark(remark));
+                IAppStore.save();
             });
         };
 
@@ -116,14 +116,14 @@ public class SiteLineManageView extends ConstraintLayout implements SiteLineUpda
                         .protocol(url.getProtocol())
                         .remark(remark)
                         .build();
-                val globalStore = XGET(GlobalStore.class);
-                val currentSite = globalStore.getSite();
+                val IAppStore = XGET(IAppStore.class);
+                val currentSite = IAppStore.getSite();
                 if (currentSite.getEndpoints() == null) {
                     currentSite.setEndpoints(new ArrayList<SiteLineModel>());
                     currentSite.getEndpoints().add(SiteLineModel.builder().endpoint(currentSite.getEndpoint()).remark("Default").build());
                 }
                 currentSite.getEndpoints().add(SiteLineModel.builder().endpoint(endpoint).remark(remark).build());
-                globalStore.save();
+                IAppStore.save();
                 loadData();
                 binding.serverInput.setText(null);
                 binding.remarkInput.setText(null);

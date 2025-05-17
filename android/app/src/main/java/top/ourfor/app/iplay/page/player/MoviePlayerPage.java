@@ -52,7 +52,7 @@ import top.ourfor.app.iplay.page.media.PlayerConfigPanelViewModel;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.util.IntervalCaller;
 import top.ourfor.app.iplay.util.WindowUtil;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.view.ListView;
 import top.ourfor.app.iplay.view.player.PlayerEventType;
 import top.ourfor.app.iplay.view.video.PlayerSourceModel;
@@ -132,7 +132,7 @@ public class MoviePlayerPage implements Page {
     }
 
     void playEmbyMediaWithId(String id) {
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         assert store != null;
         val media = store.getDataSource().getMediaMap().get(id);
         if (media == null) return;
@@ -174,7 +174,7 @@ public class MoviePlayerPage implements Page {
                     .seekableRanges(List.of(new SeekableRange(0L, 0L)))
                     .nowPlayingQueue(List.of(new EmbyModel.EmbyPlayingQueue("", "playlistItem0")))
                     .build();
-            XGET(GlobalStore.class).trackPlay(MediaPlayState.OPENING, playbackData);
+            XGET(IAppStore.class).trackPlay(MediaPlayState.OPENING, playbackData);
             val url = source != null ? video.getUrl() : store.getPlayUrl(playback);
             log.debug("video url: {}", url);
             if (url == null) return;
@@ -213,10 +213,10 @@ public class MoviePlayerPage implements Page {
                 default -> MediaPlayState.NONE;
             };
             if (type == PlayerEventType.PlayEventType.PlayEventTypeOnPause || isResume) {
-                XGET(GlobalStore.class).trackPlay(state, playbackData);
+                XGET(IAppStore.class).trackPlay(state, playbackData);
             }
             caller.invoke(() -> {
-                XGET(GlobalStore.class).trackPlay(state, playbackData);
+                XGET(IAppStore.class).trackPlay(state, playbackData);
             });
         });
 
@@ -317,7 +317,7 @@ public class MoviePlayerPage implements Page {
     }
 
     private void setupPlaylist(MediaModel media) {
-        var store = XGET(GlobalStore.class);
+        var store = XGET(IAppStore.class);
         assert store != null;
         List<MediaModel> items = null;
         if (media.isEpisode()) {
@@ -347,7 +347,7 @@ public class MoviePlayerPage implements Page {
     void onSelectMedia(MediaModel media) {
         if (media == null) return;
         id = media.getId();
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         assert store != null;
         store.getPlayback(media.getId(), playback -> {
             if (playback == null) return;
@@ -363,7 +363,7 @@ public class MoviePlayerPage implements Page {
                     .seekableRanges(List.of(new SeekableRange(0L, 0L)))
                     .nowPlayingQueue(List.of(new EmbyModel.EmbyPlayingQueue("", "playlistItem0")))
                     .build();
-            XGET(GlobalStore.class).trackPlay(MediaPlayState.OPENING, playbackData);
+            XGET(IAppStore.class).trackPlay(MediaPlayState.OPENING, playbackData);
             val url = store.getPlayUrl(playback);
             if (url == null) return;
             this.playerView.post(() -> {
@@ -382,7 +382,7 @@ public class MoviePlayerPage implements Page {
         WindowUtil.exitFullscreen();
         val action = XGET(NavigationTitleBar.ThemeManageAction.class);
         action.setStatusBarTextColor(!action.isDarkMode());
-        XGET(GlobalStore.class).trackPlay(MediaPlayState.STOPPED, playbackData);
+        XGET(IAppStore.class).trackPlay(MediaPlayState.STOPPED, playbackData);
     }
 
     @Override

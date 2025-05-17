@@ -34,7 +34,7 @@ import top.ourfor.app.iplay.model.MediaModel;
 import top.ourfor.app.iplay.page.Page;
 import top.ourfor.app.iplay.util.AnimationUtil;
 import top.ourfor.app.iplay.util.DeviceUtil;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.WindowUtil;
 import top.ourfor.app.iplay.view.GridLayoutManager;
 import top.ourfor.app.iplay.view.ListView;
@@ -55,7 +55,7 @@ public class AlbumPage implements Page {
 
     @Getter
     Context context;
-    GlobalStore store;
+    IAppStore store;
     AlbumViewModel viewModel;
     HashMap<String, Object> params;
 
@@ -296,7 +296,7 @@ public class AlbumPage implements Page {
     public void create(Context context, Map<String, Object> params) {
         this.context = context;
         this.params = new HashMap<>(params);
-        store = XGET(GlobalStore.class);
+        store = XGET(IAppStore.class);
         init();
         setup();
     }

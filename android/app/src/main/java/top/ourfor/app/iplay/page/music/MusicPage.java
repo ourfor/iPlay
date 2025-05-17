@@ -26,7 +26,7 @@ import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.databinding.EpisodePageBinding;
 import top.ourfor.app.iplay.model.MediaModel;
 import top.ourfor.app.iplay.page.Page;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.AnimationUtil;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.view.ListView;
@@ -97,7 +97,7 @@ public class MusicPage implements Page {
 //            XGET(Navigator.class).pushPage(R.id.musicPlayerPage, args);
         };
 
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         if (id == null) return;
         activityIndicator.post(() -> {
             activityIndicator.setVisibility(View.VISIBLE);
@@ -128,7 +128,7 @@ public class MusicPage implements Page {
             val itemId = item.getItemId();
             if (itemId == R.id.toggle_favorite) {
                 val media = model;
-                val store = XGET(GlobalStore.class);
+                val store = XGET(IAppStore.class);
                 val favorite = media.getUserData().isFavorite();
                 store.markFavorite(media.getId(), !favorite, obj -> {
                     if (!(obj instanceof EmbyModel.EmbyUserData)) {

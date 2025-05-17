@@ -68,7 +68,7 @@ import top.ourfor.app.iplay.page.Page;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.util.LayoutUtil;
 import top.ourfor.app.iplay.model.SiteModel;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.WindowUtil;
 import top.ourfor.app.iplay.view.TagView;
 
@@ -322,7 +322,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                 .remark(remark.isBlank() || remark.isEmpty() ? "/" : remark)
                 .path("/")
                 .build();
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         store.addDrive(drive);
         store.switchDrive(drive);
         XGET(Activity.class).runOnUiThread(() -> {
@@ -342,7 +342,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                 .auth(auth)
                 .build();
 
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         store.addDrive(drive);
         store.switchDrive(drive);
         XGET(Activity.class).runOnUiThread(() -> {
@@ -370,7 +370,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                 site.setShowSensitive(binding.showSensitiveSwitch.isChecked());
                 site.setRemark(remake);
                 site.setServerType(ServerType.Emby);
-                XGET(GlobalStore.class).addNewSite(site);
+                XGET(IAppStore.class).addNewSite(site);
                 XGET(Activity.class).runOnUiThread(() -> {
                     val action = XGET(SiteUpdateAction.class);
                     action.onSiteUpdate();
@@ -410,7 +410,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                 site.setShowSensitive(binding.showSensitiveSwitch.isChecked());
                 site.setRemark(remake);
                 site.setServerType(ServerType.Jellyfin);
-                XGET(GlobalStore.class).addNewSite(site);
+                XGET(IAppStore.class).addNewSite(site);
                 getActivity().runOnUiThread(() -> {
                     val action = XGET(SiteUpdateAction.class);
                     action.onSiteUpdate();
@@ -446,7 +446,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                         .serverUrl(binding.serverInput.getText().toString())
                         .build();
 
-                val store = XGET(GlobalStore.class);
+                val store = XGET(IAppStore.class);
                 store.addDrive(drive);
                 store.switchDrive(drive);
                 resId = R.string.login_success;
@@ -476,7 +476,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                     .token("")
                     .build();
 
-            val store = XGET(GlobalStore.class);
+            val store = XGET(IAppStore.class);
             store.addDrive(drive);
             store.switchDrive(drive);
             resId = R.string.login_success;
@@ -502,7 +502,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                         .token(token)
                         .build();
 
-                val store = XGET(GlobalStore.class);
+                val store = XGET(IAppStore.class);
                 store.addDrive(drive);
                 store.switchDrive(drive);
                 resId = R.string.login_success;
@@ -525,7 +525,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
             boolean success = response != null;
             int resId;
             if (success && response instanceof SiteModel newSite) {
-                val store = XGET(GlobalStore.class);
+                val store = XGET(IAppStore.class);
                 newSite.setRemark(remake);
                 newSite.setServerType(ServerType.iPlay);
                 store.addNewSite(newSite);
@@ -559,7 +559,7 @@ public class LoginPage extends BottomSheetDialogFragment implements OneDriveActi
                         .cookie(token)
                         .build();
 
-                val store = XGET(GlobalStore.class);
+                val store = XGET(IAppStore.class);
                 store.addDrive(drive);
                 store.switchDrive(drive);
                 success = true;

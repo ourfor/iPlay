@@ -37,7 +37,7 @@ import top.ourfor.app.iplay.config.AppSetting;
 import top.ourfor.app.iplay.model.MediaModel;
 import top.ourfor.app.iplay.page.Page;
 import top.ourfor.app.iplay.page.home.MediaViewCell;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.util.IntervalCaller;
 import top.ourfor.app.iplay.util.LayoutUtil;
@@ -77,7 +77,7 @@ public class MusicPlayerPage implements Page {
     }
 
     void bind() {
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         val media = store.getDataSource().getMediaMap().get(id);
         if (media == null) return;
         store.getPlayback(media.getId(), playback -> {
@@ -94,7 +94,7 @@ public class MusicPlayerPage implements Page {
                     .seekableRanges(List.of(new SeekableRange(0L, 0L)))
                     .nowPlayingQueue(List.of(new EmbyModel.EmbyPlayingQueue("", "playlistItem0")))
                     .build();
-            XGET(GlobalStore.class).trackPlay(MediaPlayState.OPENING, playbackData);
+            XGET(IAppStore.class).trackPlay(MediaPlayState.OPENING, playbackData);
             val url = store.getPlayUrl(playback);
             if (url == null) return;
             this.playerView.post(() -> {
@@ -132,10 +132,10 @@ public class MusicPlayerPage implements Page {
                 default -> MediaPlayState.NONE;
             };
             if (type == PlayerEventType.PlayEventType.PlayEventTypeOnPause || isResume) {
-                XGET(GlobalStore.class).trackPlay(state, playbackData);
+                XGET(IAppStore.class).trackPlay(state, playbackData);
             }
             caller.invoke(() -> {
-                XGET(GlobalStore.class).trackPlay(state, playbackData);
+                XGET(IAppStore.class).trackPlay(state, playbackData);
             });
         });
 
@@ -196,7 +196,7 @@ public class MusicPlayerPage implements Page {
 
     void onSelectMedia(MediaModel media) {
         if (media == null) return;
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         store.getPlayback(media.getId(), playback -> {
             if (playback == null) return;
             val sources = store.getPlaySources(media, playback);
@@ -211,7 +211,7 @@ public class MusicPlayerPage implements Page {
                     .seekableRanges(List.of(new SeekableRange(0L, 0L)))
                     .nowPlayingQueue(List.of(new EmbyModel.EmbyPlayingQueue("", "playlistItem0")))
                     .build();
-            XGET(GlobalStore.class).trackPlay(MediaPlayState.OPENING, playbackData);
+            XGET(IAppStore.class).trackPlay(MediaPlayState.OPENING, playbackData);
             val url = store.getPlayUrl(playback);
             if (url == null) return;
             this.playerView.post(() -> {
@@ -226,7 +226,7 @@ public class MusicPlayerPage implements Page {
 
     @Override
     public void viewWillDisappear() {
-        XGET(GlobalStore.class).trackPlay(MediaPlayState.STOPPED, playbackData);
+        XGET(IAppStore.class).trackPlay(MediaPlayState.STOPPED, playbackData);
     }
 
     @Override

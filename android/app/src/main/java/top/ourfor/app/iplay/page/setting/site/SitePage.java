@@ -37,7 +37,7 @@ import top.ourfor.app.iplay.page.Activity;
 import top.ourfor.app.iplay.page.Page;
 import top.ourfor.app.iplay.page.login.LoginPage;
 import top.ourfor.app.iplay.page.login.SiteViewCell;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.util.WindowUtil;
 import top.ourfor.app.iplay.view.ListView;
@@ -95,11 +95,11 @@ public class SitePage implements Page, SiteListUpdateAction, SiteUpdateAction {
         listView.viewModel.viewCell = SiteViewCell.class;
         listView.viewModel.onClick = (event) -> {
             log.info("site event clicked: {}", event);
-            GlobalStore store = XGET(GlobalStore.class);
+            IAppStore store = XGET(IAppStore.class);
             store.switchSite(event.getModel());
             Toast.makeText(context, "Switch site success", Toast.LENGTH_SHORT).show();
         };
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         listView.viewModel.isSelected = (model) -> model.getUser().equals(store.getSite().getUser()) && model.getId().equals(store.getSite().getId());
         listView.setItems(store.getSites());
 
@@ -112,7 +112,7 @@ public class SitePage implements Page, SiteListUpdateAction, SiteUpdateAction {
 
     @Override
     public void updateSiteList() {
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         assert store != null;
         val currentSite = store.getSite();
         if (currentSite.getRemark() == null || currentSite.getRemark().isEmpty()) {

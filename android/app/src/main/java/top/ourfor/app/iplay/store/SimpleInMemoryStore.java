@@ -56,7 +56,7 @@ import top.ourfor.app.iplay.view.video.PlayerSourceModel;
 @With
 @ToString
 @AllArgsConstructor
-public class GlobalStore {
+public class SimpleInMemoryStore implements IAppStore {
     @JsonIgnoreProperties
     private static String storeKey = "@store/emby";
 
@@ -76,19 +76,19 @@ public class GlobalStore {
     @JsonProperty("dataSource")
     private DataSource dataSource;
 
-    public static GlobalStore shared = defaultStore();
+    public static SimpleInMemoryStore shared = defaultStore();
 
-    public GlobalStore() {
+    public SimpleInMemoryStore() {
         drives = new ArrayList<>();
         sites = new ArrayList<>();
         dataSource = createDataSource();
     }
 
-    public static GlobalStore defaultStore() {
+    public static SimpleInMemoryStore defaultStore() {
         KVStorage kv = XGET(KVStorage.class);
-        GlobalStore instance = kv.getObject(storeKey, GlobalStore.class);
+        SimpleInMemoryStore instance = kv.getObject(storeKey, SimpleInMemoryStore.class);
         if (instance == null) {
-            instance = new GlobalStore();
+            instance = new SimpleInMemoryStore();
             kv.setObject(storeKey, instance);
         } else {
             val serverType = instance.site != null ? instance.site.getServerType() : ServerType.None;
@@ -180,7 +180,7 @@ public class GlobalStore {
     }
 
     public void fromJSON(String json) {
-        val store = XGET(JSONAdapter.class).fromJSON(json, GlobalStore.class);
+        val store = XGET(JSONAdapter.class).fromJSON(json, SimpleInMemoryStore.class);
         if (store == null) return;
         this.site = store.site;
         this.sites = store.sites;
@@ -188,7 +188,7 @@ public class GlobalStore {
     }
 
     public void fromSiteJSON(String json) {
-        val store = XGET(JSONAdapter.class).fromJSON(json, GlobalStore.class);
+        val store = XGET(JSONAdapter.class).fromJSON(json, SimpleInMemoryStore.class);
         if (store == null) return;
         this.site = store.site;
         this.sites = store.sites;

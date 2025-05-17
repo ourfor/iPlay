@@ -16,7 +16,7 @@ import lombok.val;
 import top.ourfor.app.iplay.api.file.File;
 import top.ourfor.app.iplay.api.file.FileProvider;
 import top.ourfor.app.iplay.api.file.FileProviderFactory;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 
 @Slf4j
 @Getter
@@ -27,9 +27,9 @@ public class FileViewModel extends ViewModel {
     private final MutableLiveData<FileProvider> fileProvider = new MutableLiveData<>(null);
     private final MutableLiveData<List<File>> cacheFiles = new MutableLiveData<>(null);
 
-    GlobalStore store;
+    IAppStore store;
 
-    FileViewModel(GlobalStore store) {
+    FileViewModel(IAppStore store) {
         this.store = store;
         val drive = store.getDrive();
         if (drive != null) {

@@ -30,7 +30,7 @@ import top.ourfor.app.iplay.model.AlbumModel;
 import top.ourfor.app.iplay.model.MediaModel;
 import top.ourfor.app.iplay.model.SiteModel;
 import top.ourfor.app.iplay.model.UserModel;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.Base64Util;
 import top.ourfor.app.iplay.util.HTTPModel;
 import top.ourfor.app.iplay.util.HTTPUtil;
@@ -262,7 +262,7 @@ public class iPlayApi implements EmbyLikeApi {
             site.getEndpoint() == null ||
             site.getUser() == null) return;
 
-        val store = XGET(GlobalStore.class);
+        val store = XGET(IAppStore.class);
         val media = store.getDataSource().getMediaMap().get(id);
         val model = HTTPModel.<iPlayModel.Response<List<iPlayModel.SourceModel>>>builder()
                 .url(site.getEndpoint().getBaseUrl() + "media/source")

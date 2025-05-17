@@ -37,7 +37,7 @@ import top.ourfor.app.iplay.page.Page;
 import top.ourfor.app.iplay.page.login.SiteViewCell;
 import top.ourfor.app.iplay.page.setting.site.SiteLineManageView;
 import top.ourfor.app.iplay.util.DeviceUtil;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.WindowUtil;
 import top.ourfor.app.iplay.view.ListView;
 import top.ourfor.app.iplay.view.infra.Toolbar;
@@ -54,14 +54,14 @@ public class HomePage implements SiteUpdateAction, ThemeUpdateAction, SiteListUp
     @Getter
     Context context;
     HomePageBinding binding;
-    GlobalStore store;
+    IAppStore store;
     HomeViewModel viewModel;
 
     public void init() {
         val inflater = LayoutInflater.from(context);
         binding = HomePageBinding.inflate(inflater, null, false);
         val view = binding.getRoot();
-        store = XGET(GlobalStore.class);
+        store = XGET(IAppStore.class);
         viewModel = new HomeViewModel(store);
         viewModel.getAlbumCollection().observe(view, albums -> {
             if (binding != null) {

@@ -25,7 +25,7 @@ import top.ourfor.app.iplay.common.annotation.ViewController;
 import top.ourfor.app.iplay.databinding.StarPageBinding;
 import top.ourfor.app.iplay.page.Page;
 import top.ourfor.app.iplay.util.DeviceUtil;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.WindowUtil;
 import top.ourfor.app.iplay.view.ListView;
 import top.ourfor.app.iplay.view.infra.Toolbar;
@@ -40,7 +40,7 @@ public class StarPage implements SiteUpdateAction, ThemeUpdateAction, Page {
 
     @Getter
     Context context;
-    GlobalStore store;
+    IAppStore store;
     StarViewModel viewModel;
     StarPageBinding binding;
     AnimationAction activityIndicator;
@@ -48,7 +48,7 @@ public class StarPage implements SiteUpdateAction, ThemeUpdateAction, Page {
     public void init() {
         binding = StarPageBinding.inflate(LayoutInflater.from(context));
         val view = binding.getRoot();
-        store = XGET(GlobalStore.class);
+        store = XGET(IAppStore.class);
         viewModel = new StarViewModel(store);
         viewModel.getIsLoading().observe(view, isLoading -> {
             if (activityIndicator == null) return;

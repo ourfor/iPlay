@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import top.ourfor.app.iplay.api.file.File;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 
 @Slf4j
 @Getter
@@ -19,9 +19,9 @@ public class WebPageViewModel extends ViewModel {
     private final MutableLiveData<String> path = new MutableLiveData<>("/");
     private final MutableLiveData<List<File>> cacheFiles = new MutableLiveData<>(null);
 
-    GlobalStore store;
+    IAppStore store;
 
-    WebPageViewModel(GlobalStore store) {
+    WebPageViewModel(IAppStore store) {
         this.store = store;
     }
 }

@@ -38,7 +38,7 @@ import top.ourfor.app.iplay.config.AppSetting;
 import top.ourfor.app.iplay.databinding.WebPageBinding;
 import top.ourfor.app.iplay.page.Activity;
 import top.ourfor.app.iplay.page.Page;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.AnimationUtil;
 import top.ourfor.app.iplay.util.DeviceUtil;
 import top.ourfor.app.iplay.util.WindowUtil;
@@ -49,7 +49,7 @@ import top.ourfor.app.iplay.view.infra.ToolbarAction;
 @ViewController(name = "web_page")
 public class WebPage implements ThemeUpdateAction, Page {
     static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0";
-    GlobalStore store;
+    IAppStore store;
     @Getter
     Context context;
     WebPageViewModel viewModel;
@@ -62,7 +62,7 @@ public class WebPage implements ThemeUpdateAction, Page {
     @SuppressLint({"SetJavaScriptEnabled", "JavascriptInterface"})
     public void init() {
         binding = WebPageBinding.inflate(LayoutInflater.from(context), null, false);
-        store = XGET(GlobalStore.class);
+        store = XGET(IAppStore.class);
         val view = binding.getRoot();
         viewModel = new WebPageViewModel(store);
         viewModel.getIsLoading().observe(view, isLoading -> {

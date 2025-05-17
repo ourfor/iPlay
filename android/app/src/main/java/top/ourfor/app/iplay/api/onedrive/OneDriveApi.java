@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 import top.ourfor.app.iplay.util.HTTPModel;
 import top.ourfor.app.iplay.util.HTTPUtil;
 import top.ourfor.app.iplay.util.PathUtil;
@@ -137,7 +137,7 @@ public class OneDriveApi {
                 auth = result;
                 drive.setAuth(result);
                 XGET(ThreadPoolExecutor.class).submit(() -> {
-                    XGET(GlobalStore.class).save();
+                    XGET(IAppStore.class).save();
                 });
             }
             latch.countDown();

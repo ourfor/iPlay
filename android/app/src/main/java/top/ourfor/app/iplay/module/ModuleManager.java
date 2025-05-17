@@ -1,7 +1,7 @@
 package top.ourfor.app.iplay.module;
 
 import static top.ourfor.app.iplay.module.Bean.XGET;
-import top.ourfor.app.iplay.store.GlobalStore;
+import top.ourfor.app.iplay.store.IAppStore;
 
 public class ModuleManager {
 
@@ -9,7 +9,7 @@ public class ModuleManager {
         return new CacheModule();
     }
 
-    public GlobalStore defaultGlobalStore() {
-        return XGET(GlobalStore.class);
+    public IAppStore defaultIAppStore() {
+        return XGET(IAppStore.class);
     }
 }
