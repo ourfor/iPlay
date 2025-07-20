@@ -62,7 +62,7 @@
     <string name="modify">修改</string>
     <string name="can_remove_current_site">无法删除使用中的站点</string>
     <string name="modify_at_site_page">请在站点配置页修改</string>
-    <string name="app_note_html"><![CDATA[<a href=\"https://github.com/ourfor/iPlay\">🥳 需要新功能就去加个🌟吧</a>]]></string>
+    <string name="app_note_html"><![CDATA[<a href=\"https://github.com/saltpi/iPlay\">🥳 需要新功能就去加个🌟吧</a>]]></string>
     <string name="webdav_sync_tutorial">☁️通过WebDAV同步你的Emby站点</string>
     <string name="webdav_sync_tutorial_html"><![CDATA[<a href=\"https://www.ourfor.top/article/iplay-webdav-sync/\">☁️ 通过WebDAV同步你的Emby站点</a>]]></string>
     <string name="menu_unknown">未知</string>

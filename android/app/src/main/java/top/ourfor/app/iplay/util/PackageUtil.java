@@ -16,7 +16,7 @@ import top.ourfor.app.iplay.common.model.GitHubReleaseModel;
 public class PackageUtil {
     public static void checkUpdate(Consumer<Map<String, String>> completion) {
         val req = HTTPModel.<GitHubReleaseModel>builder()
-                .url("https://api.github.com/repos/ourfor/iPlay/releases/latest")
+                .url("https://api.github.com/repos/saltpi/iPlay/releases/latest")
                 .method("GET")
                 .typeReference(new TypeReference<GitHubReleaseModel>() {})
                 .build();

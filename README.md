@@ -6,8 +6,8 @@
 
 <div style="display:inline-flex;flex-direction:row;gap:0.5rem;">
 
-![Build](https://github.com/ourfor/iPlayClient/actions/workflows/develop.yml/badge.svg?branch=main)
-![Version](https://img.shields.io/github/v/release/ourfor/iPlay)
+![Build](https://github.com/saltpi/iPlay/actions/workflows/develop.yml/badge.svg?branch=main)
+![Version](https://img.shields.io/github/v/release/saltpi/iPlay)
 
 </div>
 
@@ -34,8 +34,8 @@ It is developed in my free time ⏰
 
 ### 📥 Download
 
-- [Android](https://github.com/ourfor/iPlay/releases/latest)
-- [iOS](https://github.com/ourfor/iPlay/releases/latest)
+- [Android](https://github.com/saltpi/iPlay/releases/latest)
+- [iOS](https://github.com/saltpi/iPlay/releases/latest)
 - [Testflight](https://testflight.apple.com/join/73NHMoP6)
 
 <table>
